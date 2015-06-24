@@ -1,0 +1,39 @@
+From bfe878e4313e21b4c539d95a88d243065d30fc2c Mon Sep 17 00:00:00 2001
+From: Chow Loong Jin <hyperair@debian.org>
+Date: Mon, 8 Jun 2015 04:55:50 +0800
+Subject: application: Ignore --no-desktop if not first launch
+
+--no-desktop is an option to allow for running Nautilus under other desktop
+environments as well as GNOME without clobbering the foreign desktop
+environment's desktop.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=750528
+
+Signed-off-by: Chow Loong Jin <hyperair@debian.org>
+
+diff --git a/src/nautilus-application.c b/src/nautilus-application.c
+index f5e32b0..bde2330 100644
+--- a/src/nautilus-application.c
++++ b/src/nautilus-application.c
+@@ -826,10 +826,14 @@ nautilus_application_command_line (GApplication            *application,
+ 		g_action_group_activate_action (G_ACTION_GROUP (application),
+ 						"open-desktop", NULL);
+ 	} else if (g_variant_dict_contains (options, "no-desktop")) {
+-		DEBUG ("Forcing desktop off, as requested");
+-		self->priv->desktop_override = TRUE;
+-		g_action_group_activate_action (G_ACTION_GROUP (application),
+-						"close-desktop", NULL);
++		if (g_application_get_is_remote (application)) {
++			DEBUG ("Not primary instance. Ignoring --no-desktop.");
++		} else {
++			DEBUG ("Forcing desktop off, as requested");
++			self->priv->desktop_override = TRUE;
++			g_action_group_activate_action (G_ACTION_GROUP (application),
++							"close-desktop", NULL);
++		}
+ 	}
+ 
+ 	if (g_variant_dict_contains (options, "no-default-window")) {
+-- 
+cgit v0.10.2
+
