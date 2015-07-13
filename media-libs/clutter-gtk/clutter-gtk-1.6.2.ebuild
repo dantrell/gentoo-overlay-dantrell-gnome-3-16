@@ -4,7 +4,7 @@ EAPI="5"
 GCONF_DEBUG="yes"
 GNOME2_LA_PUNT="yes"
 
-inherit eutils gnome2
+inherit gnome2
 
 DESCRIPTION="Library for embedding a Clutter canvas (stage) in GTK+"
 HOMEPAGE="https://wiki.gnome.org/Projects/Clutter"
@@ -16,22 +16,15 @@ IUSE="examples +introspection"
 
 RDEPEND="
 	>=x11-libs/gtk+-3.6.0:3[introspection?]
-	>=media-libs/clutter-1.22.2-r1:1.0[introspection?]
+	>=media-libs/clutter-1.22.3:1.0[introspection?]
 	media-libs/cogl:1.0=[introspection?]
-	introspection? ( >=dev-libs/gobject-introspection-0.9.12 )
+	introspection? ( >=dev-libs/gobject-introspection-0.9.12:= )
 "
 DEPEND="${RDEPEND}
 	dev-util/gtk-doc-am
 	>=sys-devel/gettext-0.18
 	virtual/pkgconfig
 "
-
-src_prepare() {
-	# patches from upstream git master
-	epatch "${FILESDIR}"/${P}-clutter_gdk_get_visual.patch
-
-	gnome2_src_prepare
-}
 
 src_configure() {
 	gnome2_src_configure \

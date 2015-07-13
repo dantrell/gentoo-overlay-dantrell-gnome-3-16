@@ -3,6 +3,7 @@
 EAPI="5"
 GCONF_DEBUG="no"
 VALA_MIN_API_VERSION="0.26"
+VALA_USE_DEPEND="vapigen"
 
 inherit gnome2 vala
 
@@ -12,9 +13,9 @@ HOMEPAGE="https://wiki.gnome.org/Apps/LaTeXila"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="*"
-IUSE="+latexmk rubber"
+IUSE="+introspection +latexmk rubber"
 
-COMMON_DEPEND="
+COMMON_DEPEND="$(vala_depend)
 	app-text/enchant
 	>=app-text/gtkspell-3.0.4:3
 	>=dev-libs/glib-2.40:2[dbus]
@@ -25,7 +26,7 @@ COMMON_DEPEND="
 	x11-libs/gdk-pixbuf:2
 	x11-libs/libX11
 	x11-libs/pango
-	$(vala_depend)
+	introspection? ( >=dev-libs/gobject-introspection-1.30.0:= )
 "
 RDEPEND="${COMMON_DEPEND}
 	virtual/latex-base
@@ -34,6 +35,7 @@ RDEPEND="${COMMON_DEPEND}
 	rubber? ( dev-tex/rubber )
 "
 DEPEND="${COMMON_DEPEND}
+	>=dev-util/gtk-doc-am-1.14
 	>=dev-util/intltool-0.50.1
 	dev-util/itstool
 	virtual/pkgconfig
@@ -43,4 +45,9 @@ src_prepare() {
 	DOCS="AUTHORS HACKING NEWS README"
 	gnome2_src_prepare
 	vala_src_prepare
+}
+
+src_configure() {
+	gnome2_src_configure \
+		$(use_enable introspection)
 }

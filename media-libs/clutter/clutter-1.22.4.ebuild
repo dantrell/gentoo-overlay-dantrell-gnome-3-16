@@ -4,7 +4,7 @@ EAPI="5"
 GCONF_DEBUG="no"
 GNOME2_LA_PUNT="yes"
 
-inherit autotools eutils gnome2 virtualx
+inherit gnome2 virtualx
 
 HOMEPAGE="https://wiki.gnome.org/Projects/Clutter"
 DESCRIPTION="Clutter is a library for creating graphical user interfaces"
@@ -39,7 +39,7 @@ RDEPEND="
 		x11-libs/libxkbcommon
 	)
 	gtk? ( >=x11-libs/gtk+-3.3.18:3[aqua?] )
-	introspection? ( >=dev-libs/gobject-introspection-1.39 )
+	introspection? ( >=dev-libs/gobject-introspection-1.39:= )
 	X? (
 		media-libs/fontconfig
 		>=x11-libs/libX11-1.3.1
@@ -60,26 +60,19 @@ DEPEND="${RDEPEND}
 		>=dev-util/gtk-doc-1.20
 		>=app-text/docbook-sgml-utils-0.6.14[jadetex]
 		dev-libs/libxslt )
-	test? ( x11-libs/gdk-pixbuf )"
-
+	test? ( x11-libs/gdk-pixbuf )
+"
 # Tests fail with both swrast and llvmpipe
 # They pass under r600g or i965, so the bug is in mesa
 #RESTRICT="test"
 
 src_prepare() {
-	# From upstream git, 1.22 branch
-	epatch "${FILESDIR}"/${P}-touchpad-detection.patch
-	epatch "${FILESDIR}"/${P}-cogl-visual-xlib.patch
-	epatch "${FILESDIR}"/${P}-clutter_gdk_get_visual.patch
-	epatch "${FILESDIR}"/${P}-clutter_gdk_get_visual-2.patch
-
 	# We only need conformance tests, the rest are useless for us
 	sed -e 's/^\(SUBDIRS =\).*/\1 accessibility conform/g' \
 		-i tests/Makefile.am || die "am tests sed failed"
 	sed -e 's/^\(SUBDIRS =\)[^\]*/\1  accessibility conform/g' \
 		-i tests/Makefile.in || die "in tests sed failed"
 
-	eautoreconf
 	gnome2_src_prepare
 }
 

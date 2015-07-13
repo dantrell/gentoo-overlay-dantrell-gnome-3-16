@@ -34,7 +34,7 @@ RDEPEND="
 	introspection? ( >=dev-libs/gobject-introspection-1.33.4 )
 	sqlite? (
 		>=dev-db/sqlite-3.5:3
-		dev-libs/libunistring
+		dev-libs/libunistring:=
 	)
 	tracker? ( >=app-misc/tracker-0.16:= )
 	transcode? (

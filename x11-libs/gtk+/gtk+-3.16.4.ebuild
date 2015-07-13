@@ -131,7 +131,7 @@ src_prepare() {
 		strip_builddir SRC_SUBDIRS examples Makefile.{am,in}
 	fi
 
-	# Do no build and install gtk-update-icon-cache which is done by gtk+:2
+	# gtk-update-icon-cache is installed by dev-util/gtk-update-icon-cache 
 	epatch "${FILESDIR}"/${PN}-3.16.2-remove_update-icon-cache.patch
 
 	epatch_user

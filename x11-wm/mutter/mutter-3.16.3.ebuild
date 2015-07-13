@@ -10,7 +10,7 @@ HOMEPAGE="http://git.gnome.org/browse/mutter/"
 
 LICENSE="GPL-2+"
 SLOT="0"
-IUSE="+introspection kms test wayland vanilla"
+IUSE="+introspection kms test wayland +vanilla"
 KEYWORDS="*"
 
 # libXi-1.7.4 or newer needed per:
@@ -80,9 +80,6 @@ src_prepare() {
 	if ! use vanilla; then
 		epatch "${FILESDIR}"/${PN}-3.16.2-restore-deprecated-background-code.patch
 	fi
-
-	# surface-actor-x11: Make sure to set a size when unredirected (from 3.16 branch)
-	epatch "${FILESDIR}"/${P}-size-unredirected.patch
 
 	epatch_user
 
