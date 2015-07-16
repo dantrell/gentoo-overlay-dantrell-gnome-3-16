@@ -46,6 +46,10 @@ DEPEND="${COMMON_DEPEND}
 	virtual/pkgconfig
 "
 
+pkg_setup() {
+	python_setup
+}
+
 src_configure() {
 	gnome2_src_configure ITSTOOL="$(type -P true)"
 }
