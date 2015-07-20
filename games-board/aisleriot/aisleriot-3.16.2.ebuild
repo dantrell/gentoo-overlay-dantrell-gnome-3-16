@@ -30,6 +30,7 @@ DEPEND="${COMMON_DEPEND}
 	app-arch/gzip
 	dev-libs/libxml2
 	>=dev-util/intltool-0.40.4
+	dev-util/itstool
 	sys-apps/lsb-release
 	>=sys-devel/gettext-0.12
 	virtual/pkgconfig
@@ -73,7 +74,6 @@ src_configure() {
 		--with-gtk=3.0 \
 		--with-guile=2.0 \
 		GUILE=$(type -P guile-2.0) \
-		ITSTOOL=$(type -P true) \
 		${myconf[@]} \
 		$(use_enable sound)
 }

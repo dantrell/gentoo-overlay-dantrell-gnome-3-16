@@ -2,7 +2,6 @@
 
 EAPI="5"
 GCONF_DEBUG="yes"
-VALA_MIN_API_VERSION="0.20"
 VALA_USE_DEPEND="vapigen"
 
 inherit gnome2 vala
@@ -28,14 +27,13 @@ RDEPEND="
 	gnome? (
 		app-crypt/gcr:=
 		>=net-libs/gnome-online-accounts-3.8 )
-	introspection? ( >=dev-libs/gobject-introspection-0.9.7 )
+	introspection? ( >=dev-libs/gobject-introspection-0.9.7:= )
 "
 DEPEND="${RDEPEND}
 	>=dev-util/gtk-doc-am-1.14
 	>=dev-util/intltool-0.40
-	>=gnome-base/gnome-common-3.6
 	virtual/pkgconfig
-	test? ( net-libs/uhttpmock )
+	test? ( >=net-libs/uhttpmock-0.5 )
 	vala? ( $(vala_depend) )
 "
 
@@ -52,7 +50,7 @@ src_configure() {
 		$(use_enable introspection) \
 		$(use_enable vala) \
 		$(use_enable static-libs static) \
-		$(use_enable test tests)
+		$(use_enable test always-build-tests)
 }
 
 src_test() {
