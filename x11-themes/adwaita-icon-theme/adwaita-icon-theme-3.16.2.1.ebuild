@@ -25,7 +25,6 @@ RDEPEND="${COMMON_DEPEND}
 	!<x11-themes/gnome-themes-standard-3.14
 "
 DEPEND="${COMMON_DEPEND}
-	>=x11-misc/icon-naming-utils-0.8.7
 	>=dev-util/intltool-0.40
 	sys-devel/gettext
 	virtual/pkgconfig
