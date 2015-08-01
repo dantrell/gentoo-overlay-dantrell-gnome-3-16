@@ -30,6 +30,7 @@ COMMON_DEPEND="
 "
 DEPEND="${COMMON_DEPEND}
 	app-text/yelp-tools
+	dev-util/gdbus-codegen
 	>=dev-util/intltool-0.35
 	dev-util/itstool
 	sys-devel/gettext

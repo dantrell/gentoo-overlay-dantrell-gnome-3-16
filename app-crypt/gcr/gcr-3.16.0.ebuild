@@ -23,7 +23,7 @@ COMMON_DEPEND="
 	>=dev-libs/libgcrypt-1.2.2:0=
 	>=dev-libs/libtasn1-1:=
 	>=sys-apps/dbus-1
-	gtk? ( >=x11-libs/gtk+-3.10:3[X,introspection?] )
+	gtk? ( >=x11-libs/gtk+-3.12:3[X,introspection?] )
 	introspection? ( >=dev-libs/gobject-introspection-1.34 )
 "
 RDEPEND="${COMMON_DEPEND}
