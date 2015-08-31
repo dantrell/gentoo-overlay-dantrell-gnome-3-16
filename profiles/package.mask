@@ -17,7 +17,6 @@ dev-cpp/glibmm::gentoo
 dev-cpp/gtkmm::gentoo
 dev-cpp/pangomm::gentoo
 dev-libs/atk::gentoo
-dev-libs/folks::gentoo
 dev-libs/gdl::gentoo
 dev-libs/gjs::gentoo
 dev-libs/glib::gentoo
