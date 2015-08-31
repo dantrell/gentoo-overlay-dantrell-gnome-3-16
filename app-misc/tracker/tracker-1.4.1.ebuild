@@ -6,7 +6,7 @@ GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python2_7 )
 VALA_MIN_API_VERSION="0.18"
 
-inherit autotools eutils gnome2 linux-info multilib python-any-r1 vala versionator virtualx
+inherit autotools bash-completion-r1 eutils gnome2 linux-info multilib python-any-r1 vala versionator virtualx
 
 DESCRIPTION="A tagging metadata database, search tool and indexer"
 HOMEPAGE="https://wiki.gnome.org/Projects/Tracker"
@@ -191,6 +191,7 @@ src_configure() {
 		--enable-tracker-fts \
 		--enable-tracker-writeback \
 		--with-unicode-support=libicu \
+		--with-bash-completion-dir="$(get_bashcompdir)" \
 		$(use_enable cue libcue) \
 		$(use_enable eds miner-evolution) \
 		$(use_enable exif libexif) \

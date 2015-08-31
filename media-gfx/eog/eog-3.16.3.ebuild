@@ -41,13 +41,6 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 "
 
-src_prepare() {
-	# https://bugzilla.gnome.org/show_bug.cgi?id=751007
-	epatch "${FILESDIR}"/${PN}-3.16.2-without-libexif.patch
-
-	gnome2_src_prepare
-}
-
 src_configure() {
 	DOCS="AUTHORS ChangeLog HACKING MAINTAINERS NEWS README THANKS TODO"
 	gnome2_src_configure \
