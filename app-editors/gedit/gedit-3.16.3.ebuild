@@ -40,7 +40,7 @@ COMMON_DEPEND="
 
 	net-libs/libsoup:2.4
 
-	introspection? ( >=dev-libs/gobject-introspection-0.9.3 )
+	introspection? ( >=dev-libs/gobject-introspection-0.9.3:= )
 	python? (
 		${PYTHON_DEPS}
 		dev-python/pycairo[${PYTHON_USEDEP}]
@@ -60,6 +60,7 @@ DEPEND="${COMMON_DEPEND}
 	dev-libs/libxml2:2
 	>=dev-util/gtk-doc-am-1
 	>=dev-util/intltool-0.50.1
+	dev-util/itstool
 	>=sys-devel/gettext-0.18
 	virtual/pkgconfig
 "
@@ -84,8 +85,7 @@ src_configure() {
 		$(use_enable introspection) \
 		$(use_enable spell) \
 		$(use_enable python) \
-		$(use_enable vala) \
-		ITSTOOL=$(type -P true)
+		$(use_enable vala)
 }
 
 src_test() {

@@ -65,7 +65,7 @@ src_configure() {
 		--disable-static \
 		$(use_enable debug) \
 		$(use_enable glade glade-catalogue) \
-		$(use_enable crypt gnutls) \
+		$(use_with crypt gnutls) \
 		$(use_enable introspection) \
 		$(use_enable vala) \
 		${myconf}
