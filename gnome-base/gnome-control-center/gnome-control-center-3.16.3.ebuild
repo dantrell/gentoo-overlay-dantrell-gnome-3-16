@@ -9,6 +9,8 @@ inherit autotools bash-completion-r1 eutils gnome2
 DESCRIPTION="GNOME's main interface to configure various aspects of the desktop"
 HOMEPAGE="https://git.gnome.org/browse/gnome-control-center/"
 
+SRC_URI="${SRC_URI} https://dev.gentoo.org/~tetromino/distfiles/${PN}/${PN}-3.16.2-pyongyang.tar.xz"
+
 LICENSE="GPL-2+"
 SLOT="2"
 IUSE="+bluetooth +colord +cups +deprecated +gnome-online-accounts +i18n input_devices_wacom kerberos networkmanager systemd v4l wayland"
@@ -136,6 +138,11 @@ src_prepare() {
 
 	# Fix some absolute paths to be appropriate for Gentoo
 	epatch "${FILESDIR}"/${PN}-3.10.2-gentoo-paths.patch
+
+	# Update timezones for new "Pyongyang Time"
+	# https://bugzilla.gnome.org/show_bug.cgi?id=753643
+	cp "${WORKDIR}"/${PN}-3.16.2-pyongyang/*.png panels/datetime/data/ || die
+	epatch "${WORKDIR}"/${PN}-3.16.2-pyongyang/*.patch
 
 	if use deprecated; then
 		# From Funtoo:
