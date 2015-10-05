@@ -42,19 +42,18 @@ RDEPEND="${COMMON_DEPEND}
 "
 DEPEND="${COMMON_DEPEND}
 	>=dev-util/intltool-0.50
+	dev-util/itstool
 	virtual/pkgconfig
 "
 #	app-text/yelp-tools
 
 src_prepare() {
 	gnome2_src_prepare
-
 	python_copy_sources
 }
 
 src_configure() {
 	python_foreach_impl run_in_build_dir gnome2_src_configure \
-		ITSTOOL="$(type -P true)" \
 		$(use_with braille liblouis)
 }
 
