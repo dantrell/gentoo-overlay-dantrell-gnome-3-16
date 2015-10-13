@@ -94,6 +94,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	${PYTHON_DEPS}
 	$(vala_depend)
+	dev-util/gdbus-codegen
 	>=dev-libs/libxslt-1
 	>=dev-util/gtk-doc-am-1.8
 	>=dev-util/intltool-0.40.0
