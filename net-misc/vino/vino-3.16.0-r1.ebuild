@@ -3,7 +3,7 @@
 EAPI="5"
 GCONF_DEBUG="yes"
 
-inherit gnome2
+inherit eutils gnome2
 
 DESCRIPTION="An integrated VNC server for GNOME"
 HOMEPAGE="https://wiki.gnome.org/Projects/Vino"
@@ -11,7 +11,7 @@ HOMEPAGE="https://wiki.gnome.org/Projects/Vino"
 LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="*"
-IUSE="crypt libsecret ipv6 jpeg ssl +telepathy zeroconf +zlib"
+IUSE="crypt gnome-keyring ipv6 jpeg ssl +telepathy zeroconf +zlib"
 # bug #394611; tight encoding requires zlib encoding
 REQUIRED_USE="jpeg? ( zlib )"
 
@@ -36,8 +36,8 @@ RDEPEND="
 	>=x11-libs/libnotify-0.7.0:=
 
 	crypt? ( >=dev-libs/libgcrypt-1.1.90:0= )
+	gnome-keyring? ( app-crypt/libsecret )
 	jpeg? ( virtual/jpeg:0= )
-	libsecret? ( app-crypt/libsecret )
 	ssl? ( >=net-libs/gnutls-2.2.0:= )
 	telepathy? ( >=net-libs/telepathy-glib-0.18 )
 	zeroconf? ( >=net-dns/avahi-0.6:=[dbus] )
@@ -51,13 +51,23 @@ DEPEND="${RDEPEND}
 "
 # libsecret is always required at build time per bug 322763
 
+src_prepare() {
+	# Improve handling of name resolution failure (from 'master')
+	epatch "${FILESDIR}"/${P}-name-resolution.patch
+
+	# Avoid a crash when showing the preferences (from 'master')
+	epatch "${FILESDIR}"/${P}-fix-crash.patch
+
+	gnome2_src_prepare
+}
+
 src_configure() {
 	gnome2_src_configure \
 		--with-gcrypt \
 		$(use_enable ipv6) \
 		$(use_with crypt gcrypt) \
+		$(use_with gnome-keyring secret) \
 		$(use_with jpeg) \
-		$(use_with libsecret secret) \
 		$(use_with ssl gnutls) \
 		$(use_with telepathy) \
 		$(use_with zeroconf avahi) \
