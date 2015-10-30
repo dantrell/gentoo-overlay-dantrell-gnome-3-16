@@ -1,0 +1,34 @@
+From a4ef903f2302bdc96798d843f369eef432160e11 Mon Sep 17 00:00:00 2001
+From: Iain Lane <iain@orangesquash.org.uk>
+Date: Mon, 19 Oct 2015 15:31:33 +0100
+Subject: nautilus_file_peek_display_name: Don't return NULL
+
+If the name is the empty string then nautilus_file_set_display_name
+won't actually set the display name. In this case we were returning
+NULL from nautilus_file_peek_display_name, which some of our callers
+weren't prepared to handle. This led to crashes.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=700507
+---
+ libnautilus-private/nautilus-file.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/libnautilus-private/nautilus-file.c b/libnautilus-private/nautilus-file.c
+index 8a58529..96cf3e7 100644
+--- a/libnautilus-private/nautilus-file.c
++++ b/libnautilus-private/nautilus-file.c
+@@ -3744,8 +3744,9 @@ nautilus_file_peek_display_name (NautilusFile *file)
+ 			g_free (escaped_name);
+ 		}
+ 	}
+-	
+-	return eel_ref_str_peek (file->details->display_name);
++
++	return file->details->display_name ?
++		eel_ref_str_peek (file->details->display_name) : "";
+ }
+ 
+ char *
+-- 
+cgit v0.11.2
+

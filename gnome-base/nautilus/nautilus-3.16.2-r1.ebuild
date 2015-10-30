@@ -78,8 +78,16 @@ src_prepare() {
 	fi
 
 	# From GNOME
+	# 	https://git.gnome.org/browse/nautilus/commit/?id=4c56f31c0ad6c94a5851ef8b9f0142acfdabf4ad
+	# 	https://git.gnome.org/browse/nautilus/commit/?id=10ca6eed2a6ef80cae2a0649bfe682a6c02fed9f
+	# 	https://git.gnome.org/browse/nautilus/commit/?id=dfaad5ea3de9c55922ecd369c81a861efddb349b
+	# 	https://git.gnome.org/browse/nautilus/commit/?id=a4ef903f2302bdc96798d843f369eef432160e11
 	# 	https://git.gnome.org/browse/nautilus/commit/?id=bfe878e4313e21b4c539d95a88d243065d30fc2c
-	epatch "${FILESDIR}"/${PN}-9999-ignore-no-desktop-if-not-first-launch.patch
+	epatch "${FILESDIR}"/${P}-nautilus-bookmark-dont-crash-if-file-is-gone.patch
+	epatch "${FILESDIR}"/${P}-toolbar-show-modified-time-for-all-places-except-recent.patch
+	epatch "${FILESDIR}"/${P}-application-actions-use-valid-window-list.patch
+	epatch "${FILESDIR}"/${P}-nautilus-file-peek-display-name-dont-return-null.patch
+	epatch "${FILESDIR}"/${PN}-3.17.3-ignore-no-desktop-if-not-first-launch.patch
 
 	# Remove -D*DEPRECATED flags. Don't leave this for eclass! (bug #448822)
 	sed -e 's/DISABLE_DEPRECATED_CFLAGS=.*/DISABLE_DEPRECATED_CFLAGS=/' \

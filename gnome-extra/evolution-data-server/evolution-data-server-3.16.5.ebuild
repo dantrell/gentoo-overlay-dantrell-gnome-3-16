@@ -25,7 +25,7 @@ KEYWORDS="*"
 RDEPEND="
 	>=app-crypt/gcr-3.4
 	>=app-crypt/libsecret-0.5[crypt]
-	>=dev-db/sqlite-3.5:=
+	>=dev-db/sqlite-3.7.17:=
 	>=dev-libs/glib-2.40:2
 	>=dev-libs/libgdata-0.10:=
 	>=dev-libs/libical-0.43:=
@@ -44,7 +44,7 @@ RDEPEND="
 		>=x11-libs/gtk+-3.6:3
 	)
 	gnome-online-accounts? ( >=net-libs/gnome-online-accounts-3.8 )
-	introspection? ( >=dev-libs/gobject-introspection-0.9.12 )
+	introspection? ( >=dev-libs/gobject-introspection-0.9.12:= )
 	kerberos? ( virtual/krb5:= )
 	ldap? ( >=net-nds/openldap-2:= )
 	weather? ( >=dev-libs/libgweather-3.8:2= )
@@ -60,6 +60,7 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	vala? ( $(vala_depend) )
 "
+
 # eautoreconf needs:
 #	>=gnome-base/gnome-common-2
 

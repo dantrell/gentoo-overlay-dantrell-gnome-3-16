@@ -1,0 +1,42 @@
+From 4c56f31c0ad6c94a5851ef8b9f0142acfdabf4ad Mon Sep 17 00:00:00 2001
+From: Carlos Soriano <csoriano@gnome.org>
+Date: Thu, 14 May 2015 13:37:15 +0200
+Subject: nautilus-bookmark: don't crash if file is gone
+
+Sometimes the file can be gone without even noticing when
+changing the location (and therefore creating the attached bookmark
+to that new location).
+In bookmark_changed we just disconnected the file if that happened,
+so we where failing graciously. But that was not the case when just
+changing the location, where we were asserting that the file is not gone
+and therefore crashing in such case.
+
+Instead of that, do something similar as bookmark_changed and just
+clean up some of the bookmark objects and hope for the best.
+---
+ libnautilus-private/nautilus-bookmark.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/libnautilus-private/nautilus-bookmark.c b/libnautilus-private/nautilus-bookmark.c
+index 2655f48..e374fc6 100644
+--- a/libnautilus-private/nautilus-bookmark.c
++++ b/libnautilus-private/nautilus-bookmark.c
+@@ -346,7 +346,14 @@ nautilus_bookmark_connect_file (NautilusBookmark *bookmark)
+ 		DEBUG ("%s: creating file", nautilus_bookmark_get_name (bookmark));
+ 
+ 		bookmark->details->file = nautilus_file_get (bookmark->details->location);
+-		g_assert (!nautilus_file_is_gone (bookmark->details->file));
++                /* Similar to what we do when a file has been trashed or deleted
++                 * withouth noticing in bookmark_changed, just try to fall graciously.
++                 */
++                if (nautilus_file_is_gone (bookmark->details->file))
++                  {
++                        nautilus_bookmark_disconnect_file (bookmark);
++                        return;
++                  }
+ 
+ 		g_signal_connect_object (bookmark->details->file, "changed",
+ 					 G_CALLBACK (bookmark_file_changed_callback), bookmark, 0);
+-- 
+cgit v0.11.2
+

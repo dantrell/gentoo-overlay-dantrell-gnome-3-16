@@ -37,17 +37,18 @@ RDEPEND="
 	>=virtual/libiconv-0-r1[${MULTILIB_USEDEP}]
 	>=virtual/libffi-3.0.13-r1[${MULTILIB_USEDEP}]
 	>=sys-libs/zlib-1.2.8-r1[${MULTILIB_USEDEP}]
-	|| (
-		>=dev-libs/elfutils-0.142
-		>=dev-libs/libelf-0.8.12
-		>=sys-freebsd/freebsd-lib-9.2_rc1
-		)
 	selinux? ( >=sys-libs/libselinux-2.2.2-r5[${MULTILIB_USEDEP}] )
 	xattr? ( >=sys-apps/attr-2.4.47-r1[${MULTILIB_USEDEP}] )
 	fam? ( >=virtual/fam-0-r1[${MULTILIB_USEDEP}] )
 	utils? (
 		${PYTHON_DEPS}
-		>=dev-util/gdbus-codegen-${PV}[${PYTHON_USEDEP}] )
+		>=dev-util/gdbus-codegen-${PV}[${PYTHON_USEDEP}]
+		|| (
+			>=dev-libs/elfutils-0.142
+			>=dev-libs/libelf-0.8.12
+			>=sys-freebsd/freebsd-lib-9.2_rc1
+		)
+	)
 	abi_x86_32? (
 		!<=app-emulation/emul-linux-x86-baselibs-20130224-r9
 		!app-emulation/emul-linux-x86-baselibs[-abi_x86_32(-)]
@@ -148,6 +149,8 @@ src_prepare() {
 	# gdbus-codegen is a separate package
 	epatch "${FILESDIR}/${PN}-2.40.0-external-gdbus-codegen.patch"
 
+	epatch "${FILESDIR}/${PN}-2.44.1-bionic-nameser.patch"
+
 	# leave python shebang alone
 	sed -e '/${PYTHON}/d' \
 		-i glib/Makefile.{am,in} || die
@@ -179,6 +182,19 @@ multilib_src_configure() {
 		export LIBFFI_LIBS="-lffi"
 	fi
 
+	# These configure tests don't work when cross-compiling.
+	if tc-is-cross-compiler ; then
+		# https://bugzilla.gnome.org/show_bug.cgi?id=756473
+		case ${CHOST} in
+		hppa*|metag*) export glib_cv_stack_grows=yes ;;
+		*)            export glib_cv_stack_grows=no ;;
+		esac
+		# https://bugzilla.gnome.org/show_bug.cgi?id=756474
+		export glib_cv_uscore=no
+		# https://bugzilla.gnome.org/show_bug.cgi?id=756475
+		export ac_cv_func_posix_get{pwuid,grgid}_r=yes
+	fi
+
 	local myconf
 
 	case "${CHOST}" in
@@ -186,11 +202,9 @@ multilib_src_configure() {
 		*)        myconf="${myconf} --with-threads=posix" ;;
 	esac
 
-	# Only used by the gresource bin
-	multilib_is_native_abi || myconf="${myconf} --disable-libelf"
-
 	# FIXME: Always use internal libpcre, bug #254659
-	# (maybe consider going back to system lib
+	# (maybe consider going back to system lib)
+	# libelf used only by the gresource bin
 	ECONF_SOURCE="${S}" gnome2_src_configure ${myconf} \
 		$(use_enable xattr) \
 		$(use_enable fam) \
@@ -198,6 +212,7 @@ multilib_src_configure() {
 		$(use_enable static-libs static) \
 		$(use_enable systemtap dtrace) \
 		$(use_enable systemtap systemtap) \
+		$(multilib_native_use_enable utils libelf) \
 		--disable-compile-warnings \
 		--enable-man \
 		--with-pcre=internal \
