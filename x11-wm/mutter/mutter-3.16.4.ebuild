@@ -81,7 +81,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-3.16.3-fallback-keymap.patch
 
 	if ! use vanilla; then
-		epatch "${FILESDIR}"/${PN}-3.16.2-restore-deprecated-background-code.patch
+		epatch "${FILESDIR}"/${P}-restore-deprecated-background-code.patch
 	fi
 
 	epatch_user
