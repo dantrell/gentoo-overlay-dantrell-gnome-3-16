@@ -35,6 +35,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	dev-util/desktop-file-utils
 	>=dev-util/intltool-0.50.1
+	dev-util/itstool
 	virtual/pkgconfig
 	test? ( dev-util/dogtail )
 "
@@ -43,8 +44,7 @@ DEPEND="${RDEPEND}
 
 src_configure() {
 	gnome2_src_configure \
-		$(use_enable test dogtail) \
-		ITSTOOL=$(type -P true)
+		$(use_enable test dogtail)
 }
 
 src_test() {
