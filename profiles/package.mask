@@ -89,7 +89,6 @@ gnome-extra/yelp-xsl::gentoo
 gnome-extra/yelp::gentoo
 gnome-extra/zenity::gentoo
 mail-client/evolution::gentoo
-media-gfx/eog-plugins::gentoo
 media-gfx/eog::gentoo
 media-gfx/gnome-photos::gentoo
 media-gfx/gnome-screenshot::gentoo
