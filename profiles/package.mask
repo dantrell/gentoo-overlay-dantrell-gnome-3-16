@@ -1,7 +1,6 @@
 app-accessibility/at-spi2-atk::gentoo
 app-accessibility/at-spi2-core::gentoo
 app-accessibility/orca::gentoo
-app-arch/file-roller::gentoo
 app-crypt/gcr::gentoo
 app-crypt/seahorse::gentoo
 app-dicts/gnome-dictionary::gentoo
@@ -22,7 +21,6 @@ dev-libs/gjs::gentoo
 dev-libs/glib::gentoo
 dev-libs/gobject-introspection-common::gentoo
 dev-libs/gobject-introspection::gentoo
-dev-libs/libgdata::gentoo
 dev-libs/libgweather::gentoo
 dev-libs/libpeas::gentoo
 dev-python/pyatspi::gentoo
@@ -47,12 +45,10 @@ games-puzzle/gnome-klotski::gentoo
 games-puzzle/gnome-sudoku::gentoo
 games-puzzle/gnome-taquin::gentoo
 games-puzzle/gnome-tetravex::gentoo
-games-puzzle/hitori::gentoo
 games-puzzle/lightsoff::gentoo
 games-puzzle/quadrapassel::gentoo
 games-puzzle/swell-foop::gentoo
 gnome-base/dconf-editor::gentoo
-gnome-base/dconf::gentoo
 gnome-base/gdm::gentoo
 gnome-base/gnome-control-center::gentoo
 gnome-base/gnome-core-apps::gentoo
@@ -69,6 +65,7 @@ gnome-base/gsettings-desktop-schemas::gentoo
 gnome-base/gvfs::gentoo
 gnome-base/nautilus::gentoo
 gnome-extra/evolution-data-server::gentoo
+gnome-extra/evolution-ews::gentoo
 gnome-extra/gnome-boxes::gentoo
 gnome-extra/gnome-builder::gentoo
 gnome-extra/gnome-calculator::gentoo
@@ -94,7 +91,6 @@ gnome-extra/zenity::gentoo
 mail-client/evolution::gentoo
 media-gfx/eog-plugins::gentoo
 media-gfx/eog::gentoo
-media-gfx/gnome-font-viewer::gentoo
 media-gfx/gnome-photos::gentoo
 media-gfx/gnome-screenshot::gentoo
 media-gfx/simple-scan::gentoo
