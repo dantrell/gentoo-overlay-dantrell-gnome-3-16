@@ -6,7 +6,7 @@ DESCRIPTION="Sub-meta package for the applications of GNOME 3"
 HOMEPAGE="https://www.gnome.org/"
 LICENSE="metapackage"
 SLOT="3.0"
-IUSE="+bijiben boxes california epiphany +evolution +games geary +share +shotwell +tracker"
+IUSE="+bijiben boxes builder california epiphany +evolution +games geary +share +shotwell +tracker"
 
 # when unmasking for an arch
 # double check none of the deps are still masked !
@@ -18,7 +18,7 @@ KEYWORDS="*"
 RDEPEND="
 	>=gnome-base/gnome-core-libs-${PV}
 
-	>=app-admin/gnome-system-log-20150521
+	>=app-admin/gnome-system-log-20151007
 	>=app-arch/file-roller-${PV}
 	>=app-dicts/gnome-dictionary-${PV}
 	>=gnome-base/dconf-editor-${PV}
@@ -50,6 +50,7 @@ RDEPEND="
 
 	bijiben? ( >=app-misc/bijiben-${PV} )
 	boxes? ( >=gnome-extra/gnome-boxes-${PV} )
+	builder? ( >=gnome-extra/gnome-builder-${PV} )
 	california? ( >=gnome-extra/california-0.4.0 )
 	epiphany? ( >=www-client/epiphany-${PV} )
 	evolution? ( >=mail-client/evolution-3.12.11 )

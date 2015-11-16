@@ -70,6 +70,7 @@ gnome-base/gvfs::gentoo
 gnome-base/nautilus::gentoo
 gnome-extra/evolution-data-server::gentoo
 gnome-extra/gnome-boxes::gentoo
+gnome-extra/gnome-builder::gentoo
 gnome-extra/gnome-calculator::gentoo
 gnome-extra/gnome-calendar::gentoo
 gnome-extra/gnome-characters::gentoo
