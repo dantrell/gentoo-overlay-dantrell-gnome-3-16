@@ -9,8 +9,6 @@ inherit autotools bash-completion-r1 eutils gnome2
 DESCRIPTION="GNOME's main interface to configure various aspects of the desktop"
 HOMEPAGE="https://git.gnome.org/browse/gnome-control-center/"
 
-SRC_URI="${SRC_URI} https://dev.gentoo.org/~tetromino/distfiles/${PN}/${PN}-3.16.2-pyongyang.tar.xz"
-
 LICENSE="GPL-2+"
 SLOT="2"
 IUSE="+bluetooth +colord +cups +deprecated +gnome-online-accounts +i18n input_devices_wacom kerberos networkmanager systemd v4l wayland"
@@ -21,12 +19,9 @@ QA_CONFIGURE_OPTIONS=".*"
 
 # gnome-session-2.91.6-r1 is needed so that 10-user-dirs-update is run at login
 # g-s-d[policykit] needed for bug #403527
-
 # kerberos unfortunately means mit-krb5; build fails with heimdal
-
 # udev could be made optional, only conditions gsd-device-panel
 # (mouse, keyboards, touchscreen, etc)
-
 COMMON_DEPEND="
 	>=dev-libs/glib-2.39.91:2[dbus]
 	>=x11-libs/gdk-pixbuf-2.23.0:2
@@ -139,10 +134,10 @@ src_prepare() {
 	# Fix some absolute paths to be appropriate for Gentoo
 	epatch "${FILESDIR}"/${PN}-3.10.2-gentoo-paths.patch
 
-	# Update timezones for new "Pyongyang Time"
-	# https://bugzilla.gnome.org/show_bug.cgi?id=753643
-	cp "${WORKDIR}"/${PN}-3.16.2-pyongyang/*.png panels/datetime/data/ || die
-	epatch "${WORKDIR}"/${PN}-3.16.2-pyongyang/*.patch
+	# From GNOME:
+	# 	https://bugzilla.gnome.org/show_bug.cgi?id=753643
+	cp "${FILESDIR}"/timezones/*.png panels/datetime/data/ || die
+	epatch "${FILESDIR}"/${PN}-3.17.3-datetime-update-timezones-for-new-pyongyang-time.patch
 
 	if use deprecated; then
 		# From Funtoo:

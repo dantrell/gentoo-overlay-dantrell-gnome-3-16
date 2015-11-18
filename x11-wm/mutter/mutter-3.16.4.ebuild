@@ -10,7 +10,7 @@ HOMEPAGE="https://git.gnome.org/browse/mutter/"
 
 LICENSE="GPL-2+"
 SLOT="0"
-IUSE="+introspection kms test wayland +vanilla"
+IUSE="deprecated-background +introspection kms test wayland"
 KEYWORDS="*"
 
 # libXi-1.7.4 or newer needed per:
@@ -80,7 +80,7 @@ src_prepare() {
 	# Fallback to a default keymap if getting it from X fails (from 'master')
 	epatch "${FILESDIR}"/${PN}-3.16.3-fallback-keymap.patch
 
-	if ! use vanilla; then
+	if use deprecated-background; then
 		epatch "${FILESDIR}"/${P}-restore-deprecated-background-code.patch
 	fi
 

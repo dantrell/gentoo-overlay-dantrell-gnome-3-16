@@ -12,7 +12,7 @@ HOMEPAGE="https://wiki.gnome.org/Projects/GnomeShell"
 
 LICENSE="GPL-2+ LGPL-2+"
 SLOT="0"
-IUSE="+bluetooth +deprecated +i18n +networkmanager systemd +vanilla"
+IUSE="+bluetooth +deprecated deprecated-background +networkmanager +nls systemd vanilla"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 KEYWORDS="*"
 
@@ -61,6 +61,7 @@ COMMON_DEPEND="
 	x11-apps/mesa-progs
 
 	bluetooth? ( >=net-wireless/gnome-bluetooth-3.9[introspection] )
+	deprecated-background? ( x11-wm/mutter[deprecated-background] )
 	networkmanager? (
 		app-crypt/libsecret
 		>=gnome-extra/nm-applet-0.9.8
@@ -76,7 +77,7 @@ COMMON_DEPEND="
 # 4. Control shell settings
 # 5. xdg-utils needed for xdg-open, used by extension tool
 # 6. gnome-icon-theme-symbolic and dejavu font neeed for various icons & arrows
-# 7. IBus is needed for i18n integration
+# 7. IBus is needed for nls integration
 # 8. mobile-broadband-provider-info, timezone-data for shell-mobile-providers.c
 RDEPEND="${COMMON_DEPEND}
 	>=sys-auth/polkit-0.101[introspection]
@@ -101,10 +102,10 @@ RDEPEND="${COMMON_DEPEND}
 	media-fonts/dejavu
 	x11-themes/gnome-icon-theme-symbolic
 
-	i18n? ( >=app-i18n/ibus-1.4.99[dconf(+),gtk3,introspection] )
 	networkmanager? (
 		net-misc/mobile-broadband-provider-info
 		sys-libs/timezone-data )
+	nls? ( >=app-i18n/ibus-1.4.99[dconf(+),gtk3,introspection] )
 "
 # avoid circular dependency, see bug #546134
 PDEPEND="
@@ -130,8 +131,12 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-3.12.2-expose-hibernate-functionality.patch
 	fi
 
-	if ! use vanilla; then
+	if use deprecated-background; then
 		epatch "${FILESDIR}"/${P}-restore-deprecated-background-code.patch
+	fi
+
+	if ! use vanilla; then
+		epatch "${FILESDIR}"/${PN}-3.16.4-improve-motd-handling.patch
 	fi
 
 	# Change favorites defaults, bug #479918
@@ -190,18 +195,6 @@ pkg_postinst() {
 		ewarn "you need to either install media-libs/gst-plugins-good:1.0"
 		ewarn "and media-plugins/gst-plugins-vpx:1.0, or use dconf-editor to change"
 		ewarn "apps.gnome-shell.recorder/pipeline to what you want to use."
-	fi
-
-	if ! has_version ">=x11-base/xorg-server-1.11"; then
-		ewarn "If you use multiple screens, it is highly recommended that you"
-		ewarn "upgrade to >=x11-base/xorg-server-1.11 to be able to make use of"
-		ewarn "pointer barriers which will make it easier to use hot corners."
-	fi
-
-	if has_version "<x11-drivers/ati-drivers-12"; then
-		ewarn "GNOME Shell has been reported to show graphical corruption under"
-		ewarn "x11-drivers/ati-drivers-11.*; you may want to switch to open-source"
-		ewarn "drivers."
 	fi
 
 	if ! has_version "media-libs/mesa[llvm]"; then

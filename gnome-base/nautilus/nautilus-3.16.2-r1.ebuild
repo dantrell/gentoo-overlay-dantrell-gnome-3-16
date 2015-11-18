@@ -13,7 +13,7 @@ LICENSE="GPL-2+ LGPL-2+ FDL-1.1"
 SLOT="0"
 
 # profiling?
-IUSE="exif gnome +introspection packagekit +previewer sendto tracker xmp"
+IUSE="exif gnome +introspection packagekit +previewer sendto tracker xmp +vanilla"
 KEYWORDS="*"
 
 # FIXME: tests fails under Xvfb, but pass when building manually
@@ -75,6 +75,10 @@ src_prepare() {
 		DOC_CONTENTS="nautilus uses gnome-extra/sushi to preview media files.
 			To activate the previewer, select a file and press space; to
 			close the previewer, press space again."
+	fi
+
+	if ! use vanilla; then
+		epatch "${FILESDIR}"/${P}-support-click-to-rename.patch
 	fi
 
 	# From GNOME
