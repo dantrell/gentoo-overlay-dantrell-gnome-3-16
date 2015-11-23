@@ -78,7 +78,9 @@ src_prepare() {
 	fi
 
 	if ! use vanilla; then
+		epatch "${FILESDIR}"/${P}-reorder-context-menu.patch
 		epatch "${FILESDIR}"/${P}-support-click-to-rename.patch
+		epatch "${FILESDIR}"/${P}-use-old-icon-grid-and-text-width-proportions.patch
 	fi
 
 	# From GNOME
