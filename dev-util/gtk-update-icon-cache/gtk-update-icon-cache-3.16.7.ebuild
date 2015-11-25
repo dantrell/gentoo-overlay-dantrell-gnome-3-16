@@ -11,9 +11,9 @@ SRC_URI="https://dev.gentoo.org/~eva/distfiles/${PN}/${P}.tar.xz http://files.mi
 
 LICENSE="LGPL-2+"
 SLOT="0"
-IUSE=""
-
 KEYWORDS="*"
+
+IUSE=""
 
 RDEPEND="
 	>=dev-libs/glib-2.43.4:2

@@ -10,8 +10,9 @@ HOMEPAGE="https://developer.gnome.org/gdl/"
 
 LICENSE="LGPL-2.1+"
 SLOT="3/5" # subslot = libgdl-3 soname version
-IUSE="+introspection"
 KEYWORDS="*"
+
+IUSE="+introspection"
 
 RDEPEND="
 	dev-libs/glib:2

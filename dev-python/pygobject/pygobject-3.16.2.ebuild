@@ -14,6 +14,7 @@ HOMEPAGE="https://wiki.gnome.org/Projects/PyGObject"
 LICENSE="LGPL-2.1+"
 SLOT="3"
 KEYWORDS="*"
+
 IUSE="+cairo examples test +threads"
 
 REQUIRED_USE="

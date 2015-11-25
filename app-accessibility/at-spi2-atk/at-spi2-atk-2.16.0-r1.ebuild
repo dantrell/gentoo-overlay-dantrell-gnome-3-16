@@ -12,6 +12,7 @@ HOMEPAGE="https://live.gnome.org/Accessibility"
 LICENSE="LGPL-2+"
 SLOT="2"
 KEYWORDS="*"
+
 IUSE="test"
 
 COMMON_DEPEND="

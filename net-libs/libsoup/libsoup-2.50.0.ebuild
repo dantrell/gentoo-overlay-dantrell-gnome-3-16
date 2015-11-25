@@ -12,8 +12,9 @@ HOMEPAGE="https://wiki.gnome.org/LibSoup"
 
 LICENSE="LGPL-2+"
 SLOT="2.4"
-IUSE="debug +introspection samba ssl test"
 KEYWORDS="*"
+
+IUSE="debug +introspection samba ssl test"
 
 RDEPEND="
 	>=dev-libs/glib-2.34.3:2[${MULTILIB_USEDEP}]

@@ -11,6 +11,7 @@ HOMEPAGE="https://git.gnome.org/browse/gvfs"
 
 LICENSE="LGPL-2+"
 SLOT="0"
+KEYWORDS="*"
 
 IUSE="afp archive bluray cdda fuse gnome-keyring gnome-online-accounts gphoto2 gtk +http ios mtp nfs samba systemd test +udev udisks zeroconf"
 REQUIRED_USE="
@@ -19,7 +20,6 @@ REQUIRED_USE="
 	udisks? ( udev )
 	systemd? ( udisks )
 "
-KEYWORDS="*"
 
 # Can use libgphoto-2.5.0 as well. Automagic detection.
 RDEPEND="

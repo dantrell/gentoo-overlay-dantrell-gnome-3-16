@@ -10,8 +10,9 @@ HOMEPAGE="https://wiki.gnome.org/Apps/Yelp"
 
 LICENSE="GPL-2+"
 SLOT="0"
-IUSE=""
 KEYWORDS="*"
+
+IUSE=""
 
 RDEPEND="
 	app-arch/bzip2:=

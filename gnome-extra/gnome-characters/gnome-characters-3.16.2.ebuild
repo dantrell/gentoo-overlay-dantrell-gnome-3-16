@@ -13,6 +13,7 @@ HOMEPAGE="https://live.gnome.org/Gucharmap"
 LICENSE="GPL-2 BSD"
 SLOT="0"
 KEYWORDS="*"
+
 IUSE="test"
 
 RDEPEND="${COMMON_DEPEND}

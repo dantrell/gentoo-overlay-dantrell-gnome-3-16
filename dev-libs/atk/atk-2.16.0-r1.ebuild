@@ -11,6 +11,7 @@ HOMEPAGE="https://projects.gnome.org/accessibility/"
 LICENSE="LGPL-2+"
 SLOT="0"
 KEYWORDS="*"
+
 IUSE="+introspection nls test"
 
 RDEPEND="
