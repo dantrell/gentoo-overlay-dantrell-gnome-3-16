@@ -16,7 +16,6 @@ SLOT="3"
 KEYWORDS="*"
 
 IUSE="+cairo examples test +threads"
-
 REQUIRED_USE="
 	${PYTHON_REQUIRED_USE}
 	test? ( cairo )
