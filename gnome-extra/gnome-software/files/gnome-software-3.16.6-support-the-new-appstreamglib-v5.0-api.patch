@@ -1,0 +1,42 @@
+diff '--exclude=.git' -urN a/src/plugins/gs-plugin-appstream.c b/src/plugins/gs-plugin-appstream.c
+--- a/src/plugins/gs-plugin-appstream.c	2015-10-16 06:04:17.000000000 -0400
++++ b/src/plugins/gs-plugin-appstream.c	2015-12-16 03:55:29.703403202 -0500
+@@ -236,7 +236,11 @@
+ 		if (*perc < 10) {
+ 			g_debug ("Adding keyword '%s' to %s",
+ 				 origin, as_app_get_id (app));
+-			as_app_add_keyword (app, NULL, origin, -1);
++#if AS_CHECK_VERSION(0,5,0)
++			as_app_add_keyword (app, NULL, origin);
++#else
++ 			as_app_add_keyword (app, NULL, origin, -1);
++#endif
+ 		}
+ 	}
+ 
+@@ -555,7 +559,11 @@
+ 	tmp = as_app_get_description (item, NULL);
+ 	if (tmp != NULL) {
+ 		_cleanup_free_ gchar *from_xml = NULL;
+-		from_xml = as_markup_convert_simple (tmp, -1, error);
++#if AS_CHECK_VERSION(0,5,0)
++		from_xml = as_markup_convert_simple (tmp, error);
++#else
++ 		from_xml = as_markup_convert_simple (tmp, -1, error);
++#endif
+ 		if (from_xml == NULL) {
+ 			g_prefix_error (error, "trying to parse '%s': ", tmp);
+ 			return FALSE;
+@@ -1035,7 +1043,11 @@
+ 				category = gs_category_new (parent, "other", NULL);
+ 				gs_category_add_subcategory (parent, category);
+ 			}
+-			as_app_add_category (app, gs_category_get_id (category), -1);
++#if AS_CHECK_VERSION(0,5,0)
++			as_app_add_category (app, gs_category_get_id (category));
++#else
++ 			as_app_add_category (app, gs_category_get_id (category), -1);
++#endif
+ 			gs_category_increment_size (category);
+ 		}
+ 	}
