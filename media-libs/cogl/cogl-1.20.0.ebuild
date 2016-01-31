@@ -12,10 +12,12 @@ LICENSE="MIT BSD"
 SLOT="1.0/20" # subslot = .so version
 KEYWORDS="*"
 
-# doc and profile disable for now due bugs #484750 and #483332
+# doc and profile disable for now due to bugs #484750 and #483332
 IUSE="examples gles2 gstreamer +introspection +kms +opengl +pango test wayland" # doc profile
-REQUIRED_USE="wayland? ( gles2 )
-	|| ( gles2 opengl )"
+REQUIRED_USE="
+	wayland? ( gles2 )
+	|| ( gles2 opengl )
+"
 
 COMMON_DEPEND="
 	>=dev-libs/glib-2.32:2
@@ -32,7 +34,6 @@ COMMON_DEPEND="
 	gstreamer? (
 		media-libs/gstreamer:1.0
 		media-libs/gst-plugins-base:1.0 )
-
 	introspection? ( >=dev-libs/gobject-introspection-1.34.2:= )
 	kms? (
 		media-libs/mesa[gbm]
