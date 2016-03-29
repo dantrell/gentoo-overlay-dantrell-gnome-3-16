@@ -17,6 +17,10 @@ KEYWORDS="*"
 
 IUSE="+introspection test"
 
+# FIXME: need network #424719, recheck
+# need various locales to be present
+RESTRICT="test"
+
 RDEPEND="
 	>=dev-libs/glib-2.34:2
 	>=dev-libs/json-glib-0.99.2[introspection?]
@@ -35,10 +39,6 @@ DEPEND="${RDEPEND}
 # eautoreconf requires:
 #	dev-libs/gobject-introspection-common
 #	gnome-base/gnome-common
-
-# FIXME: need network #424719, recheck
-# need various locales to be present
-RESTRICT="test"
 
 src_test() {
 	export GVFS_DISABLE_FUSE=1

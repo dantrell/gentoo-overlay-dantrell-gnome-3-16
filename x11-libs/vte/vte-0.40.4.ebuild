@@ -8,12 +8,15 @@ inherit eutils gnome2 vala
 
 DESCRIPTION="Library providing a virtual terminal emulator widget"
 HOMEPAGE="https://wiki.gnome.org/action/show/Apps/Terminal/VTE"
+SRC_URI="https://git.gnome.org/browse/${PN}/snapshot/${P}.tar.xz"
 
 LICENSE="LGPL-2+"
 SLOT="2.91"
 KEYWORDS="*"
 
 IUSE="+crypt debug glade +introspection vala"
+
+RESTRICT="mirror"
 
 PDEPEND=">=x11-libs/gnome-pty-helper-${PV}"
 RDEPEND="

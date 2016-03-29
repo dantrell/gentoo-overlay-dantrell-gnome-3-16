@@ -9,12 +9,15 @@ inherit gnome2
 DESCRIPTION="GNOME Setuid helper for opening ptys"
 HOMEPAGE="https://wiki.gnome.org/action/show/Apps/Terminal/VTE"
 # gnome-pty-helper is inside vte
+SRC_URI="https://git.gnome.org/browse/${GNOME_ORG_MODULE}/snapshot/${GNOME_ORG_MODULE}-${PV}.tar.xz"
 
 LICENSE="LGPL-2"
 SLOT="0"
 KEYWORDS="*"
 
 IUSE="+hardened"
+
+RESTRICT="mirror"
 
 # gnome-pty-helper was spit out with 0.27.90
 RDEPEND="!<x11-libs/vte-0.27.90"
