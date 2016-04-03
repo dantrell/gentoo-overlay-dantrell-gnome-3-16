@@ -21,11 +21,14 @@ RESTRICT="mirror"
 
 # gnome-pty-helper was spit out with 0.27.90
 RDEPEND="!<x11-libs/vte-0.27.90"
-DEPEND=""
+DEPEND="dev-util/gtk-doc"
 
-S="${WORKDIR}/vte-${PV}/gnome-pty-helper"
+S="${WORKDIR}/${GNOME_ORG_MODULE}-${PV}/${PN}"
 
 src_prepare() {
+	cd "${WORKDIR}/${GNOME_ORG_MODULE}-${PV}"
+	./autogen.sh
+
 	# As recommended by upstream (/usr/libexec/$PN is a setgid binary)
 	if use hardened; then
 		export SUID_CFLAGS="-fPIE ${SUID_CFLAGS}"

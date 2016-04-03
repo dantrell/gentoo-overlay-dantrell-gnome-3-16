@@ -36,6 +36,7 @@ DEPEND="${RDEPEND}
 	$(vala_depend)
 	>=dev-util/gtk-doc-am-1.13
 	>=dev-util/intltool-0.35
+	dev-util/gtk-doc
 	sys-devel/gettext
 	virtual/pkgconfig
 
@@ -46,6 +47,8 @@ RDEPEND="${RDEPEND}
 "
 
 src_prepare() {
+	./autogen.sh
+
 	vala_src_prepare
 	gnome2_src_prepare
 }
@@ -76,7 +79,7 @@ src_configure() {
 }
 
 src_install() {
-	DOCS="AUTHORS ChangeLog HACKING NEWS README"
+	DOCS="AUTHORS HACKING NEWS README"
 	gnome2_src_install
 	mv "${D}"/etc/profile.d/vte{,-${SLOT}}.sh || die
 }
