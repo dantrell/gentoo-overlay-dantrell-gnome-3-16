@@ -3,7 +3,7 @@
 EAPI="5"
 GCONF_DEBUG="no"
 GNOME2_LA_PUNT="yes"
-PYTHON_COMPAT=( python{3_3,3_4} )
+PYTHON_COMPAT=( python{3_3,3_4,3_5} )
 
 inherit autotools eutils gnome2 multilib pax-utils python-r1 systemd
 
@@ -214,6 +214,12 @@ pkg_postinst() {
 		elog "llvmpipe is used as fallback when no 3D acceleration"
 		elog "is available. You will need to enable llvm USE for"
 		elog "media-libs/mesa."
+	fi
+
+	# https://bugs.gentoo.org/show_bug.cgi?id=563084
+	if has_version "x11-drivers/nvidia-drivers[-kms]"; then
+		ewarn "You will need to enable kms support in x11-drivers/nvidia-drivers,"
+		ewarn "otherwise Gnome will fail to start"
 	fi
 
 	if use deprecated; then

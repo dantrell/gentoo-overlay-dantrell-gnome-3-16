@@ -37,7 +37,7 @@ COMMON_DEPEND="
 	x11-libs/libXrender
 
 	exif? ( >=media-libs/libexif-0.6.20 )
-	introspection? ( >=dev-libs/gobject-introspection-0.6.4 )
+	introspection? ( >=dev-libs/gobject-introspection-0.6.4:= )
 	tracker? ( >=app-misc/tracker-0.16:= )
 	xmp? ( >=media-libs/exempi-2.1.0 )
 "

@@ -46,7 +46,7 @@ RDEPEND="
 
 	x11-libs/libX11
 
-	gnome-base/gnome-desktop:3
+	gnome-base/gnome-desktop:3=
 	gnome-base/gsettings-desktop-schemas
 	x11-themes/gnome-icon-theme-symbolic
 

@@ -21,7 +21,7 @@ COMMON_DEPEND="
 	>=x11-libs/gdk-pixbuf-2.23[introspection]
 	>=dev-libs/gjs-1.40
 	>=dev-libs/glib-2.29.14:2
-	>=dev-libs/gobject-introspection-0.9.6
+	>=dev-libs/gobject-introspection-0.9.6:=
 	>=media-libs/clutter-1.11.4:1.0[introspection]
 	>=media-libs/clutter-gtk-1.0.1:1.0[introspection]
 	>=x11-libs/gtk+-3.13.2:3[introspection]

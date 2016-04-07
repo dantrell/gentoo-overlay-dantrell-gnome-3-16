@@ -3,25 +3,25 @@
 EAPI="5"
 GCONF_DEBUG="yes"
 GNOME2_LA_PUNT="yes"
-PYTHON_COMPAT=( python{2_7,3_3,3_4} )
+PYTHON_COMPAT=( python{2_7,3_3,3_4,3_5} )
 
 inherit gnome2 multilib-minimal python-any-r1
 
 DESCRIPTION="An HTTP library implementation in C"
-HOMEPAGE="https://wiki.gnome.org/LibSoup"
+HOMEPAGE="https://wiki.gnome.org/Projects/libsoup"
 
 LICENSE="LGPL-2+"
 SLOT="2.4"
 KEYWORDS="*"
 
-IUSE="debug +introspection samba ssl test"
+IUSE="+introspection samba ssl test"
 
 RDEPEND="
 	>=dev-libs/glib-2.34.3:2[${MULTILIB_USEDEP}]
 	>=dev-libs/libxml2-2.9.1-r4:2[${MULTILIB_USEDEP}]
 	>=dev-db/sqlite-3.8.2:3[${MULTILIB_USEDEP}]
 	>=net-libs/glib-networking-2.38.2[ssl?,${MULTILIB_USEDEP}]
-	introspection? ( >=dev-libs/gobject-introspection-0.9.5 )
+	introspection? ( >=dev-libs/gobject-introspection-0.9.5:= )
 	samba? ( net-fs/samba )
 "
 DEPEND="${RDEPEND}
@@ -38,13 +38,6 @@ DEPEND="${RDEPEND}
 #		dev-lang/php[apache2,xmlrpc]
 #		net-misc/curl
 #		net-libs/glib-networking[ssl])"
-
-RDEPEND="${RDEPEND}
-	abi_x86_32? (
-		!<=app-emulation/emul-linux-x86-baselibs-20140508-r8
-		!app-emulation/emul-linux-x86-baselibs[-abi_x86_32(-)]
-	)
-"
 
 src_prepare() {
 	if ! use test; then

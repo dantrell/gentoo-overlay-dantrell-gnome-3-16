@@ -4,7 +4,7 @@ EAPI="5"
 GCONF_DEBUG="no"
 # gedit-3.8 is python3 only, this also per:
 # https://bugzilla.redhat.com/show_bug.cgi?id=979450
-PYTHON_COMPAT=( python{3_3,3_4} )
+PYTHON_COMPAT=( python{3_3,3_4,3_5} )
 
 inherit gnome2 python-single-r1 toolchain-funcs
 
@@ -19,7 +19,7 @@ IUSE="gedit"
 REQUIRED_USE="gedit? ( ${PYTHON_REQUIRED_USE} )"
 
 COMMON_DEPEND="
-	>=dev-libs/glib-2.37.3:2
+	>=dev-libs/glib-2.37.3:2[dbus]
 	>=x11-libs/gtk+-3.13.4:3
 	>=net-libs/webkit-gtk-2:4
 "

@@ -27,12 +27,12 @@ RDEPEND="${COMMON_DEPEND}
 "
 DEPEND="${COMMON_DEPEND}
 	>=dev-util/intltool-0.50
+	dev-util/itstool
 	sys-devel/gettext
 	virtual/pkgconfig
 "
 
 src_configure() {
 	gnome2_src_configure \
-		ITSTOOL=$(type -P true) \
 		VALAC=$(type -P true)
 }

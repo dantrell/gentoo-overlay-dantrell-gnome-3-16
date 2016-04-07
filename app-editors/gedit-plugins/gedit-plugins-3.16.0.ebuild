@@ -3,7 +3,7 @@
 EAPI="5"
 GCONF_DEBUG="no"
 GNOME2_LA_PUNT="yes" # plugins are dlopened
-PYTHON_COMPAT=( python3_{3,4} )
+PYTHON_COMPAT=( python3_{3,4,5} )
 PYTHON_REQ_USE="xml"
 
 inherit eutils gnome2 multilib python-r1
@@ -51,6 +51,7 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	>=dev-util/intltool-0.40.0
+	dev-util/itstool
 	sys-devel/gettext
 	virtual/pkgconfig
 "
@@ -62,8 +63,7 @@ pkg_setup() {
 src_configure() {
 	gnome2_src_configure \
 		$(use_enable python) \
-		$(use_enable zeitgeist) \
-		ITSTOOL=$(type -P true)
+		$(use_enable zeitgeist)
 }
 
 src_install() {

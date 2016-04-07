@@ -41,6 +41,7 @@ DEPEND="${RDEPEND}
 	>=dev-lang/perl-5
 	dev-libs/appstream-glib
 	>=dev-util/intltool-0.50
+	dev-util/itstool
 	>=sys-devel/gettext-0.17
 	virtual/pkgconfig
 	$(vala_depend)
@@ -67,6 +68,5 @@ src_configure() {
 		$(use_enable ssh) \
 		$(use_enable spice) \
 		$(use_with telepathy) \
-		$(use_with zeroconf avahi) \
-		ITSTOOL=$(type -P true)
+		$(use_with zeroconf avahi)
 }

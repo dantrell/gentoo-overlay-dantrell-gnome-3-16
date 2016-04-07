@@ -15,7 +15,6 @@ KEYWORDS="*"
 
 IUSE=""
 
-# fixed vala & gtk+ from gnome-3.16 branch
 RDEPEND="
 	>=dev-libs/glib-2.40:2
 	dev-libs/libgee:0.8[introspection]
@@ -26,12 +25,12 @@ RDEPEND="
 	x11-libs/pango[introspection]
 "
 DEPEND="${RDEPEND}
+	$(vala_depend)
 	app-text/yelp-tools
 	dev-libs/appstream-glib
 	>=dev-util/intltool-0.50
 	sys-devel/gettext
 	virtual/pkgconfig
-	$(vala_depend)
 "
 
 src_prepare() {

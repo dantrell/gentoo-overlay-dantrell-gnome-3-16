@@ -6,7 +6,7 @@ GCONF_DEBUG="no"
 inherit gnome2
 
 DESCRIPTION="Simple sound recorder"
-HOMEPAGE="https://wiki.gnome.org/ThreePointEleven/Features/SoundRecorder"
+HOMEPAGE="https://wiki.gnome.org/Design/Apps/SoundRecorder"
 
 LICENSE="GPL-2+"
 SLOT="0"
@@ -25,7 +25,7 @@ RDEPEND="${COMMON_DEPEND}
 	media-libs/gstreamer:1.0[introspection]
 	media-libs/gst-plugins-base:1.0[introspection]
 "
-DEPEND="${RDEPEND}
+DEPEND="${COMMON_DEPEND}
 	>=dev-util/intltool-0.26
 	virtual/pkgconfig
 "

@@ -14,7 +14,7 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="
-	>=dev-libs/glib-2.27
+	>=dev-libs/glib-2.27:2
 	>=x11-libs/gtk+-3.15.2:3
 	sys-apps/dbus
 	media-libs/libcanberra[gtk3]

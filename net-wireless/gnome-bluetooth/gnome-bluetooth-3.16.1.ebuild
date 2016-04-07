@@ -6,7 +6,7 @@ GCONF_DEBUG="yes"
 inherit eutils gnome2 udev user
 
 DESCRIPTION="Bluetooth graphical utilities integrated with GNOME"
-HOMEPAGE="https://wiki.gnome.org/GnomeBluetooth"
+HOMEPAGE="https://wiki.gnome.org/Projects/GnomeBluetooth"
 
 LICENSE="GPL-2+ LGPL-2.1+ FDL-1.1+"
 SLOT="2/13" # subslot = libgnome-bluetooth soname version
@@ -18,7 +18,7 @@ COMMON_DEPEND="
 	>=dev-libs/glib-2.38:2
 	>=x11-libs/gtk+-3.12:3[introspection?]
 	virtual/udev
-	introspection? ( >=dev-libs/gobject-introspection-0.9.5 )
+	introspection? ( >=dev-libs/gobject-introspection-0.9.5:= )
 "
 RDEPEND="${COMMON_DEPEND}
 	>=net-wireless/bluez-5
@@ -31,6 +31,7 @@ DEPEND="${COMMON_DEPEND}
 	dev-util/gdbus-codegen
 	>=dev-util/gtk-doc-am-1.9
 	>=dev-util/intltool-0.40.0
+	dev-util/itstool
 	virtual/libudev
 	virtual/pkgconfig
 	x11-proto/xproto
@@ -44,6 +45,7 @@ pkg_setup() {
 
 src_prepare() {
 	# Regenerate gdbus-codegen files to allow using any glib version; bug #436236
+	# https://bugzilla.gnome.org/show_bug.cgi?id=758096
 	rm -v lib/bluetooth-client-glue.{c,h} || die
 	gnome2_src_prepare
 }
@@ -54,8 +56,7 @@ src_configure() {
 		--enable-documentation \
 		--disable-desktop-update \
 		--disable-icon-update \
-		--disable-static \
-		ITSTOOL=$(type -P true)
+		--disable-static
 }
 
 src_install() {

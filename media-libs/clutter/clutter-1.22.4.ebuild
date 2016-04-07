@@ -13,7 +13,7 @@ LICENSE="LGPL-2.1+ FDL-1.1+"
 SLOT="1.0"
 KEYWORDS="*"
 
-IUSE="aqua debug doc egl gtk +introspection test wayland +X"
+IUSE="aqua debug doc egl gtk +introspection test wayland X"
 REQUIRED_USE="
 	|| ( aqua wayland X )
 	wayland? ( egl )

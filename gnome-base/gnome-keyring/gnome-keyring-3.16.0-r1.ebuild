@@ -14,7 +14,7 @@ LICENSE="GPL-2+ LGPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="+caps debug pam selinux +ssh-agent test"
+IUSE="+caps pam selinux +ssh-agent test"
 
 # Replace gkd gpg-agent with pinentry[gnome-keyring] one, bug #547456
 COMMON_DEPEND="
@@ -46,7 +46,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	# Disable stupid CFLAGS
+	# Disable stupid CFLAGS with debug enabled
 	sed -e 's/CFLAGS="$CFLAGS -g"//' \
 		-e 's/CFLAGS="$CFLAGS -O0"//' \
 		-i configure.ac configure || die

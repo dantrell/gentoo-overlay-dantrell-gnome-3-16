@@ -8,9 +8,6 @@ inherit gnome2
 DESCRIPTION="GLib geocoding library that uses the Yahoo! Place Finder service"
 HOMEPAGE="https://git.gnome.org/browse/geocode-glib"
 
-# FIXME: should be slot 1.0 but upstream failed at renaming the libs
-#        and some files conflict from previous releases.
-
 LICENSE="LGPL-2"
 SLOT="0"
 KEYWORDS="*"
@@ -27,8 +24,8 @@ RDEPEND="
 	gnome-base/gvfs[http]
 	net-libs/libsoup:2.4[introspection?]
 	introspection? (
-		>=dev-libs/gobject-introspection-0.6.3
-		net-libs/libsoup-gnome:2.4[introspection] )
+		>=dev-libs/gobject-introspection-0.6.3:=
+		net-libs/libsoup:2.4[introspection] )
 "
 DEPEND="${RDEPEND}
 	>=dev-util/gtk-doc-am-1.13
@@ -39,6 +36,10 @@ DEPEND="${RDEPEND}
 # eautoreconf requires:
 #	dev-libs/gobject-introspection-common
 #	gnome-base/gnome-common
+
+src_configure() {
+	gnome2_src_configure $(use_enable introspection)
+}
 
 src_test() {
 	export GVFS_DISABLE_FUSE=1

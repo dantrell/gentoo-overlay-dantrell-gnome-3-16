@@ -25,7 +25,7 @@ IUSE="smartcard usbredir" #bindist
 RDEPEND="
 	>=app-arch/libarchive-3:=
 	>=dev-libs/glib-2.38:2
-	>=dev-libs/gobject-introspection-0.9.6
+	>=dev-libs/gobject-introspection-0.9.6:=
 	>=dev-libs/libxml2-2.7.8:2
 	>=sys-libs/libosinfo-0.2.11
 	>=app-emulation/qemu-1.3.1[spice,smartcard?,usbredir?]

@@ -17,7 +17,7 @@ IUSE="+introspection"
 # cairo[X] needed for gnome-bg
 COMMON_DEPEND="
 	app-text/iso-codes
-	>=dev-libs/glib-2.38:2
+	>=dev-libs/glib-2.38:2[dbus]
 	>=x11-libs/gdk-pixbuf-2.21.3:2[introspection?]
 	>=x11-libs/gtk+-3.3.6:3[X,introspection?]
 	>=x11-libs/libXext-1.1
@@ -26,7 +26,7 @@ COMMON_DEPEND="
 	x11-libs/libX11
 	x11-misc/xkeyboard-config
 	>=gnome-base/gsettings-desktop-schemas-3.5.91
-	introspection? ( >=dev-libs/gobject-introspection-0.9.7 )
+	introspection? ( >=dev-libs/gobject-introspection-0.9.7:= )
 "
 RDEPEND="${COMMON_DEPEND}
 	!<gnome-base/gnome-desktop-2.32.1-r1:2[doc]
@@ -36,6 +36,7 @@ DEPEND="${COMMON_DEPEND}
 	dev-util/gdbus-codegen
 	>=dev-util/gtk-doc-am-1.14
 	>=dev-util/intltool-0.40.6
+	dev-util/itstool
 	sys-devel/gettext
 	x11-proto/xproto
 	>=x11-proto/randrproto-1.2
@@ -55,8 +56,7 @@ src_configure() {
 		--disable-static \
 		--with-gnome-distributor=Gentoo \
 		--enable-desktop-docs \
-		$(use_enable introspection) \
-		ITSTOOL=$(type -P true)
+		$(use_enable introspection)
 }
 
 src_test() {

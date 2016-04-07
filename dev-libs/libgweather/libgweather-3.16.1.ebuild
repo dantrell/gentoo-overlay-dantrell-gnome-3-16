@@ -26,7 +26,7 @@ COMMON_DEPEND="
 	>=sys-libs/timezone-data-2010k
 
 	glade? ( >=dev-util/glade-3.16:3.10 )
-	introspection? ( >=dev-libs/gobject-introspection-0.9.5 )
+	introspection? ( >=dev-libs/gobject-introspection-0.9.5:= )
 "
 RDEPEND="${COMMON_DEPEND}
 	!<gnome-base/gnome-applets-2.22.0

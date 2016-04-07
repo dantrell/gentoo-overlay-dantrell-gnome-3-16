@@ -39,6 +39,7 @@ DEPEND="${COMMON_DEPEND}
 	dev-libs/appstream-glib
 	dev-libs/libxslt
 	>=dev-util/intltool-0.35
+	dev-util/itstool
 	virtual/pkgconfig
 "
 
@@ -50,8 +51,7 @@ src_configure() {
 		--enable-tests \
 		$(use_enable packagekit) \
 		$(use_enable raw exiv) \
-		APPSTREAM_UTIL=$(type -P true) \
-		ITSTOOL=$(type -P true)
+		APPSTREAM_UTIL=$(type -P true)
 }
 
 src_test() {

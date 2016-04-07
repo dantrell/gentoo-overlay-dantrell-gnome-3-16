@@ -12,7 +12,7 @@ LICENSE="LGPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="libnotify test +webkit"
+IUSE="libnotify test webkit"
 
 RDEPEND="
 	>=dev-libs/glib-2.8:2

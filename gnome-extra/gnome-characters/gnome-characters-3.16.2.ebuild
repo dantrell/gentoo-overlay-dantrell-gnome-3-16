@@ -8,7 +8,7 @@ VALA_USE_DEPEND="vapigen"
 inherit gnome2 vala virtualx
 
 DESCRIPTION="Unicode character map viewer and library"
-HOMEPAGE="https://live.gnome.org/Gucharmap"
+HOMEPAGE="https://wiki.gnome.org/Design/Apps/CharacterMap"
 
 LICENSE="GPL-2 BSD"
 SLOT="0"
@@ -16,10 +16,10 @@ KEYWORDS="*"
 
 IUSE="test"
 
-RDEPEND="${COMMON_DEPEND}
+RDEPEND="
 	>=dev-libs/gjs-1.43.3
 	>=dev-libs/glib-2.32:2
-	>=dev-libs/gobject-introspection-1.35.9
+	>=dev-libs/gobject-introspection-1.35.9:=
 	>=dev-libs/libunistring-0.9.5
 	>=x11-libs/gtk+-3:3[introspection]
 	>=x11-libs/pango-1.36[introspection]
@@ -31,6 +31,11 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	test? ( dev-util/dogtail )
 "
+
+src_prepare() {
+	gnome2_src_prepare
+	vala_src_prepare
+}
 
 src_configure() {
 	gnome2_src_configure $(use_enable test dogtail)

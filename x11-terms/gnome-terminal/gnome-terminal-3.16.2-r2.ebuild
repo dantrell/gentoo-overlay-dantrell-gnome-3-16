@@ -4,7 +4,7 @@ EAPI="5"
 GCONF_DEBUG="no"
 GNOME2_LA_PUNT="yes"
 
-inherit eutils gnome2 readme.gentoo
+inherit autotools eutils gnome2 readme.gentoo
 
 DESCRIPTION="The Gnome Terminal"
 HOMEPAGE="https://wiki.gnome.org/Apps/Terminal/"
@@ -46,24 +46,28 @@ DOC_CONTENTS="To get previous working directory inherited in new opened
 	. /etc/profile.d/vte.sh"
 
 src_prepare() {
-	gnome2_src_prepare
 	if use deprecated; then
-		# Fedora patch, https://bugzilla.gnome.org/show_bug.cgi?id=695371
+		# From Fedora:
+		# 	https://bugzilla.gnome.org/show_bug.cgi?id=695371
+		# 	https://bugzilla.gnome.org/show_bug.cgi?id=721932
 		epatch "${FILESDIR}"/${PN}-3.16.2-restore-transparency.patch
+		epatch "${FILESDIR}"/${PN}-3.16.2-restore-dark.patch
 
 		# From GNOME:
 		# 	https://git.gnome.org/browse/gnome-terminal/commit/?id=b3c270b3612acd45f309521cf1167e1abd561c09
 		epatch "${FILESDIR}"/${PN}-3.14.3-fix-broken-transparency-on-startup.patch
-
-		# Fedora patch, https://bugzilla.gnome.org/show_bug.cgi?id=721932
-		epatch "${FILESDIR}"/${PN}-3.16.2-restore-dark.patch
 	fi
 
 	if ! use vanilla; then
-		# Funtoo,
+		# From Funtoo:
 		# 	https://bugs.funtoo.org/browse/FL-1652
 		epatch "${FILESDIR}"/${PN}-3.16.2-disable-function-keys.patch
 	fi
+
+	epatch_user
+
+	eautoreconf
+	gnome2_src_prepare
 }
 
 src_configure() {

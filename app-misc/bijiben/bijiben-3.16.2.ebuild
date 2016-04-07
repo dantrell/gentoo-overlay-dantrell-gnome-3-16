@@ -20,7 +20,6 @@ RDEPEND="
 	>=dev-libs/glib-2.28:2
 	dev-libs/libxml2
 	>=gnome-extra/evolution-data-server-3.13.90:=
-	>=mail-client/evolution-3
 	gnome-extra/zeitgeist
 	net-libs/gnome-online-accounts
 	net-libs/webkit-gtk:3
@@ -30,6 +29,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	dev-libs/appstream-glib
 	>=dev-util/intltool-0.50.1
+	dev-util/itstool
 	sys-devel/gettext
 	virtual/pkgconfig
 "
@@ -37,6 +37,5 @@ DEPEND="${RDEPEND}
 
 src_configure() {
 	gnome2_src_configure \
-		ITSTOOL="$(type -P true)" \
 		--disable-update-mimedb
 }

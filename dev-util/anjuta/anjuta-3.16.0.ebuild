@@ -23,7 +23,7 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 # FIXME: make python dependency non-automagic
 COMMON_DEPEND="
-	>=dev-libs/glib-2.34:2
+	>=dev-libs/glib-2.34:2[dbus]
 	x11-libs/gdk-pixbuf:2
 	>=x11-libs/gtk+-3.10:3
 	>=dev-libs/libxml2-2.4.23
@@ -42,7 +42,7 @@ COMMON_DEPEND="
 
 	devhelp? ( >=dev-util/devhelp-3.7.4:= )
 	glade? ( >=dev-util/glade-3.12:3.10= )
-	introspection? ( >=dev-libs/gobject-introspection-0.9.5 )
+	introspection? ( >=dev-libs/gobject-introspection-0.9.5:= )
 	subversion? (
 		>=dev-vcs/subversion-1.8:=
 		>=net-libs/serf-1.2:1=

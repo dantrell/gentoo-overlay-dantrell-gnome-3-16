@@ -3,7 +3,7 @@
 EAPI="5"
 GCONF_DEBUG="no"
 GNOME2_LA_PUNT="yes"
-PYTHON_COMPAT=( python3_{3,4} )
+PYTHON_COMPAT=( python3_{3,4,5} )
 PYTHON_REQ_USE="threads"
 
 inherit gnome2 python-r1
@@ -20,7 +20,6 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 # liblouis is not in portage yet
 # it is used to provide contracted braille support
-# XXX: Check deps for correctness
 COMMON_DEPEND="${PYTHON_DEPS}
 	>=app-accessibility/at-spi2-atk-2.10:2
 	>=app-accessibility/at-spi2-core-2.10:2[introspection]

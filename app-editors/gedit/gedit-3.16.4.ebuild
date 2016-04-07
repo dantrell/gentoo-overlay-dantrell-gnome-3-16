@@ -3,7 +3,7 @@
 EAPI="5"
 GCONF_DEBUG="no"
 GNOME2_LA_PUNT="yes" # plugins are dlopened
-PYTHON_COMPAT=( python3_{3,4} )
+PYTHON_COMPAT=( python3_{3,4,5} )
 VALA_MIN_API_VERSION="0.26"
 VALA_USE_DEPEND="vapigen"
 
@@ -55,7 +55,7 @@ RDEPEND="${COMMON_DEPEND}
 DEPEND="${COMMON_DEPEND}
 	${vala_depend}
 	app-text/docbook-xml-dtd:4.1.2
-	>=app-text/scrollkeeper-0.3.11
+	app-text/yelp-tools
 	dev-libs/libxml2:2
 	>=dev-util/gtk-doc-am-1
 	>=dev-util/intltool-0.50.1
@@ -88,7 +88,6 @@ src_configure() {
 }
 
 src_test() {
-	# FIXME: this should be handled at eclass level
 	"${EROOT}${GLIB_COMPILE_SCHEMAS}" --allow-any-name "${S}/data" || die
 
 	unset DBUS_SESSION_BUS_ADDRESS

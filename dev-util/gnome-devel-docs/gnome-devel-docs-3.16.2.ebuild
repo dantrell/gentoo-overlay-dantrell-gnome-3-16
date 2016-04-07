@@ -22,11 +22,12 @@ DEPEND="
 	app-text/docbook-xml-dtd:4.1.2
 	app-text/docbook-xml-dtd:4.2
 	dev-libs/libxslt
+	dev-util/itstool
 	sys-devel/gettext
 	virtual/pkgconfig
 "
 
 src_configure() {
 	# Wants to build demo samples
-	gnome2_src_configure ITSTOOL=$(type -P true) ac_cv_path_CC=""
+	gnome2_src_configure ac_cv_path_CC=""
 }

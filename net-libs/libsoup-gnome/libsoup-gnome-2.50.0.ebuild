@@ -17,12 +17,12 @@ LICENSE="LGPL-2+"
 SLOT="2.4"
 KEYWORDS="*"
 
-IUSE="debug +introspection"
+IUSE="+introspection"
 
 RDEPEND="
 	~net-libs/libsoup-${PV}[introspection?,${MULTILIB_USEDEP}]
 	dev-db/sqlite:3=[${MULTILIB_USEDEP}]
-	introspection? ( >=dev-libs/gobject-introspection-0.9.5 )
+	introspection? ( >=dev-libs/gobject-introspection-0.9.5:= )
 	>=net-libs/libsoup-2.42.2-r1[${MULTILIB_USEDEP}]
 "
 DEPEND="${RDEPEND}

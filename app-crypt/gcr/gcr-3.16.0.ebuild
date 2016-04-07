@@ -3,12 +3,12 @@
 EAPI="5"
 GCONF_DEBUG="no"
 VALA_USE_DEPEND="vapigen"
-PYTHON_COMPAT=( python2_7 python3_3 python3_4 )
+PYTHON_COMPAT=( python{2_7,3_3,3_4,3_5} )
 
 inherit gnome2 python-any-r1 vala virtualx
 
 DESCRIPTION="Libraries for cryptographic UIs and accessing PKCS#11 modules"
-HOMEPAGE="https://developer.gnome.org/gcr/"
+HOMEPAGE="https://git.gnome.org/browse/gcr"
 
 LICENSE="GPL-2+ LGPL-2+"
 SLOT="0/1" # subslot = suffix of libgcr-3
@@ -25,7 +25,7 @@ COMMON_DEPEND="
 	>=dev-libs/libtasn1-1:=
 	>=sys-apps/dbus-1
 	gtk? ( >=x11-libs/gtk+-3.12:3[X,introspection?] )
-	introspection? ( >=dev-libs/gobject-introspection-1.34 )
+	introspection? ( >=dev-libs/gobject-introspection-1.34:= )
 "
 RDEPEND="${COMMON_DEPEND}
 	!<gnome-base/gnome-keyring-3.3

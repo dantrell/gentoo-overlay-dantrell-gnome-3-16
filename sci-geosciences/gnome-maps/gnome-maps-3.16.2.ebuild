@@ -18,7 +18,7 @@ RDEPEND="
 	>=app-misc/geoclue-0.12.99:2.0
 	>=dev-libs/folks-0.10
 	>=dev-libs/gjs-1.43.3
-	>=dev-libs/gobject-introspection-0.6.3
+	>=dev-libs/gobject-introspection-0.6.3:=
 	>=dev-libs/glib-2.39.3:2
 	>=dev-libs/libgee-0.16:0.8[introspection]
 	media-libs/clutter-gtk:1.0[introspection]

@@ -6,7 +6,7 @@ GCONF_DEBUG="yes"
 inherit gnome2
 
 DESCRIPTION="Dictionary utility for GNOME"
-HOMEPAGE="https://live.gnome.org/GnomeUtils"
+HOMEPAGE="https://wiki.gnome.org/Apps/Dictionary"
 
 LICENSE="GPL-2+ LGPL-2.1+ FDL-1.1+"
 SLOT="0/8" # subslot = suffix of libgdict-1.0.so
@@ -15,11 +15,11 @@ KEYWORDS="*"
 IUSE="+introspection ipv6"
 
 COMMON_DEPEND="
-	>=dev-libs/glib-2.39:2
+	>=dev-libs/glib-2.39:2[dbus]
 	x11-libs/cairo:=
 	>=x11-libs/gtk+-3.14:3
 	x11-libs/pango
-	introspection? ( >=dev-libs/gobject-introspection-1.42 )
+	introspection? ( >=dev-libs/gobject-introspection-1.42:= )
 "
 RDEPEND="${COMMON_DEPEND}
 	gnome-base/gsettings-desktop-schemas
@@ -29,6 +29,7 @@ RDEPEND="${COMMON_DEPEND}
 DEPEND="${COMMON_DEPEND}
 	>=dev-util/gtk-doc-am-1.15
 	>=dev-util/intltool-0.40
+	dev-util/itstool
 	>=sys-devel/gettext-0.17
 	virtual/pkgconfig
 "
@@ -36,6 +37,5 @@ DEPEND="${COMMON_DEPEND}
 src_configure() {
 	gnome2_src_configure \
 		$(use_enable introspection) \
-		$(use_enable ipv6) \
-		ITSTOOL=$(type -P true)
+		$(use_enable ipv6)
 }

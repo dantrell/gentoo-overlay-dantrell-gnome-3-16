@@ -7,7 +7,7 @@ GNOME2_LA_PUNT="yes"
 inherit autotools eutils gnome2 multilib-minimal
 
 DESCRIPTION="Gtk module for bridging AT-SPI to Atk"
-HOMEPAGE="https://live.gnome.org/Accessibility"
+HOMEPAGE="https://wiki.gnome.org/Accessibility"
 
 LICENSE="LGPL-2+"
 SLOT="2"
@@ -23,10 +23,6 @@ COMMON_DEPEND="
 "
 RDEPEND="${COMMON_DEPEND}
 	!<gnome-extra/at-spi-1.32.0-r1
-	abi_x86_32? (
-		!<=app-emulation/emul-linux-x86-gtklibs-20140508-r3
-		!app-emulation/emul-linux-x86-gtklibs[-abi_x86_32(-)]
-	)
 "
 DEPEND="${COMMON_DEPEND}
 	virtual/pkgconfig[${MULTILIB_USEDEP}]

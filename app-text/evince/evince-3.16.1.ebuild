@@ -14,7 +14,7 @@ LICENSE="GPL-2+ CC-BY-SA-3.0"
 SLOT="0/evd3.4-evv3.3"
 KEYWORDS="*"
 
-IUSE="djvu dvi gnome +introspection libsecret nautilus nsplugin +postscript t1lib tiff xps"
+IUSE="djvu dvi gnome gnome-keyring +introspection nautilus nsplugin +postscript t1lib tiff xps"
 
 # Since 2.26.2, can handle poppler without cairo support. Make it optional ?
 # not mature enough
@@ -36,9 +36,9 @@ COMMON_DEPEND="
 		virtual/tex-base
 		dev-libs/kpathsea:=
 		t1lib? ( >=media-libs/t1lib-5:= ) )
-	gnome? ( gnome-base/gnome-desktop:3 )
-	introspection? ( >=dev-libs/gobject-introspection-1 )
-	libsecret? ( >=app-crypt/libsecret-0.5 )
+	gnome? ( gnome-base/gnome-desktop:3= )
+	gnome-keyring? ( >=app-crypt/libsecret-0.5 )
+	introspection? ( >=dev-libs/gobject-introspection-1:= )
 	nautilus? ( >=gnome-base/nautilus-2.91.4[introspection?] )
 	postscript? ( >=app-text/libspectre-0.2:= )
 	tiff? ( >=media-libs/tiff-3.6:0= )
@@ -49,9 +49,8 @@ RDEPEND="${COMMON_DEPEND}
 	gnome-base/librsvg
 	|| (
 		>=x11-themes/adwaita-icon-theme-2.17.1
-		>=x11-themes/gnome-icon-theme-2.17.1
+		( >=x11-themes/gnome-icon-theme-2.17.1 x11-themes/gnome-icon-theme-symbolic )
 		>=x11-themes/hicolor-icon-theme-0.10 )
-	x11-themes/gnome-icon-theme-symbolic
 "
 DEPEND="${COMMON_DEPEND}
 	app-text/docbook-xml-dtd:4.3
@@ -59,6 +58,7 @@ DEPEND="${COMMON_DEPEND}
 	dev-util/gdbus-codegen
 	>=dev-util/gtk-doc-am-1.13
 	>=dev-util/intltool-0.35
+	dev-util/itstool
 	sys-devel/gettext
 	virtual/pkgconfig
 "
@@ -84,8 +84,8 @@ src_configure() {
 		--enable-dbus \
 		$(use_enable djvu) \
 		$(use_enable dvi) \
-		$(use_with libsecret keyring) \
 		$(use_enable gnome libgnome-desktop) \
+		$(use_with gnome-keyring keyring) \
 		$(use_enable introspection) \
 		$(use_enable nautilus) \
 		$(use_enable nsplugin browser-plugin) \
@@ -93,6 +93,5 @@ src_configure() {
 		$(use_enable t1lib) \
 		$(use_enable tiff) \
 		$(use_enable xps) \
-		BROWSER_PLUGIN_DIR="${EPREFIX}"/usr/$(get_libdir)/nsbrowser/plugins \
-		ITSTOOL=$(type -P true)
+		BROWSER_PLUGIN_DIR="${EPREFIX}"/usr/$(get_libdir)/nsbrowser/plugins
 }

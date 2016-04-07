@@ -32,7 +32,7 @@ RDEPEND="
 	>=net-libs/libsoup-2.44:2.4
 	>=sys-apps/util-linux-2.20
 	x11-misc/shared-mime-info
-	introspection? ( >=dev-libs/gobject-introspection-1.33.4 )
+	introspection? ( >=dev-libs/gobject-introspection-1.33.4:= )
 	sqlite? (
 		>=dev-db/sqlite-3.5:3
 		dev-libs/libunistring:=

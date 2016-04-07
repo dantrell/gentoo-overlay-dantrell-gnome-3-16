@@ -18,7 +18,7 @@ IUSE="v4l"
 
 VALA_DEPEND="
 	$(vala_depend)
-	>=dev-libs/gobject-introspection-0.9.6
+	>=dev-libs/gobject-introspection-0.9.6:=
 	dev-libs/folks[vala(+)]
 	gnome-base/gnome-desktop[introspection]
 	gnome-extra/evolution-data-server[vala]

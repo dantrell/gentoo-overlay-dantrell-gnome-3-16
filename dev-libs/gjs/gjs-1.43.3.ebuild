@@ -16,7 +16,7 @@ IUSE="+cairo examples gtk test"
 
 RDEPEND="
 	>=dev-libs/glib-2.36:2
-	>=dev-libs/gobject-introspection-1.41.4
+	>=dev-libs/gobject-introspection-1.41.4:=
 
 	sys-libs/readline:0
 	dev-lang/spidermonkey:24

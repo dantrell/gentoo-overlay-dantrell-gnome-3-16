@@ -18,7 +18,7 @@ IUSE=""
 RDEPEND="
 	>=dev-libs/glib-2.43.4:2
 	>=dev-libs/libical-1.0.1
-	>=gnome-extra/evolution-data-server-3.13.90
+	>=gnome-extra/evolution-data-server-3.13.90:=
 	>=x11-libs/gtk+-3.15.4:3
 "
 DEPEND="${RDEPEND}

@@ -137,8 +137,9 @@ src_prepare() {
 	# Show logo when branding is enabled
 	use branding && epatch "${FILESDIR}/${PN}-3.8.4-logo.patch"
 
-	eautoreconf
+	epatch_user
 
+	eautoreconf
 	gnome2_src_prepare
 }
 

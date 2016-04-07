@@ -16,7 +16,7 @@ IUSE="+introspection"
 
 RDEPEND="
 	>=dev-libs/glib-2.31:2
-	introspection? ( >=dev-libs/gobject-introspection-1.31.0 )
+	introspection? ( >=dev-libs/gobject-introspection-1.31.0:= )
 	!<gnome-base/gdm-3.8
 "
 DEPEND="${RDEPEND}

@@ -2,8 +2,9 @@
 
 EAPI="5"
 GCONF_DEBUG="no"
+VALA_MIN_API_VERSION="0.22"
 
-inherit gnome2 versionator
+inherit gnome2 vala versionator
 
 DESCRIPTION="Simple document scanning utility"
 HOMEPAGE="https://launchpad.net/simple-scan"
@@ -34,13 +35,18 @@ RDEPEND="${COMMON_DEPEND}
 		x11-themes/gnome-icon-theme )
 "
 DEPEND="${COMMON_DEPEND}
+	$(vala_depend)
 	app-text/yelp-tools
 	>=dev-util/intltool-0.35.0
 	virtual/pkgconfig
 "
 
+src_prepare() {
+	vala_src_prepare
+	gnome2_src_prepare
+}
+
 src_configure() {
 	DOCS="NEWS README.md"
-	gnome2_src_configure \
-		VALAC=$(type -P true)
+	gnome2_src_configure
 }

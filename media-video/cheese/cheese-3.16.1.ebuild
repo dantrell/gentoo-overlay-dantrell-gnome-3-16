@@ -35,7 +35,7 @@ COMMON_DEPEND="
 	media-libs/gst-plugins-base:1.0[introspection?,ogg,pango,theora,vorbis,X]
 
 	virtual/libgudev:=
-	introspection? ( >=dev-libs/gobject-introspection-0.6.7 )
+	introspection? ( >=dev-libs/gobject-introspection-0.6.7:= )
 "
 RDEPEND="${COMMON_DEPEND}
 	media-libs/gst-plugins-bad:1.0
@@ -56,6 +56,7 @@ DEPEND="${COMMON_DEPEND}
 	dev-util/gdbus-codegen
 	>=dev-util/gtk-doc-am-1.14
 	>=dev-util/intltool-0.50
+	dev-util/itstool
 	virtual/pkgconfig
 	x11-proto/xf86vidmodeproto
 	test? ( dev-libs/glib:2[utils] )
@@ -71,8 +72,7 @@ src_configure() {
 		GST_INSPECT=$(type -P true) \
 		$(use_enable introspection) \
 		--disable-lcov \
-		--disable-static \
-		ITSTOOL=$(type -P true)
+		--disable-static
 }
 
 src_compile() {

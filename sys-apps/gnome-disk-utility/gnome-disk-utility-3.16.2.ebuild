@@ -13,10 +13,10 @@ LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="fat +gnome systemd"
+IUSE="fat gnome systemd"
 
 COMMON_DEPEND="
-	>=dev-libs/glib-2.31:2
+	>=dev-libs/glib-2.31:2[dbus]
 	>=sys-fs/udisks-2.1.1:2
 	>=x11-libs/gtk+-3.12:3
 	>=app-arch/xz-utils-5.0.5

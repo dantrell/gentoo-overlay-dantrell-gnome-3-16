@@ -2,7 +2,7 @@
 
 EAPI="5"
 GCONF_DEBUG="no"
-PYTHON_COMPAT=( python{3_3,3_4} )
+PYTHON_COMPAT=( python{3_3,3_4,3_5} )
 
 inherit gnome2 python-single-r1 virtualx
 
@@ -20,7 +20,7 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 RDEPEND="
 	${PYTHON_DEPS}
 	>=dev-libs/gjs-1.42
-	>=dev-libs/glib-2.44:2
+	>=dev-libs/glib-2.44:2[dbus]
 	dev-libs/libgit2[ssh,threads]
 	>=dev-libs/libgit2-glib-0.22.6[ssh]
 	>=dev-libs/libxml2-2.9
@@ -30,7 +30,7 @@ RDEPEND="
 	sys-devel/clang
 	>=x11-libs/gtk+-3.16.1:3[introspection?]
 	>=x11-libs/gtksourceview-3.16.1:3.0[introspection?]
-	introspection? ( >=dev-libs/gobject-introspection-1.42 )
+	introspection? ( >=dev-libs/gobject-introspection-1.42:= )
 "
 DEPEND="${RDEPEND}
 	dev-libs/appstream-glib

@@ -1,6 +1,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="5"
+GNOME2_LA_PUNT="yes"
 GCONF_DEBUG="no"
 
 inherit autotools eutils gnome2
@@ -29,6 +30,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-util/gtk-doc-am-1.13
 	>=dev-util/intltool-0.41.0
+	dev-util/itstool
 	>=sys-devel/gettext-0.17
 	virtual/pkgconfig
 "
@@ -45,6 +47,5 @@ src_configure() {
 	gnome2_src_configure \
 		--disable-static \
 		--enable-bz2 \
-		--enable-lzma \
-		ITSTOOL=$(type -P true)
+		--enable-lzma
 }

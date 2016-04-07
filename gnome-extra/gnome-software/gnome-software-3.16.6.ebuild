@@ -20,7 +20,7 @@ RDEPEND="
 	dev-db/sqlite:3
 	>=dev-libs/appstream-glib-0.3.4:0
 	>=dev-libs/glib-2.39.1:2
-	gnome-base/gnome-desktop:3
+	gnome-base/gnome-desktop:3=
 	>=gnome-base/gsettings-desktop-schemas-3.11.5
 	net-libs/libsoup:2.4
 	sys-auth/polkit

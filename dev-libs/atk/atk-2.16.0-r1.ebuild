@@ -6,7 +6,7 @@ GCONF_DEBUG="no"
 inherit gnome2 multilib-minimal
 
 DESCRIPTION="GTK+ & GNOME Accessibility Toolkit"
-HOMEPAGE="https://projects.gnome.org/accessibility/"
+HOMEPAGE="https://wiki.gnome.org/Accessibility"
 
 LICENSE="LGPL-2+"
 SLOT="0"
@@ -16,11 +16,7 @@ IUSE="+introspection nls test"
 
 RDEPEND="
 	>=dev-libs/glib-2.31.2:2[${MULTILIB_USEDEP}]
-	introspection? ( >=dev-libs/gobject-introspection-0.6.7 )
-	abi_x86_32? (
-		!<=app-emulation/emul-linux-x86-gtklibs-20140508
-		!app-emulation/emul-linux-x86-gtklibs[-abi_x86_32(-)]
-	)
+	introspection? ( >=dev-libs/gobject-introspection-0.6.7:= )
 "
 DEPEND="${RDEPEND}
 	>=dev-lang/perl-5
