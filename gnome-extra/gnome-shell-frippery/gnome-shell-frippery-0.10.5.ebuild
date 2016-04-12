@@ -12,6 +12,8 @@ KEYWORDS="*"
 
 IUSE=""
 
+RESTRICT="mirror"
+
 RDEPEND="
 	app-eselect/eselect-gnome-shell-extensions
 	>=dev-libs/gjs-1.29
