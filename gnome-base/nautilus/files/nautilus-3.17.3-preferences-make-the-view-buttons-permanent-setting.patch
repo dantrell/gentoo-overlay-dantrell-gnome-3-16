@@ -1,0 +1,130 @@
+From 3409a397d8cd46821ceb2bdca70b88d1aaf5c1f7 Mon Sep 17 00:00:00 2001
+From: Carlos Soriano <csoriano@gnome.org>
+Date: Mon, 29 Jun 2015 16:20:43 +0200
+Subject: preferences: make the view buttons permanent setting
+
+So we can remove it from "Preferences" and don't confuse the
+user with a temporary preference (the one in the toolbar) and
+permanent preference (the one in "Preferences")
+---
+ src/nautilus-file-management-properties.c  | 13 ---------
+ src/nautilus-file-management-properties.ui | 45 ------------------------------
+ src/nautilus-window.c                      |  6 ++++
+ 3 files changed, 6 insertions(+), 58 deletions(-)
+
+diff --git a/src/nautilus-file-management-properties.c b/src/nautilus-file-management-properties.c
+index 3714d12..97de77f 100644
+--- a/src/nautilus-file-management-properties.c
++++ b/src/nautilus-file-management-properties.c
+@@ -54,12 +54,6 @@
+ /* int enums */
+ #define NAUTILUS_FILE_MANAGEMENT_PROPERTIES_THUMBNAIL_LIMIT_WIDGET "preview_image_size_combobox"
+ 
+-static const char * const default_view_values[] = {
+-	"icon-view",
+-	"list-view",
+-	NULL
+-};
+-
+ static const char * const sort_order_values[] = {
+ 	"name",
+ 	"size",
+@@ -581,9 +575,6 @@ nautilus_file_management_properties_dialog_setup (GtkBuilder *builder, GtkWindow
+ 
+ 	/* setup UI */
+ 	nautilus_file_management_properties_size_group_create (builder,
+-							       "views_label",
+-							       2);
+-	nautilus_file_management_properties_size_group_create (builder,
+ 							       "captions_label",
+ 							       3);
+ 	nautilus_file_management_properties_size_group_create (builder,
+@@ -609,10 +600,6 @@ nautilus_file_management_properties_dialog_setup (GtkBuilder *builder, GtkWindow
+ 			   NAUTILUS_PREFERENCES_LIST_VIEW_USE_TREE);
+ 
+ 	bind_builder_enum (builder, nautilus_preferences,
+-			   NAUTILUS_FILE_MANAGEMENT_PROPERTIES_DEFAULT_VIEW_WIDGET,
+-			   NAUTILUS_PREFERENCES_DEFAULT_FOLDER_VIEWER,
+-			   (const char **) default_view_values);
+-	bind_builder_enum (builder, nautilus_preferences,
+ 			   NAUTILUS_FILE_MANAGEMENT_PROPERTIES_SORT_ORDER_WIDGET,
+ 			   NAUTILUS_PREFERENCES_DEFAULT_SORT_ORDER,
+ 			   (const char **) sort_order_values);
+diff --git a/src/nautilus-file-management-properties.ui b/src/nautilus-file-management-properties.ui
+index 3448f0e..7656041 100644
+--- a/src/nautilus-file-management-properties.ui
++++ b/src/nautilus-file-management-properties.ui
+@@ -75,51 +75,6 @@
+                             <property name="orientation">vertical</property>
+                             <property name="spacing">6</property>
+                             <child>
+-                              <object class="GtkBox" id="hbox34">
+-                                <property name="visible">True</property>
+-                                <property name="can_focus">False</property>
+-                                <property name="spacing">12</property>
+-                                <child>
+-                                  <object class="GtkLabel" id="views_label_0">
+-                                    <property name="visible">True</property>
+-                                    <property name="can_focus">False</property>
+-                                    <property name="xalign">0</property>
+-                                    <property name="label" translatable="yes">View _new folders using:</property>
+-                                    <property name="use_underline">True</property>
+-                                    <property name="mnemonic_widget">default_view_combobox</property>
+-                                  </object>
+-                                  <packing>
+-                                    <property name="expand">False</property>
+-                                    <property name="fill">False</property>
+-                                    <property name="position">0</property>
+-                                  </packing>
+-                                </child>
+-                                <child>
+-                                  <object class="GtkComboBox" id="default_view_combobox">
+-                                    <property name="visible">True</property>
+-                                    <property name="can_focus">False</property>
+-                                    <property name="model">model1</property>
+-                                    <child>
+-                                      <object class="GtkCellRendererText" id="renderer1"/>
+-                                      <attributes>
+-                                        <attribute name="text">0</attribute>
+-                                      </attributes>
+-                                    </child>
+-                                  </object>
+-                                  <packing>
+-                                    <property name="expand">False</property>
+-                                    <property name="fill">True</property>
+-                                    <property name="position">1</property>
+-                                  </packing>
+-                                </child>
+-                              </object>
+-                              <packing>
+-                                <property name="expand">False</property>
+-                                <property name="fill">True</property>
+-                                <property name="position">0</property>
+-                              </packing>
+-                            </child>
+-                            <child>
+                               <object class="GtkBox" id="hbox11">
+                                 <property name="visible">True</property>
+                                 <property name="can_focus">False</property>
+diff --git a/src/nautilus-window.c b/src/nautilus-window.c
+index ce4c93f..d315316 100644
+--- a/src/nautilus-window.c
++++ b/src/nautilus-window.c
+@@ -445,8 +445,14 @@ action_view_mode (GSimpleAction *action,
+ 
+ 	if (g_strcmp0 (name, "list") == 0) {
+ 		nautilus_window_slot_set_content_view (slot, NAUTILUS_LIST_VIEW_ID);
++                g_settings_set_enum (nautilus_preferences,
++                                     NAUTILUS_PREFERENCES_DEFAULT_FOLDER_VIEWER,
++                                     NAUTILUS_DEFAULT_FOLDER_VIEWER_LIST_VIEW);
+ 	} else if (g_strcmp0 (name, "grid") == 0) {
+ 		nautilus_window_slot_set_content_view (slot, NAUTILUS_CANVAS_VIEW_ID);
++                g_settings_set_enum (nautilus_preferences,
++                                     NAUTILUS_PREFERENCES_DEFAULT_FOLDER_VIEWER,
++                                     NAUTILUS_DEFAULT_FOLDER_VIEWER_ICON_VIEW);
+ 	} else {
+ 		g_assert_not_reached ();
+ 	}
+-- 
+cgit v0.12
+

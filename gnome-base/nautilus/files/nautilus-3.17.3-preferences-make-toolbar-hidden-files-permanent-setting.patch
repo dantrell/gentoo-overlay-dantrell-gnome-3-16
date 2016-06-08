@@ -1,0 +1,78 @@
+From 2e1ac987268cd57349cdc2763d2442b532ce3c49 Mon Sep 17 00:00:00 2001
+From: Carlos Soriano <csoriano@gnome.org>
+Date: Mon, 29 Jun 2015 16:58:42 +0200
+Subject: preferences: make toolbar hidden files permanent setting
+
+Following previous decision for others preferences.
+---
+ src/nautilus-file-management-properties.c  |  4 ----
+ src/nautilus-file-management-properties.ui | 16 ----------------
+ src/nautilus-view.c                        |  3 +++
+ 3 files changed, 3 insertions(+), 20 deletions(-)
+
+diff --git a/src/nautilus-file-management-properties.c b/src/nautilus-file-management-properties.c
+index 97de77f..ee30b78 100644
+--- a/src/nautilus-file-management-properties.c
++++ b/src/nautilus-file-management-properties.c
+@@ -49,7 +49,6 @@
+ #define NAUTILUS_FILE_MANAGEMENT_PROPERTIES_FOLDERS_FIRST_WIDGET "sort_folders_first_checkbutton"
+ #define NAUTILUS_FILE_MANAGEMENT_PROPERTIES_LIST_VIEW_USE_TREE_WIDGET "use_tree_view_checkbutton"
+ #define NAUTILUS_FILE_MANAGEMENT_PROPERTIES_TRASH_CONFIRM_WIDGET "trash_confirm_checkbutton"
+-#define NAUTILUS_FILE_MANAGEMENT_PROPERTIES_SHOW_HIDDEN_WIDGET "hidden_files_checkbutton"
+ 
+ /* int enums */
+ #define NAUTILUS_FILE_MANAGEMENT_PROPERTIES_THUMBNAIL_LIMIT_WIDGET "preview_image_size_combobox"
+@@ -592,9 +591,6 @@ nautilus_file_management_properties_dialog_setup (GtkBuilder *builder, GtkWindow
+ 	bind_builder_bool (builder, nautilus_preferences,
+ 			   NAUTILUS_FILE_MANAGEMENT_PROPERTIES_TRASH_CONFIRM_WIDGET,
+ 			   NAUTILUS_PREFERENCES_CONFIRM_TRASH);
+-	bind_builder_bool (builder, gtk_filechooser_preferences,
+-			   NAUTILUS_FILE_MANAGEMENT_PROPERTIES_SHOW_HIDDEN_WIDGET,
+-			   NAUTILUS_PREFERENCES_SHOW_HIDDEN_FILES);
+ 	bind_builder_bool (builder, nautilus_list_view_preferences,
+ 			   NAUTILUS_FILE_MANAGEMENT_PROPERTIES_LIST_VIEW_USE_TREE_WIDGET,
+ 			   NAUTILUS_PREFERENCES_LIST_VIEW_USE_TREE);
+diff --git a/src/nautilus-file-management-properties.ui b/src/nautilus-file-management-properties.ui
+index 7656041..fb1856f 100644
+--- a/src/nautilus-file-management-properties.ui
++++ b/src/nautilus-file-management-properties.ui
+@@ -135,22 +135,6 @@
+                                 <property name="position">2</property>
+                               </packing>
+                             </child>
+-                            <child>
+-                              <object class="GtkCheckButton" id="hidden_files_checkbutton">
+-                                <property name="label" translatable="yes">Show hidden and _backup files</property>
+-                                <property name="visible">True</property>
+-                                <property name="can_focus">True</property>
+-                                <property name="receives_default">False</property>
+-                                <property name="use_action_appearance">False</property>
+-                                <property name="use_underline">True</property>
+-                                <property name="draw_indicator">True</property>
+-                              </object>
+-                              <packing>
+-                                <property name="expand">False</property>
+-                                <property name="fill">False</property>
+-                                <property name="position">3</property>
+-                              </packing>
+-                            </child>
+                           </object>
+                         </child>
+                       </object>
+diff --git a/src/nautilus-view.c b/src/nautilus-view.c
+index 8af50bd..160c636 100644
+--- a/src/nautilus-view.c
++++ b/src/nautilus-view.c
+@@ -2062,6 +2062,9 @@ action_show_hidden_files (GSimpleAction *action,
+ 
+ 	nautilus_view_set_show_hidden_files (view, show_hidden);
+ 
++        g_settings_set_boolean (gtk_filechooser_preferences,
++                                NAUTILUS_PREFERENCES_SHOW_HIDDEN_FILES,
++                                show_hidden);
+ 	g_simple_action_set_state (action, state);
+ }
+ 
+-- 
+cgit v0.12
+

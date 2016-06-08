@@ -1,0 +1,274 @@
+diff '--exclude=.git' -urN a/src/nautilus-canvas-view.c b/src/nautilus-canvas-view.c
+--- a/src/nautilus-canvas-view.c	2015-05-13 13:24:43.000000000 -0400
++++ b/src/nautilus-canvas-view.c	2016-06-04 17:28:53.697201736 -0400
+@@ -968,6 +968,9 @@
+ 	nautilus_canvas_view_zoom_to_level (view, zoom_level);
+ 
+ 	g_simple_action_set_state (G_SIMPLE_ACTION (action), state);
++	g_settings_set_enum (nautilus_icon_view_preferences,
++                             NAUTILUS_PREFERENCES_ICON_VIEW_DEFAULT_ZOOM_LEVEL,
++                             zoom_level);
+ }
+ 
+ static void
+diff '--exclude=.git' -urN a/src/nautilus-file-management-properties.c b/src/nautilus-file-management-properties.c
+--- a/src/nautilus-file-management-properties.c	2015-05-13 13:24:43.000000000 -0400
++++ b/src/nautilus-file-management-properties.c	2016-06-04 17:28:53.698201720 -0400
+@@ -41,8 +41,6 @@
+ 
+ /* string enum preferences */
+ #define NAUTILUS_FILE_MANAGEMENT_PROPERTIES_DEFAULT_VIEW_WIDGET "default_view_combobox"
+-#define NAUTILUS_FILE_MANAGEMENT_PROPERTIES_ICON_VIEW_ZOOM_WIDGET "icon_view_zoom_combobox"
+-#define NAUTILUS_FILE_MANAGEMENT_PROPERTIES_LIST_VIEW_ZOOM_WIDGET "list_view_zoom_combobox"
+ #define NAUTILUS_FILE_MANAGEMENT_PROPERTIES_SORT_ORDER_WIDGET "sort_order_combobox"
+ #define NAUTILUS_FILE_MANAGEMENT_PROPERTIES_PREVIEW_FILES_WIDGET "preview_image_combobox"
+ #define NAUTILUS_FILE_MANAGEMENT_PROPERTIES_PREVIEW_FOLDER_WIDGET "preview_folder_combobox"
+@@ -62,13 +60,6 @@
+ 	NULL
+ };
+ 
+-static const char * const zoom_values[] = {
+-	"small",
+-	"standard",
+-	"large",
+-	NULL
+-};
+-
+ static const char * const sort_order_values[] = {
+ 	"name",
+ 	"size",
+@@ -591,7 +582,7 @@
+ 	/* setup UI */
+ 	nautilus_file_management_properties_size_group_create (builder,
+ 							       "views_label",
+-							       4);
++							       2);
+ 	nautilus_file_management_properties_size_group_create (builder,
+ 							       "captions_label",
+ 							       3);
+@@ -621,14 +612,6 @@
+ 			   NAUTILUS_FILE_MANAGEMENT_PROPERTIES_DEFAULT_VIEW_WIDGET,
+ 			   NAUTILUS_PREFERENCES_DEFAULT_FOLDER_VIEWER,
+ 			   (const char **) default_view_values);
+-	bind_builder_enum (builder, nautilus_icon_view_preferences,
+-			   NAUTILUS_FILE_MANAGEMENT_PROPERTIES_ICON_VIEW_ZOOM_WIDGET,
+-			   NAUTILUS_PREFERENCES_ICON_VIEW_DEFAULT_ZOOM_LEVEL,
+-			   (const char **) zoom_values);
+-	bind_builder_enum (builder, nautilus_list_view_preferences,
+-			   NAUTILUS_FILE_MANAGEMENT_PROPERTIES_LIST_VIEW_ZOOM_WIDGET,
+-			   NAUTILUS_PREFERENCES_LIST_VIEW_DEFAULT_ZOOM_LEVEL,
+-			   (const char **) zoom_values);
+ 	bind_builder_enum (builder, nautilus_preferences,
+ 			   NAUTILUS_FILE_MANAGEMENT_PROPERTIES_SORT_ORDER_WIDGET,
+ 			   NAUTILUS_PREFERENCES_DEFAULT_SORT_ORDER,
+diff '--exclude=.git' -urN a/src/nautilus-file-management-properties.ui b/src/nautilus-file-management-properties.ui
+--- a/src/nautilus-file-management-properties.ui	2015-05-13 13:24:43.000000000 -0400
++++ b/src/nautilus-file-management-properties.ui	2016-06-04 17:32:31.773636254 -0400
+@@ -212,194 +212,6 @@
+                     <property name="position">0</property>
+                   </packing>
+                 </child>
+-                <child>
+-                  <object class="GtkBox" id="vbox3">
+-                    <property name="visible">True</property>
+-                    <property name="can_focus">False</property>
+-                    <property name="orientation">vertical</property>
+-                    <property name="spacing">6</property>
+-                    <child>
+-                      <object class="GtkLabel" id="label5">
+-                        <property name="visible">True</property>
+-                        <property name="can_focus">False</property>
+-                        <property name="xalign">0</property>
+-                        <property name="label" translatable="yes">Icon View Defaults</property>
+-                        <attributes>
+-                          <attribute name="weight" value="bold"/>
+-                        </attributes>
+-                      </object>
+-                      <packing>
+-                        <property name="expand">False</property>
+-                        <property name="fill">False</property>
+-                        <property name="position">0</property>
+-                      </packing>
+-                    </child>
+-                    <child>
+-                      <object class="GtkAlignment" id="alignment1">
+-                        <property name="visible">True</property>
+-                        <property name="can_focus">False</property>
+-                        <property name="left_padding">12</property>
+-                        <child>
+-                          <object class="GtkBox" id="vbox16">
+-                            <property name="visible">True</property>
+-                            <property name="can_focus">False</property>
+-                            <property name="orientation">vertical</property>
+-                            <property name="spacing">6</property>
+-                            <child>
+-                              <object class="GtkBox" id="hbox35">
+-                                <property name="visible">True</property>
+-                                <property name="can_focus">False</property>
+-                                <property name="spacing">12</property>
+-                                <child>
+-                                  <object class="GtkLabel" id="views_label_2">
+-                                    <property name="visible">True</property>
+-                                    <property name="can_focus">False</property>
+-                                    <property name="xalign">0</property>
+-                                    <property name="label" translatable="yes">Default _zoom level:</property>
+-                                    <property name="use_underline">True</property>
+-                                    <property name="mnemonic_widget">icon_view_zoom_combobox</property>
+-                                  </object>
+-                                  <packing>
+-                                    <property name="expand">False</property>
+-                                    <property name="fill">False</property>
+-                                    <property name="position">0</property>
+-                                  </packing>
+-                                </child>
+-                                <child>
+-                                  <object class="GtkComboBox" id="icon_view_zoom_combobox">
+-                                    <property name="visible">True</property>
+-                                    <property name="can_focus">False</property>
+-                                    <property name="model">model3</property>
+-                                    <child>
+-                                      <object class="GtkCellRendererText" id="renderer3"/>
+-                                      <attributes>
+-                                        <attribute name="text">0</attribute>
+-                                      </attributes>
+-                                    </child>
+-                                  </object>
+-                                  <packing>
+-                                    <property name="expand">False</property>
+-                                    <property name="fill">True</property>
+-                                    <property name="position">1</property>
+-                                  </packing>
+-                                </child>
+-                              </object>
+-                              <packing>
+-                                <property name="expand">False</property>
+-                                <property name="fill">True</property>
+-                                <property name="position">0</property>
+-                              </packing>
+-                            </child>
+-                          </object>
+-                        </child>
+-                      </object>
+-                      <packing>
+-                        <property name="expand">False</property>
+-                        <property name="fill">True</property>
+-                        <property name="position">1</property>
+-                      </packing>
+-                    </child>
+-                  </object>
+-                  <packing>
+-                    <property name="expand">False</property>
+-                    <property name="fill">True</property>
+-                    <property name="position">1</property>
+-                  </packing>
+-                </child>
+-                <child>
+-                  <object class="GtkBox" id="vbox4">
+-                    <property name="visible">True</property>
+-                    <property name="can_focus">False</property>
+-                    <property name="orientation">vertical</property>
+-                    <property name="spacing">6</property>
+-                    <child>
+-                      <object class="GtkLabel" id="label6">
+-                        <property name="visible">True</property>
+-                        <property name="can_focus">False</property>
+-                        <property name="xalign">0</property>
+-                        <property name="label" translatable="yes">List View Defaults</property>
+-                        <attributes>
+-                          <attribute name="weight" value="bold"/>
+-                        </attributes>
+-                      </object>
+-                      <packing>
+-                        <property name="expand">False</property>
+-                        <property name="fill">False</property>
+-                        <property name="position">0</property>
+-                      </packing>
+-                    </child>
+-                    <child>
+-                      <object class="GtkAlignment" id="alignment3">
+-                        <property name="visible">True</property>
+-                        <property name="can_focus">False</property>
+-                        <property name="left_padding">12</property>
+-                        <child>
+-                          <object class="GtkBox" id="vbox15">
+-                            <property name="visible">True</property>
+-                            <property name="can_focus">False</property>
+-                            <property name="orientation">vertical</property>
+-                            <property name="spacing">6</property>
+-                            <child>
+-                              <object class="GtkBox" id="hbox36">
+-                                <property name="visible">True</property>
+-                                <property name="can_focus">False</property>
+-                                <property name="spacing">12</property>
+-                                <child>
+-                                  <object class="GtkLabel" id="views_label_3">
+-                                    <property name="visible">True</property>
+-                                    <property name="can_focus">False</property>
+-                                    <property name="xalign">0</property>
+-                                    <property name="label" translatable="yes">D_efault zoom level:</property>
+-                                    <property name="use_underline">True</property>
+-                                    <property name="mnemonic_widget">list_view_zoom_combobox</property>
+-                                  </object>
+-                                  <packing>
+-                                    <property name="expand">False</property>
+-                                    <property name="fill">False</property>
+-                                    <property name="position">0</property>
+-                                  </packing>
+-                                </child>
+-                                <child>
+-                                  <object class="GtkComboBox" id="list_view_zoom_combobox">
+-                                    <property name="visible">True</property>
+-                                    <property name="can_focus">False</property>
+-                                    <property name="model">model4</property>
+-                                    <child>
+-                                      <object class="GtkCellRendererText" id="renderer5"/>
+-                                      <attributes>
+-                                        <attribute name="text">0</attribute>
+-                                      </attributes>
+-                                    </child>
+-                                  </object>
+-                                  <packing>
+-                                    <property name="expand">False</property>
+-                                    <property name="fill">True</property>
+-                                    <property name="position">1</property>
+-                                  </packing>
+-                                </child>
+-                              </object>
+-                              <packing>
+-                                <property name="expand">False</property>
+-                                <property name="fill">True</property>
+-                                <property name="position">0</property>
+-                              </packing>
+-                            </child>
+-                          </object>
+-                        </child>
+-                      </object>
+-                      <packing>
+-                        <property name="expand">False</property>
+-                        <property name="fill">True</property>
+-                        <property name="position">1</property>
+-                      </packing>
+-                    </child>
+-                  </object>
+-                  <packing>
+-                    <property name="expand">False</property>
+-                    <property name="fill">True</property>
+-                    <property name="position">3</property>
+-                  </packing>
+-                </child>
+               </object>
+               <packing>
+                 <property name="tab_expand">True</property>
+diff '--exclude=.git' -urN a/src/nautilus-list-view.c b/src/nautilus-list-view.c
+--- a/src/nautilus-list-view.c	2015-05-13 13:24:43.000000000 -0400
++++ b/src/nautilus-list-view.c	2016-06-04 17:28:53.699201704 -0400
+@@ -2872,6 +2872,9 @@
+ 	nautilus_list_view_zoom_to_level (view, zoom_level);
+ 
+ 	g_simple_action_set_state (G_SIMPLE_ACTION (action), state);
++	g_settings_set_enum (nautilus_list_view_preferences,
++                             NAUTILUS_PREFERENCES_LIST_VIEW_DEFAULT_ZOOM_LEVEL,
++                             zoom_level);
+ }
+ 
+ static void

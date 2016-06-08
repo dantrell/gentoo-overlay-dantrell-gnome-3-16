@@ -4,7 +4,7 @@ EAPI="5"
 GCONF_DEBUG="no"
 GNOME2_LA_PUNT="yes"
 
-inherit gnome2 virtualx
+inherit eutils gnome2 virtualx
 
 DESCRIPTION="Clutter is a library for creating graphical user interfaces"
 HOMEPAGE="https://wiki.gnome.org/Projects/Clutter"
@@ -35,7 +35,7 @@ RDEPEND="
 
 	egl? (
 		>=dev-libs/libinput-0.8
-		media-libs/cogl[gles2,kms]
+		media-libs/cogl:1.0=[gles2,kms]
 		>=virtual/libgudev-136
 		x11-libs/libxkbcommon
 	)
@@ -63,11 +63,12 @@ DEPEND="${RDEPEND}
 		dev-libs/libxslt )
 	test? ( x11-libs/gdk-pixbuf )
 "
-# Tests fail with both swrast and llvmpipe
-# They pass under r600g or i965, so the bug is in mesa
-#RESTRICT="test"
 
 src_prepare() {
+	# From GNOME:
+	# 	https://git.gnome.org/browse/clutter/commit/?id=be8602fbb491c30c1e2febb92553375b2f4ce584
+	epatch "${FILESDIR}"/${PN}-1.22.4-reorganize-backends.patch
+
 	# We only need conformance tests, the rest are useless for us
 	sed -e 's/^\(SUBDIRS =\).*/\1 accessibility conform/g' \
 		-i tests/Makefile.am || die "am tests sed failed"

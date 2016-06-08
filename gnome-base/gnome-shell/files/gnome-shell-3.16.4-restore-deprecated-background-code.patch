@@ -1,18 +1,7 @@
-diff '--exclude=.git' -urN a/.gitignore b/.gitignore
---- a/.gitignore	2015-04-16 04:33:55.398118000 -0400
-+++ b/.gitignore	2015-06-20 21:47:25.958827325 -0400
-@@ -23,7 +23,6 @@
- data/gnome-shell-wayland.desktop.in
- data/gnome-shell-extension-prefs.desktop
- data/gnome-shell-extension-prefs.desktop.in
--data/gnome-shell-theme.gresource
- data/gschemas.compiled
- data/perf-background.xml
- data/org.gnome.shell.gschema.xml
 diff '--exclude=.git' -urN a/data/Makefile.am b/data/Makefile.am
---- a/data/Makefile.am	2015-04-16 04:33:55.399118000 -0400
-+++ b/data/Makefile.am	2015-06-20 21:48:39.360177317 -0400
-@@ -66,11 +66,44 @@
+--- a/data/Makefile.am	2015-10-08 15:27:11.000000000 -0400
++++ b/data/Makefile.am	2016-05-30 22:19:36.069179239 -0400
+@@ -66,11 +66,43 @@
  		$(SASS) --sourcemap=none -f -q --update $<; \
  	fi
  
@@ -38,17 +27,16 @@ diff '--exclude=.git' -urN a/data/Makefile.am b/data/Makefile.am
 +	theme/filter-selected-ltr.svg		\
 +	theme/filter-selected-rtl.svg		\
 +	theme/gnome-shell.css			\
++	theme/gnome-shell-high-contrast.css	\
 +	theme/logged-in-indicator.svg		\
-+	theme/message-tray-background.png	\
 +	theme/more-results.svg			\
++	theme/no-events.svg				\
++	theme/no-notifications.svg		\
 +	theme/noise-texture.png			\
 +	theme/page-indicator-active.svg		\
 +	theme/page-indicator-inactive.svg	\
 +	theme/page-indicator-checked.svg	\
 +	theme/page-indicator-hover.svg		\
-+	theme/panel-button-border.svg		\
-+	theme/panel-button-highlight-narrow.svg	\
-+	theme/panel-button-highlight-wide.svg	\
 +	theme/process-working.svg		\
 +	theme/running-indicator.svg		\
 +	theme/source-button-border.svg		\
@@ -63,7 +51,7 @@ diff '--exclude=.git' -urN a/data/Makefile.am b/data/Makefile.am
  backgrounddir = $(pkgdatadir)
  background_DATA = perf-background.xml
 diff '--exclude=.git' -urN a/data/gnome-shell-theme.gresource.xml b/data/gnome-shell-theme.gresource.xml
---- a/data/gnome-shell-theme.gresource.xml	2015-06-19 09:47:23.584277064 -0400
+--- a/data/gnome-shell-theme.gresource.xml	2015-10-15 14:06:46.000000000 -0400
 +++ b/data/gnome-shell-theme.gresource.xml	1969-12-31 19:00:00.000000000 -0500
 @@ -1,40 +0,0 @@
 -<?xml version="1.0" encoding="UTF-8"?>
@@ -106,9 +94,442 @@ diff '--exclude=.git' -urN a/data/gnome-shell-theme.gresource.xml b/data/gnome-s
 -    <file>ws-switch-arrow-down.png</file>
 -  </gresource>
 -</gresources>
+diff '--exclude=.git' -urN a/data/theme/gnome-shell-high-contrast.css b/data/theme/gnome-shell-high-contrast.css
+--- a/data/theme/gnome-shell-high-contrast.css	2015-10-15 14:36:37.000000000 -0400
++++ b/data/theme/gnome-shell-high-contrast.css	2016-06-04 20:44:46.897114766 -0400
+@@ -119,13 +119,13 @@
+ .check-box StBin {
+   width: 24px;
+   height: 22px;
+-  background-image: url("resource:///org/gnome/shell/theme/checkbox-off.svg"); }
++  background-image: url("checkbox-off.svg"); }
+ .check-box:focus StBin {
+-  background-image: url("resource:///org/gnome/shell/theme/checkbox-off-focused.svg"); }
++  background-image: url("checkbox-off-focused.svg"); }
+ .check-box:checked StBin {
+-  background-image: url("resource:///org/gnome/shell/theme/checkbox.svg"); }
++  background-image: url("checkbox.svg"); }
+ .check-box:focus:checked StBin {
+-  background-image: url("resource:///org/gnome/shell/theme/checkbox-focused.svg"); }
++  background-image: url("checkbox-focused.svg"); }
+ 
+ /* Switches */
+ .toggle-switch {
+@@ -134,14 +134,14 @@
+   background-size: contain; }
+ 
+ .toggle-switch-us {
+-  background-image: url("resource:///org/gnome/shell/theme/toggle-off-us.svg"); }
++  background-image: url("toggle-off-us.svg"); }
+   .toggle-switch-us:checked {
+-    background-image: url("resource:///org/gnome/shell/theme/toggle-on-us.svg"); }
++    background-image: url("toggle-on-us.svg"); }
+ 
+ .toggle-switch-intl {
+-  background-image: url("resource:///org/gnome/shell/theme/toggle-off-intl.svg"); }
++  background-image: url("toggle-off-intl.svg"); }
+   .toggle-switch-intl:checked {
+-    background-image: url("resource:///org/gnome/shell/theme/toggle-on-intl.svg"); }
++    background-image: url("toggle-on-intl.svg"); }
+ 
+ /* links */
+ .shell-link {
+@@ -664,14 +664,14 @@
+     background-color: rgba(0, 0, 0, 0.05); }
+ 
+ .calendar-change-month-back {
+-  background-image: url("resource:///org/gnome/shell/theme/calendar-arrow-left.svg"); }
++  background-image: url("calendar-arrow-left.svg"); }
+   .calendar-change-month-back:rtl {
+-    background-image: url("resource:///org/gnome/shell/theme/calendar-arrow-right.svg"); }
++    background-image: url("calendar-arrow-right.svg"); }
+ 
+ .calendar-change-month-forward {
+-  background-image: url("resource:///org/gnome/shell/theme/calendar-arrow-right.svg"); }
++  background-image: url("calendar-arrow-right.svg"); }
+   .calendar-change-month-forward:rtl {
+-    background-image: url("resource:///org/gnome/shell/theme/calendar-arrow-left.svg"); }
++    background-image: url("calendar-arrow-left.svg"); }
+ 
+ .calendar-day-base {
+   font-size: 80%;
+@@ -711,7 +711,7 @@
+ .calendar-day-with-events {
+   color: white;
+   font-weight: bold;
+-  background-image: url("resource:///org/gnome/shell/theme/calendar-today.svg"); }
++  background-image: url("calendar-today.svg"); }
+ 
+ .calendar-other-month-day {
+   color: rgba(255, 255, 255, 0.15);
+@@ -773,7 +773,7 @@
+   border: 1px solid rgba(255, 255, 255, 0.4); }
+ 
+ #appMenu {
+-  spinner-image: url("resource:///org/gnome/shell/theme/process-working.svg");
++  spinner-image: url("process-working.svg");
+   spacing: 4px; }
+   #appMenu .label-shadow {
+     color: transparent; }
+@@ -803,11 +803,11 @@
+ .ripple-box {
+   width: 52px;
+   height: 52px;
+-  background-image: url("resource:///org/gnome/shell/theme/corner-ripple-ltr.png");
++  background-image: url("corner-ripple-ltr.png");
+   background-size: contain; }
+ 
+ .ripple-box:rtl {
+-  background-image: url("resource:///org/gnome/shell/theme/corner-ripple-rtl.png"); }
++  background-image: url("corner-ripple-rtl.png"); }
+ 
+ .popup-menu-arrow {
+   width: 16px;
+@@ -817,7 +817,7 @@
+   icon-size: 1.09em; }
+ 
+ .window-close {
+-  background-image: url("resource:///org/gnome/shell/theme/close-window.svg");
++  background-image: url("close-window.svg");
+   background-size: 32px;
+   height: 32px;
+   width: 32px; }
+@@ -967,7 +967,7 @@
+ .search-provider-icon-more {
+   width: 16px;
+   height: 16px;
+-  background-image: url("resource:///org/gnome/shell/theme/more-results.svg"); }
++  background-image: url("more-results.svg"); }
+ 
+ /* DASHBOARD */
+ #dash {
+@@ -981,7 +981,7 @@
+   #dash:rtl {
+     border-radius: 9px 0 0 9px; }
+   #dash .placeholder {
+-    background-image: url("resource:///org/gnome/shell/theme/dash-placeholder.svg");
++    background-image: url("dash-placeholder.svg");
+     background-size: contain;
+     height: 24px; }
+   #dash .empty-dash-drop-target {
+@@ -1105,13 +1105,13 @@
+   .page-indicator .page-indicator-icon {
+     width: 18px;
+     height: 18px;
+-    background-image: url(resource:///org/gnome/shell/theme/page-indicator-inactive.svg); }
++    background-image: url(page-indicator-inactive.svg); }
+   .page-indicator:hover .page-indicator-icon {
+-    background-image: url(resource:///org/gnome/shell/theme/page-indicator-hover.svg); }
++    background-image: url(page-indicator-hover.svg); }
+   .page-indicator:active .page-indicator-icon {
+-    background-image: url(resource:///org/gnome/shell/theme/page-indicator-active.svg); }
++    background-image: url(page-indicator-active.svg); }
+   .page-indicator:checked .page-indicator-icon, .page-indicator:checked:active {
+-    background-image: url(resource:///org/gnome/shell/theme/page-indicator-checked.svg); }
++    background-image: url(page-indicator-checked.svg); }
+ 
+ .app-well-app > .overview-icon.overview-icon-with-label,
+ .grid-search-result .overview-icon.overview-icon-with-label {
+@@ -1605,7 +1605,7 @@
+   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4); }
+ 
+ #lockDialogGroup {
+-  background: #2e3436 url(resource:///org/gnome/shell/theme/noise-texture.png);
++  background: #2e3436 url(noise-texture.png);
+   background-repeat: repeat; }
+ 
+ #screenShieldNotifications StButton#vhandle, #screenShieldNotifications StButton#hhandle {
+diff '--exclude=.git' -urN a/data/theme/gnome-shell-sass/_common.scss b/data/theme/gnome-shell-sass/_common.scss
+--- a/data/theme/gnome-shell-sass/_common.scss	2015-10-15 14:15:47.000000000 -0400
++++ b/data/theme/gnome-shell-sass/_common.scss	2016-06-04 20:46:06.324757281 -0400
+@@ -122,11 +122,11 @@
+   StBin {
+     width: 24px;
+     height: 22px;
+-    background-image: url("resource:///org/gnome/shell/theme/checkbox-off.svg");
++    background-image: url("checkbox-off.svg");
+   }
+-  &:focus StBin { background-image: url("resource:///org/gnome/shell/theme/checkbox-off-focused.svg"); }
+-  &:checked StBin { background-image: url("resource:///org/gnome/shell/theme/checkbox.svg"); }
+-  &:focus:checked StBin { background-image: url("resource:///org/gnome/shell/theme/checkbox-focused.svg"); }
++  &:focus StBin { background-image: url("checkbox-off-focused.svg"); }
++  &:checked StBin { background-image: url("checkbox.svg"); }
++  &:focus:checked StBin { background-image: url("checkbox-focused.svg"); }
+ }
+ 
+ /* Switches */
+@@ -138,8 +138,8 @@
+ 
+   @each $v in us, intl {
+     .toggle-switch-#{$v} {
+-      background-image: url("resource:///org/gnome/shell/theme/toggle-off-#{$v}.svg");
+-      &:checked { background-image: url("resource:///org/gnome/shell/theme/toggle-on-#{$v}.svg"); }
++      background-image: url("toggle-off-#{$v}.svg");
++      &:checked { background-image: url("toggle-on-#{$v}.svg"); }
+     }
+   }
+ 
+@@ -586,7 +586,7 @@
+     height: 50px;
+     background-color: $selected_bg_color;
+     color: $selected_fg_color;
+-    //background-image: url("resource:///org/gnome/shell/theme/ws-switch-arrow-up.png");
++    //background-image: url("ws-switch-arrow-up.png");
+     background-size: 32px;
+     border-radius: 8px;
+   }
+@@ -780,12 +780,12 @@
+     }
+ 
+       .calendar-change-month-back { //arrow back
+-        background-image: url("resource:///org/gnome/shell/theme/calendar-arrow-left.svg");
+-        &:rtl { background-image: url("resource:///org/gnome/shell/theme/calendar-arrow-right.svg"); }
++        background-image: url("calendar-arrow-left.svg");
++        &:rtl { background-image: url("calendar-arrow-right.svg"); }
+       }
+       .calendar-change-month-forward { //arrow foreward
+-        background-image: url("resource:///org/gnome/shell/theme/calendar-arrow-right.svg");
+-        &:rtl { background-image: url("resource:///org/gnome/shell/theme/calendar-arrow-left.svg"); }
++        background-image: url("calendar-arrow-right.svg");
++        &:rtl { background-image: url("calendar-arrow-left.svg"); }
+       }
+ 
+     .calendar-day-base {
+@@ -827,7 +827,7 @@
+       .calendar-day-with-events {
+         color: lighten($fg_color,10%);
+         font-weight: bold;
+-        background-image: url("resource:///org/gnome/shell/theme/calendar-today.svg");
++        background-image: url("calendar-today.svg");
+       }
+       .calendar-other-month-day {
+         color: transparentize($fg_color,0.85);
+@@ -905,7 +905,7 @@
+   }
+ 
+   #appMenu {
+-    spinner-image: url("resource:///org/gnome/shell/theme/process-working.svg");
++    spinner-image: url("process-working.svg");
+     spacing: 4px;
+ 
+     .label-shadow { color: transparent; }
+@@ -937,12 +937,12 @@
+ .ripple-box {
+   width: 52px;
+   height: 52px;
+-  background-image: url("resource:///org/gnome/shell/theme/corner-ripple-ltr.png");
++  background-image: url("corner-ripple-ltr.png");
+   background-size: contain;
+ }
+ 
+ .ripple-box:rtl {
+-  background-image: url("resource:///org/gnome/shell/theme/corner-ripple-rtl.png");
++  background-image: url("corner-ripple-rtl.png");
+ }
+ 
+ // not really top bar only
+@@ -952,7 +952,7 @@
+ //close buttons
+ 
+ .window-close {
+-  background-image: url("resource:///org/gnome/shell/theme/close-window.svg");
++  background-image: url("close-window.svg");
+   background-size: 32px;
+   height: 32px;
+   width: 32px;
+@@ -1090,7 +1090,7 @@
+   .search-provider-icon-more {
+     width: 16px;
+     height: 16px;
+-    background-image: url("resource:///org/gnome/shell/theme/more-results.svg");
++    background-image: url("more-results.svg");
+   }
+ 
+ 
+@@ -1110,7 +1110,7 @@
+     }
+ 
+     .placeholder {
+-      background-image: url("resource:///org/gnome/shell/theme/dash-placeholder.svg");
++      background-image: url("dash-placeholder.svg");
+       background-size: contain;
+       height: 24px;
+     }
+@@ -1239,13 +1239,13 @@
+     .page-indicator-icon {
+       width: 18px;
+       height: 18px;
+-      background-image: url(resource:///org/gnome/shell/theme/page-indicator-inactive.svg);
++      background-image: url(page-indicator-inactive.svg);
+     }
+ 
+-    &:hover .page-indicator-icon { background-image: url(resource:///org/gnome/shell/theme/page-indicator-hover.svg); }
+-    &:active .page-indicator-icon { background-image: url(resource:///org/gnome/shell/theme/page-indicator-active.svg); }
++    &:hover .page-indicator-icon { background-image: url(page-indicator-hover.svg); }
++    &:active .page-indicator-icon { background-image: url(page-indicator-active.svg); }
+     &:checked .page-indicator-icon,
+-    &:checked:active { background-image: url(resource:///org/gnome/shell/theme/page-indicator-checked.svg); }
++    &:checked:active { background-image: url(page-indicator-checked.svg); }
+   }
+ 
+   .no-frequent-applications-label { @extend %status_text; }
+@@ -1700,7 +1700,7 @@
+ }
+ 
+ #lockDialogGroup {
+-  background: #2e3436 url(resource:///org/gnome/shell/theme/noise-texture.png);
++  background: #2e3436 url(noise-texture.png);
+   background-repeat: repeat;
+ }
+ 
+diff '--exclude=.git' -urN a/data/theme/gnome-shell.css b/data/theme/gnome-shell.css
+--- a/data/theme/gnome-shell.css	2015-10-15 14:36:37.000000000 -0400
++++ b/data/theme/gnome-shell.css	2016-06-04 20:44:46.337124337 -0400
+@@ -119,13 +119,13 @@
+ .check-box StBin {
+   width: 24px;
+   height: 22px;
+-  background-image: url("resource:///org/gnome/shell/theme/checkbox-off.svg"); }
++  background-image: url("checkbox-off.svg"); }
+ .check-box:focus StBin {
+-  background-image: url("resource:///org/gnome/shell/theme/checkbox-off-focused.svg"); }
++  background-image: url("checkbox-off-focused.svg"); }
+ .check-box:checked StBin {
+-  background-image: url("resource:///org/gnome/shell/theme/checkbox.svg"); }
++  background-image: url("checkbox.svg"); }
+ .check-box:focus:checked StBin {
+-  background-image: url("resource:///org/gnome/shell/theme/checkbox-focused.svg"); }
++  background-image: url("checkbox-focused.svg"); }
+ 
+ /* Switches */
+ .toggle-switch {
+@@ -134,14 +134,14 @@
+   background-size: contain; }
+ 
+ .toggle-switch-us {
+-  background-image: url("resource:///org/gnome/shell/theme/toggle-off-us.svg"); }
++  background-image: url("toggle-off-us.svg"); }
+   .toggle-switch-us:checked {
+-    background-image: url("resource:///org/gnome/shell/theme/toggle-on-us.svg"); }
++    background-image: url("toggle-on-us.svg"); }
+ 
+ .toggle-switch-intl {
+-  background-image: url("resource:///org/gnome/shell/theme/toggle-off-intl.svg"); }
++  background-image: url("toggle-off-intl.svg"); }
+   .toggle-switch-intl:checked {
+-    background-image: url("resource:///org/gnome/shell/theme/toggle-on-intl.svg"); }
++    background-image: url("toggle-on-intl.svg"); }
+ 
+ /* links */
+ .shell-link {
+@@ -664,14 +664,14 @@
+     background-color: rgba(57, 63, 63, 0.05); }
+ 
+ .calendar-change-month-back {
+-  background-image: url("resource:///org/gnome/shell/theme/calendar-arrow-left.svg"); }
++  background-image: url("calendar-arrow-left.svg"); }
+   .calendar-change-month-back:rtl {
+-    background-image: url("resource:///org/gnome/shell/theme/calendar-arrow-right.svg"); }
++    background-image: url("calendar-arrow-right.svg"); }
+ 
+ .calendar-change-month-forward {
+-  background-image: url("resource:///org/gnome/shell/theme/calendar-arrow-right.svg"); }
++  background-image: url("calendar-arrow-right.svg"); }
+   .calendar-change-month-forward:rtl {
+-    background-image: url("resource:///org/gnome/shell/theme/calendar-arrow-left.svg"); }
++    background-image: url("calendar-arrow-left.svg"); }
+ 
+ .calendar-day-base {
+   font-size: 80%;
+@@ -711,7 +711,7 @@
+ .calendar-day-with-events {
+   color: white;
+   font-weight: bold;
+-  background-image: url("resource:///org/gnome/shell/theme/calendar-today.svg"); }
++  background-image: url("calendar-today.svg"); }
+ 
+ .calendar-other-month-day {
+   color: rgba(238, 238, 236, 0.15);
+@@ -773,7 +773,7 @@
+   border: 1px solid rgba(238, 238, 236, 0.4); }
+ 
+ #appMenu {
+-  spinner-image: url("resource:///org/gnome/shell/theme/process-working.svg");
++  spinner-image: url("process-working.svg");
+   spacing: 4px; }
+   #appMenu .label-shadow {
+     color: transparent; }
+@@ -803,11 +803,11 @@
+ .ripple-box {
+   width: 52px;
+   height: 52px;
+-  background-image: url("resource:///org/gnome/shell/theme/corner-ripple-ltr.png");
++  background-image: url("corner-ripple-ltr.png");
+   background-size: contain; }
+ 
+ .ripple-box:rtl {
+-  background-image: url("resource:///org/gnome/shell/theme/corner-ripple-rtl.png"); }
++  background-image: url("corner-ripple-rtl.png"); }
+ 
+ .popup-menu-arrow {
+   width: 16px;
+@@ -817,7 +817,7 @@
+   icon-size: 1.09em; }
+ 
+ .window-close {
+-  background-image: url("resource:///org/gnome/shell/theme/close-window.svg");
++  background-image: url("close-window.svg");
+   background-size: 32px;
+   height: 32px;
+   width: 32px; }
+@@ -967,7 +967,7 @@
+ .search-provider-icon-more {
+   width: 16px;
+   height: 16px;
+-  background-image: url("resource:///org/gnome/shell/theme/more-results.svg"); }
++  background-image: url("more-results.svg"); }
+ 
+ /* DASHBOARD */
+ #dash {
+@@ -981,7 +981,7 @@
+   #dash:rtl {
+     border-radius: 9px 0 0 9px; }
+   #dash .placeholder {
+-    background-image: url("resource:///org/gnome/shell/theme/dash-placeholder.svg");
++    background-image: url("dash-placeholder.svg");
+     background-size: contain;
+     height: 24px; }
+   #dash .empty-dash-drop-target {
+@@ -1105,13 +1105,13 @@
+   .page-indicator .page-indicator-icon {
+     width: 18px;
+     height: 18px;
+-    background-image: url(resource:///org/gnome/shell/theme/page-indicator-inactive.svg); }
++    background-image: url(page-indicator-inactive.svg); }
+   .page-indicator:hover .page-indicator-icon {
+-    background-image: url(resource:///org/gnome/shell/theme/page-indicator-hover.svg); }
++    background-image: url(page-indicator-hover.svg); }
+   .page-indicator:active .page-indicator-icon {
+-    background-image: url(resource:///org/gnome/shell/theme/page-indicator-active.svg); }
++    background-image: url(page-indicator-active.svg); }
+   .page-indicator:checked .page-indicator-icon, .page-indicator:checked:active {
+-    background-image: url(resource:///org/gnome/shell/theme/page-indicator-checked.svg); }
++    background-image: url(page-indicator-checked.svg); }
+ 
+ .app-well-app > .overview-icon.overview-icon-with-label,
+ .grid-search-result .overview-icon.overview-icon-with-label {
+@@ -1605,7 +1605,7 @@
+   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4); }
+ 
+ #lockDialogGroup {
+-  background: #2e3436 url(resource:///org/gnome/shell/theme/noise-texture.png);
++  background: #2e3436 url(noise-texture.png);
+   background-repeat: repeat; }
+ 
+ #screenShieldNotifications StButton#vhandle, #screenShieldNotifications StButton#hhandle {
 diff '--exclude=.git' -urN a/js/gdm/authPrompt.js b/js/gdm/authPrompt.js
---- a/js/gdm/authPrompt.js	2015-04-16 04:33:55.411118000 -0400
-+++ b/js/gdm/authPrompt.js	2015-06-20 21:50:50.678802206 -0400
+--- a/js/gdm/authPrompt.js	2015-10-15 14:06:46.000000000 -0400
++++ b/js/gdm/authPrompt.js	2016-05-30 22:19:36.069179239 -0400
 @@ -1,7 +1,6 @@
  // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
  
@@ -127,9 +548,9 @@ diff '--exclude=.git' -urN a/js/gdm/authPrompt.js b/js/gdm/authPrompt.js
          this._spinner.actor.opacity = 0;
          this._spinner.actor.show();
 diff '--exclude=.git' -urN a/js/gdm/loginDialog.js b/js/gdm/loginDialog.js
---- a/js/gdm/loginDialog.js	2015-04-16 04:33:55.419118000 -0400
-+++ b/js/gdm/loginDialog.js	2015-06-20 21:57:28.295459940 -0400
-@@ -740,24 +740,24 @@
+--- a/js/gdm/loginDialog.js	2015-10-15 14:06:46.000000000 -0400
++++ b/js/gdm/loginDialog.js	2016-05-30 22:19:36.070179223 -0400
+@@ -747,24 +747,24 @@
          this._bannerView.hide();
      },
  
@@ -163,8 +584,8 @@ diff '--exclude=.git' -urN a/js/gdm/loginDialog.js b/js/gdm/loginDialog.js
  
      _onPrompted: function() {
 diff '--exclude=.git' -urN a/js/ui/animation.js b/js/ui/animation.js
---- a/js/ui/animation.js	2014-10-18 13:10:58.016592000 -0400
-+++ b/js/ui/animation.js	2015-06-20 21:50:50.603801850 -0400
+--- a/js/ui/animation.js	2015-10-15 14:06:46.000000000 -0400
++++ b/js/ui/animation.js	2016-05-30 22:19:36.071179206 -0400
 @@ -12,7 +12,7 @@
  const Animation = new Lang.Class({
      Name: 'Animation',
@@ -194,8 +615,8 @@ diff '--exclude=.git' -urN a/js/ui/animation.js b/js/ui/animation.js
      }
  });
 diff '--exclude=.git' -urN a/js/ui/background.js b/js/ui/background.js
---- a/js/ui/background.js	2015-04-16 04:33:55.428118000 -0400
-+++ b/js/ui/background.js	2015-06-20 22:02:20.947986696 -0400
+--- a/js/ui/background.js	2015-10-15 14:06:46.000000000 -0400
++++ b/js/ui/background.js	2016-05-30 22:19:36.073179173 -0400
 @@ -1,98 +1,5 @@
  // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
  
@@ -1380,9 +1801,23 @@ diff '--exclude=.git' -urN a/js/ui/background.js b/js/ui/background.js
      },
  });
  Signals.addSignalMethods(BackgroundManager.prototype);
+diff '--exclude=.git' -urN a/js/ui/calendar.js b/js/ui/calendar.js
+--- a/js/ui/calendar.js	2015-10-15 14:06:46.000000000 -0400
++++ b/js/ui/calendar.js	2016-06-04 13:50:05.969706185 -0400
+@@ -1736,8 +1736,8 @@
+ 
+         this._date = new Date();
+ 
+-        let todayFile = Gio.File.new_for_uri('resource:///org/gnome/shell/theme/no-notifications.svg');
+-        let otherFile = Gio.File.new_for_uri('resource:///org/gnome/shell/theme/no-events.svg');
++        let todayFile = Gio.File.new_for_path(global.datadir + '/theme/no-notifications.svg');
++        let otherFile = Gio.File.new_for_path(global.datadir + '/theme/no-events.svg');
+         this._todayIcon = new Gio.FileIcon({ file: todayFile });
+         this._otherIcon = new Gio.FileIcon({ file: otherFile });
+ 
 diff '--exclude=.git' -urN a/js/ui/extensionSystem.js b/js/ui/extensionSystem.js
---- a/js/ui/extensionSystem.js	2014-10-18 13:10:58.018592000 -0400
-+++ b/js/ui/extensionSystem.js	2015-06-20 21:50:43.869769844 -0400
+--- a/js/ui/extensionSystem.js	2015-10-15 13:20:17.000000000 -0400
++++ b/js/ui/extensionSystem.js	2016-05-30 22:19:36.074179156 -0400
 @@ -74,7 +74,7 @@
  
      if (extension.stylesheet) {
@@ -1402,8 +1837,8 @@ diff '--exclude=.git' -urN a/js/ui/extensionSystem.js b/js/ui/extensionSystem.js
              break;
          }
 diff '--exclude=.git' -urN a/js/ui/layout.js b/js/ui/layout.js
---- a/js/ui/layout.js	2015-06-19 09:47:23.587277047 -0400
-+++ b/js/ui/layout.js	2015-06-20 22:02:20.946986701 -0400
+--- a/js/ui/layout.js	2015-10-15 14:06:46.000000000 -0400
++++ b/js/ui/layout.js	2016-05-30 22:19:36.075179140 -0400
 @@ -11,7 +11,6 @@
  
  const Background = imports.ui.background;
@@ -1510,8 +1945,8 @@ diff '--exclude=.git' -urN a/js/ui/layout.js b/js/ui/layout.js
          this._coverPane = null;
  
 diff '--exclude=.git' -urN a/js/ui/magnifier.js b/js/ui/magnifier.js
---- a/js/ui/magnifier.js	2015-04-16 04:33:55.432118000 -0400
-+++ b/js/ui/magnifier.js	2015-06-20 09:09:33.941093171 -0400
+--- a/js/ui/magnifier.js	2015-10-15 14:06:46.000000000 -0400
++++ b/js/ui/magnifier.js	2016-05-30 22:19:36.075179140 -0400
 @@ -1199,7 +1199,12 @@
  
          // Add a background for when the magnified uiGroup is scrolled
@@ -1527,8 +1962,8 @@ diff '--exclude=.git' -urN a/js/ui/magnifier.js b/js/ui/magnifier.js
  
          // Clone the group that contains all of UI on the screen.  This is the
 diff '--exclude=.git' -urN a/js/ui/main.js b/js/ui/main.js
---- a/js/ui/main.js	2015-04-16 04:33:55.433118000 -0400
-+++ b/js/ui/main.js	2015-06-20 21:50:43.876769877 -0400
+--- a/js/ui/main.js	2015-10-15 13:20:17.000000000 -0400
++++ b/js/ui/main.js	2016-05-30 22:19:36.076179123 -0400
 @@ -4,7 +4,6 @@
  const Gdk = imports.gi.Gdk;
  const Gio = imports.gi.Gio;
@@ -1629,8 +2064,8 @@ diff '--exclude=.git' -urN a/js/ui/main.js b/js/ui/main.js
  
  /**
 diff '--exclude=.git' -urN a/js/ui/modalDialog.js b/js/ui/modalDialog.js
---- a/js/ui/modalDialog.js	2015-04-16 04:33:55.434118000 -0400
-+++ b/js/ui/modalDialog.js	2015-06-20 21:50:50.642802035 -0400
+--- a/js/ui/modalDialog.js	2015-10-15 14:06:46.000000000 -0400
++++ b/js/ui/modalDialog.js	2016-05-30 22:19:36.076179123 -0400
 @@ -194,7 +194,7 @@
      },
  
@@ -1641,8 +2076,8 @@ diff '--exclude=.git' -urN a/js/ui/modalDialog.js b/js/ui/modalDialog.js
          this._workSpinner.actor.opacity = 0;
          this._workSpinner.actor.show();
 diff '--exclude=.git' -urN a/js/ui/overview.js b/js/ui/overview.js
---- a/js/ui/overview.js	2015-04-16 04:33:55.434118000 -0400
-+++ b/js/ui/overview.js	2015-06-20 22:02:20.923986812 -0400
+--- a/js/ui/overview.js	2015-10-15 14:06:46.000000000 -0400
++++ b/js/ui/overview.js	2016-05-30 22:19:36.076179123 -0400
 @@ -185,7 +185,7 @@
          for (let i = 0; i < Main.layoutManager.monitors.length; i++) {
              let bgManager = new Background.BackgroundManager({ container: this._backgroundGroup,
@@ -1681,8 +2116,8 @@ diff '--exclude=.git' -urN a/js/ui/overview.js b/js/ui/overview.js
                                 transition: 'easeOutQuad'
                               });
 diff '--exclude=.git' -urN a/js/ui/panel.js b/js/ui/panel.js
---- a/js/ui/panel.js	2015-05-30 19:55:05.326445000 -0400
-+++ b/js/ui/panel.js	2015-06-20 21:50:50.641802030 -0400
+--- a/js/ui/panel.js	2015-10-15 14:06:46.000000000 -0400
++++ b/js/ui/panel.js	2016-05-30 22:19:36.077179106 -0400
 @@ -179,7 +179,7 @@
      _onStyleChanged: function(actor) {
          let node = actor.get_theme_node();
@@ -1693,8 +2128,8 @@ diff '--exclude=.git' -urN a/js/ui/panel.js b/js/ui/panel.js
          this._spinnerIcon = icon;
          this._spinner = new Animation.AnimatedIcon(this._spinnerIcon, PANEL_ICON_SIZE);
 diff '--exclude=.git' -urN a/js/ui/status/network.js b/js/ui/status/network.js
---- a/js/ui/status/network.js	2015-04-16 04:33:55.437118000 -0400
-+++ b/js/ui/status/network.js	2015-06-20 21:50:50.640802025 -0400
+--- a/js/ui/status/network.js	2015-10-15 14:06:46.000000000 -0400
++++ b/js/ui/status/network.js	2016-05-30 22:19:36.077179106 -0400
 @@ -876,8 +876,7 @@
                                                   x_align: Clutter.ActorAlign.CENTER,
                                                   y_align: Clutter.ActorAlign.CENTER });
@@ -1706,8 +2141,8 @@ diff '--exclude=.git' -urN a/js/ui/status/network.js b/js/ui/status/network.js
          this._noNetworksBox.add_actor(new St.Label({ style_class: 'no-networks-label',
                                                       text: _("No Networks") }));
 diff '--exclude=.git' -urN a/js/ui/workspaceThumbnail.js b/js/ui/workspaceThumbnail.js
---- a/js/ui/workspaceThumbnail.js	2015-01-30 21:03:50.972897000 -0500
-+++ b/js/ui/workspaceThumbnail.js	2015-06-20 22:02:20.922986817 -0400
+--- a/js/ui/workspaceThumbnail.js	2015-10-15 13:20:17.000000000 -0400
++++ b/js/ui/workspaceThumbnail.js	2016-05-30 22:19:36.078179090 -0400
 @@ -306,7 +306,7 @@
      _createBackground: function() {
          this._bgManager = new Background.BackgroundManager({ monitorIndex: Main.layoutManager.primaryIndex,
@@ -1736,8 +2171,8 @@ diff '--exclude=.git' -urN a/js/ui/workspaceThumbnail.js b/js/ui/workspaceThumbn
              clone.setStackAbove(this._windows[this._windows.length - 1].actor);
  
 diff '--exclude=.git' -urN a/src/shell-util.c b/src/shell-util.c
---- a/src/shell-util.c	2015-04-16 04:33:55.455118000 -0400
-+++ b/src/shell-util.c	2015-06-20 09:08:25.239483426 -0400
+--- a/src/shell-util.c	2015-10-15 14:06:47.000000000 -0400
++++ b/src/shell-util.c	2016-05-30 22:19:36.078179090 -0400
 @@ -5,9 +5,6 @@
  #include <sys/types.h>
  #include <sys/wait.h>
@@ -1786,8 +2221,8 @@ diff '--exclude=.git' -urN a/src/shell-util.c b/src/shell-util.c
  shell_util_text_insert_keyval (ClutterActor *actor,
                                 guint         keyval)
 diff '--exclude=.git' -urN a/src/shell-util.h b/src/shell-util.h
---- a/src/shell-util.h	2015-04-16 04:33:55.455118000 -0400
-+++ b/src/shell-util.h	2015-06-20 09:08:40.438397091 -0400
+--- a/src/shell-util.h	2015-10-15 14:06:47.000000000 -0400
++++ b/src/shell-util.h	2016-05-30 22:19:36.081179040 -0400
 @@ -45,8 +45,6 @@
  void    shell_util_cursor_tracker_to_clutter (MetaCursorTracker *tracker,
                                                ClutterTexture    *texture);
@@ -1798,8 +2233,8 @@ diff '--exclude=.git' -urN a/src/shell-util.h b/src/shell-util.h
                                      guint         keyval);
  
 diff '--exclude=.git' -urN a/src/st/st-border-image.c b/src/st/st-border-image.c
---- a/src/st/st-border-image.c	2014-10-18 13:10:58.072592000 -0400
-+++ b/src/st/st-border-image.c	2015-06-20 21:50:50.603801850 -0400
+--- a/src/st/st-border-image.c	2015-10-08 15:27:12.000000000 -0400
++++ b/src/st/st-border-image.c	2016-05-30 22:19:36.081179040 -0400
 @@ -27,7 +27,7 @@
  struct _StBorderImage {
    GObject parent;
@@ -1874,8 +2309,8 @@ diff '--exclude=.git' -urN a/src/st/st-border-image.c b/src/st/st-border-image.c
 +          strcmp (image->filename, other->filename) == 0);
  }
 diff '--exclude=.git' -urN a/src/st/st-border-image.h b/src/st/st-border-image.h
---- a/src/st/st-border-image.h	2014-10-18 13:10:58.072592000 -0400
-+++ b/src/st/st-border-image.h	2015-06-20 21:50:50.610801883 -0400
+--- a/src/st/st-border-image.h	2015-10-14 12:09:43.000000000 -0400
++++ b/src/st/st-border-image.h	2016-05-30 22:19:36.082179023 -0400
 @@ -22,7 +22,6 @@
  #define __ST_BORDER_IMAGE_H__
  
@@ -1902,8 +2337,8 @@ diff '--exclude=.git' -urN a/src/st/st-border-image.h b/src/st/st-border-image.h
                                            int           *border_top,
                                            int           *border_right,
 diff '--exclude=.git' -urN a/src/st/st-texture-cache.c b/src/st/st-texture-cache.c
---- a/src/st/st-texture-cache.c	2015-04-16 04:33:55.456118000 -0400
-+++ b/src/st/st-texture-cache.c	2015-06-20 21:51:55.554110337 -0400
+--- a/src/st/st-texture-cache.c	2015-10-14 12:09:43.000000000 -0400
++++ b/src/st/st-texture-cache.c	2016-05-30 22:19:36.082179023 -0400
 @@ -28,8 +28,8 @@
  #include <glib.h>
  
@@ -2342,8 +2777,8 @@ diff '--exclude=.git' -urN a/src/st/st-texture-cache.c b/src/st/st-texture-cache
  }
  
 diff '--exclude=.git' -urN a/src/st/st-texture-cache.h b/src/st/st-texture-cache.h
---- a/src/st/st-texture-cache.h	2015-01-30 21:03:50.981897000 -0500
-+++ b/src/st/st-texture-cache.h	2015-06-20 21:50:50.637802011 -0400
+--- a/src/st/st-texture-cache.h	2015-10-14 12:09:43.000000000 -0400
++++ b/src/st/st-texture-cache.h	2016-05-30 22:19:36.082179023 -0400
 @@ -69,7 +69,7 @@
  
  ClutterActor *
@@ -2380,8 +2815,8 @@ diff '--exclude=.git' -urN a/src/st/st-texture-cache.h b/src/st/st-texture-cache
  
  /**
 diff '--exclude=.git' -urN a/src/st/st-theme-node-drawing.c b/src/st/st-theme-node-drawing.c
---- a/src/st/st-theme-node-drawing.c	2015-04-16 04:33:55.456118000 -0400
-+++ b/src/st/st-theme-node-drawing.c	2015-06-20 21:50:50.637802011 -0400
+--- a/src/st/st-theme-node-drawing.c	2015-10-15 14:06:47.000000000 -0400
++++ b/src/st/st-theme-node-drawing.c	2016-05-30 22:19:36.083179007 -0400
 @@ -600,7 +600,7 @@
    cairo_pattern_t *pattern;
    cairo_content_t  content;
@@ -2428,8 +2863,8 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node-drawing.c b/src/st/st-theme-no
  
        background_image = st_theme_node_get_background_image (node);
 diff '--exclude=.git' -urN a/src/st/st-theme-node-private.h b/src/st/st-theme-node-private.h
---- a/src/st/st-theme-node-private.h	2015-04-16 04:33:55.456118000 -0400
-+++ b/src/st/st-theme-node-private.h	2015-06-20 21:50:50.634801997 -0400
+--- a/src/st/st-theme-node-private.h	2015-10-14 12:09:43.000000000 -0400
++++ b/src/st/st-theme-node-private.h	2016-05-30 22:19:36.083179007 -0400
 @@ -70,7 +70,7 @@
  
    int transition_duration;
@@ -2440,8 +2875,8 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node-private.h b/src/st/st-theme-no
    StShadow *box_shadow;
    StShadow *background_image_shadow;
 diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
---- a/src/st/st-theme-node.c	2015-04-16 04:33:55.457118000 -0400
-+++ b/src/st/st-theme-node.c	2015-06-20 21:50:50.634801997 -0400
+--- a/src/st/st-theme-node.c	2015-10-15 14:06:47.000000000 -0400
++++ b/src/st/st-theme-node.c	2016-05-30 22:19:36.083179007 -0400
 @@ -158,10 +158,7 @@
      }
  
@@ -2656,8 +3091,8 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
  
    _st_theme_node_ensure_geometry (node);
 diff '--exclude=.git' -urN a/src/st/st-theme-node.h b/src/st/st-theme-node.h
---- a/src/st/st-theme-node.h	2015-01-30 21:03:50.981897000 -0500
-+++ b/src/st/st-theme-node.h	2015-06-20 21:50:50.630801978 -0400
+--- a/src/st/st-theme-node.h	2015-10-14 12:09:43.000000000 -0400
++++ b/src/st/st-theme-node.h	2016-05-30 22:19:36.084178990 -0400
 @@ -168,7 +168,7 @@
  gboolean st_theme_node_lookup_url    (StThemeNode  *node,
                                        const char   *property_name,
@@ -2686,8 +3121,8 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.h b/src/st/st-theme-node.h
  int    st_theme_node_get_border_width  (StThemeNode  *node,
                                          StSide        side);
 diff '--exclude=.git' -urN a/src/st/st-theme.c b/src/st/st-theme.c
---- a/src/st/st-theme.c	2014-10-18 13:10:58.074592000 -0400
-+++ b/src/st/st-theme.c	2015-06-20 21:50:50.610801883 -0400
+--- a/src/st/st-theme.c	2015-10-15 14:06:47.000000000 -0400
++++ b/src/st/st-theme.c	2016-05-30 22:19:36.084178990 -0400
 @@ -60,13 +60,13 @@
  {
    GObject parent;
@@ -3109,8 +3544,8 @@ diff '--exclude=.git' -urN a/src/st/st-theme.c b/src/st/st-theme.c
    else
      {
 diff '--exclude=.git' -urN a/src/st/st-theme.h b/src/st/st-theme.h
---- a/src/st/st-theme.h	2014-10-18 13:10:58.074592000 -0400
-+++ b/src/st/st-theme.h	2015-06-20 21:50:43.869769844 -0400
+--- a/src/st/st-theme.h	2015-10-14 12:09:43.000000000 -0400
++++ b/src/st/st-theme.h	2016-05-30 22:19:36.084178990 -0400
 @@ -47,12 +47,12 @@
  
  GType  st_theme_get_type (void) G_GNUC_CONST;
@@ -3130,8 +3565,8 @@ diff '--exclude=.git' -urN a/src/st/st-theme.h b/src/st/st-theme.h
  
  G_END_DECLS
 diff '--exclude=.git' -urN a/src/st/st-widget.c b/src/st/st-widget.c
---- a/src/st/st-widget.c	2015-01-30 21:03:50.981897000 -0500
-+++ b/src/st/st-widget.c	2015-06-20 21:50:50.629801973 -0400
+--- a/src/st/st-widget.c	2015-10-15 14:06:47.000000000 -0400
++++ b/src/st/st-widget.c	2016-05-30 22:19:36.084178990 -0400
 @@ -278,26 +278,26 @@
  
  static void
@@ -3175,8 +3610,8 @@ diff '--exclude=.git' -urN a/src/st/st-widget.c b/src/st/st-widget.c
  
  static void
 diff '--exclude=.git' -urN a/src/st/test-theme.c b/src/st/test-theme.c
---- a/src/st/test-theme.c	2015-01-30 21:03:50.982897000 -0500
-+++ b/src/st/test-theme.c	2015-06-20 21:50:50.613801897 -0400
+--- a/src/st/test-theme.c	2015-10-15 14:06:47.000000000 -0400
++++ b/src/st/test-theme.c	2016-05-30 22:19:36.085178973 -0400
 @@ -176,21 +176,17 @@
  			 const char  *node_description,
  			 const char  *expected)
@@ -3228,8 +3663,8 @@ diff '--exclude=.git' -urN a/src/st/test-theme.c b/src/st/test-theme.c
    stage = clutter_stage_new ();
    context = st_theme_context_get_for_stage (CLUTTER_STAGE (stage));
 diff '--exclude=.git' -urN a/tests/testcommon/ui.js b/tests/testcommon/ui.js
---- a/tests/testcommon/ui.js	2014-10-18 13:10:58.074592000 -0400
-+++ b/tests/testcommon/ui.js	2015-06-20 21:50:43.870769849 -0400
+--- a/tests/testcommon/ui.js	2015-10-08 15:27:12.000000000 -0400
++++ b/tests/testcommon/ui.js	2016-05-30 22:19:36.085178973 -0400
 @@ -1,7 +1,6 @@
  // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
  
