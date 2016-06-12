@@ -1,0 +1,12 @@
+diff '--exclude=.git' -urN a/src/nautilus-view.c b/src/nautilus-view.c
+--- a/src/nautilus-view.c	2015-06-16 15:56:26.000000000 -0400
++++ b/src/nautilus-view.c	2016-06-11 15:08:02.371246621 -0400
+@@ -3434,7 +3434,7 @@
+ 					new_changed_files = g_list_delete_link (new_changed_files, node);
+ 					old_added_files = g_list_prepend (old_added_files, pending);
+ 				}
+-			} else if (nautilus_view_should_show_file (view, pending->file)) {
++			} else {
+ 				new_changed_files = g_list_delete_link (new_changed_files, node);
+ 				old_changed_files = g_list_prepend (old_changed_files, pending);
+ 			}
