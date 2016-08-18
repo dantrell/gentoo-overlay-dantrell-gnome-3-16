@@ -4,7 +4,7 @@ EAPI="5"
 GCONF_DEBUG="no"
 GNOME2_LA_PUNT="yes"
 
-inherit gnome2 virtualx
+inherit gnome2 versionator
 
 DESCRIPTION="Rygel is an open source UPnP/DLNA MediaServer"
 HOMEPAGE="https://wiki.gnome.org/Projects/Rygel"
@@ -56,7 +56,7 @@ DEPEND="${RDEPEND}
 #   dev-libs/libxslt
 
 src_configure() {
-	# We defined xsltproc because man pages are provided by upstream
+	# We set xsltproc because man pages are provided by upstream
 	# and we do not want to regenerate them automagically.
 	gnome2_src_configure \
 		XSLTPROC=$(type -P false) \
@@ -71,10 +71,13 @@ src_configure() {
 		$(use_with X ui)
 }
 
-src_install() {
-	gnome2_src_install
-	# Autostart file is not placed correctly, bug #402745
-	insinto /etc/xdg/autostart
-	doins "${D}"/usr/share/applications/rygel.desktop
-	rm "${D}"/usr/share/applications/rygel.desktop
+pkg_postinst() {
+	gnome2_pkg_postinst
+	if ! version_is_at_least 0.32.0 ${REPLACING_VERSIONS}; then
+		elog "This version stops forcing the automatical starting of"
+		elog "rygel as upstream pretends. This way, it will honor the"
+		elog "user settings at Sharing section in gnome-control-center."
+		elog "If you desire to keep getting rygel autostarting always"
+		elog "you will need to configure your desktop to do it."
+	fi
 }
