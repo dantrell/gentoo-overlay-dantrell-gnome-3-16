@@ -22,6 +22,7 @@ RDEPEND="
 	>=dev-cpp/atkmm-2.22.7[${MULTILIB_USEDEP}]
 	>=dev-cpp/cairomm-1.10.0-r1[${MULTILIB_USEDEP}]
 	>=dev-cpp/pangomm-2.34.0:1.4[${MULTILIB_USEDEP}]
+	dev-libs/libsigc++:2=[${MULTILIB_USEDEP}]
 	>=dev-libs/libsigc++-2.3.2:2[${MULTILIB_USEDEP}]
 "
 DEPEND="${RDEPEND}

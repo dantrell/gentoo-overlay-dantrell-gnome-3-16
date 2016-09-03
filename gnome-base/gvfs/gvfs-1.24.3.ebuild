@@ -74,17 +74,9 @@ DEPEND="${RDEPEND}
 src_prepare() {
 	DOCS="AUTHORS ChangeLog NEWS MAINTAINERS README TODO" # ChangeLog.pre-1.2 README.commits
 
-	# dav: Mark files as untrashable (from '3.16' branch)
-	epatch "${FILESDIR}"/${P}-untrashable.patch
-
-	# proxy volume monitor: Guard access to the internal caches (from '3.16' branch)
-	epatch "${FILESDIR}"/${P}-guard-caches.patch
-
-	# proxy volume monitor: Properly handle failure to create a remote proxy (from '3.16' branch)
-	epatch "${FILESDIR}"/${P}-remote-proxy.patch
-
-	# Avoid crash when no monitor implementations exist (from '3.16' branch)
-	epatch "${FILESDIR}"/${P}-crash-monitor.patch
+	# From GNOME:
+	# 	https://git.gnome.org/browse/gvfs/commit/?id=48877cbca19d13f4bdb9aae4bf366e78831cedc4
+	epatch "${FILESDIR}"/${PN}-1.24.4-gvfs-open-also-replace-dashes-when-computing-object-path.patch
 
 	if ! use udev; then
 		sed -e 's/gvfsd-burn/ /' \
