@@ -4,7 +4,7 @@ EAPI="5"
 GCONF_DEBUG="no"
 VALA_USE_DEPEND="vapigen"
 
-inherit gnome2 vala
+inherit eutils gnome2 vala
 
 DESCRIPTION="Library to access weather information from online services"
 HOMEPAGE="https://wiki.gnome.org/Projects/LibGWeather"
@@ -39,6 +39,10 @@ DEPEND="${COMMON_DEPEND}
 "
 
 src_prepare() {
+	# From GNOME:
+	# 	https://git.gnome.org/browse/libgweather/commit/?id=6b0586d95f5632c92b2fbbcb68426bfe5be51098
+	epatch "${FILESDIR}"/${PN}-3.18.2-switch-to-new-metar-data-provider.patch
+
 	use vala && vala_src_prepare
 	gnome2_src_prepare
 }
