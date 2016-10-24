@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit autotools eutils gnome2 pam readme.gentoo systemd user versionator
+inherit autotools gnome2 pam readme.gentoo-r1 systemd user versionator
 
 DESCRIPTION="GNOME Display Manager for managing graphical display servers and user logins"
 HOMEPAGE="https://wiki.gnome.org/Projects/GDM"
@@ -72,7 +71,6 @@ RDEPEND="${COMMON_DEPEND}
 	>=gnome-base/gnome-shell-3.1.90
 	gnome-extra/polkit-gnome:0
 	x11-apps/xhost
-	x11-themes/gnome-icon-theme-symbolic
 
 	accessibility? (
 		>=app-accessibility/orca-3.10
@@ -126,18 +124,16 @@ pkg_setup() {
 
 src_prepare() {
 	# make custom session work, bug #216984, upstream bug #737578
-	epatch "${FILESDIR}/${PN}-3.2.1.1-custom-session.patch"
+	eapply "${FILESDIR}/${PN}-3.2.1.1-custom-session.patch"
 
 	# ssh-agent handling must be done at xinitrc.d, bug #220603
-	epatch "${FILESDIR}/${PN}-2.32.0-xinitrc-ssh-agent.patch"
+	eapply "${FILESDIR}/${PN}-2.32.0-xinitrc-ssh-agent.patch"
 
 	# Gentoo does not have a fingerprint-auth pam stack
-	epatch "${FILESDIR}/${PN}-3.8.4-fingerprint-auth.patch"
+	eapply "${FILESDIR}/${PN}-3.8.4-fingerprint-auth.patch"
 
 	# Show logo when branding is enabled
-	use branding && epatch "${FILESDIR}/${PN}-3.8.4-logo.patch"
-
-	epatch_user
+	use branding && eapply "${FILESDIR}/${PN}-3.8.4-logo.patch"
 
 	eautoreconf
 	gnome2_src_prepare
@@ -163,6 +159,7 @@ src_configure() {
 		--with-default-pam-config=exherbo \
 		--with-at-spi-registryd-directory="${EPREFIX}"/usr/libexec \
 		--with-consolekit-directory="${EPREFIX}"/usr/lib/ConsoleKit \
+		--with-systemdsystemunitdir="$(systemd_get_systemunitdir)" \
 		--without-xevie \
 		$(use_with audit libaudit) \
 		$(use_enable ipv6) \
@@ -171,7 +168,6 @@ src_configure() {
 		$(use_with systemd) \
 		$(use_with !systemd console-kit) \
 		$(use_enable systemd systemd-journal) \
-		$(systemd_with_unitdir) \
 		$(use_with tcpd tcp-wrappers) \
 		$(use_enable wayland wayland-support) \
 		$(use_with xinerama) \

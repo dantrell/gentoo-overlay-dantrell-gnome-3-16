@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
 inherit gnome2 multilib-minimal
 
@@ -12,7 +11,7 @@ LICENSE="LGPL-2.1+"
 SLOT="3.0"
 KEYWORDS="*"
 
-IUSE="aqua doc examples test wayland +X"
+IUSE="aqua doc examples test wayland X"
 REQUIRED_USE="|| ( aqua wayland X )"
 
 RDEPEND="
@@ -26,7 +25,7 @@ RDEPEND="
 	>=dev-libs/libsigc++-2.3.2:2[${MULTILIB_USEDEP}]
 "
 DEPEND="${RDEPEND}
-	virtual/pkgconfig
+	virtual/pkgconfig[${MULTILIB_USEDEP}]
 	doc? (
 		media-gfx/graphviz
 		dev-libs/libxslt
@@ -52,7 +51,8 @@ src_prepare() {
 }
 
 multilib_src_configure() {
-	ECONF_SOURCE="${S}" gnome2_src_configure \
+	ECONF_SOURCE="${S}" \
+	gnome2_src_configure \
 		--enable-api-atkmm \
 		$(multilib_native_use_enable doc documentation) \
 		$(use_enable aqua quartz-backend) \
@@ -62,9 +62,4 @@ multilib_src_configure() {
 
 multilib_src_install() {
 	gnome2_src_install
-}
-
-multilib_src_install_all() {
-	DOCS="AUTHORS ChangeLog PORTING NEWS README"
-	einstalldocs
 }

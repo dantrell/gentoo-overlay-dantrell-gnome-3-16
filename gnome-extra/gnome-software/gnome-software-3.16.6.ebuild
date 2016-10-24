@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 PYTHON_COMPAT=( python2_7 )
 
-inherit eutils gnome2 python-any-r1 virtualx
+inherit gnome2 python-any-r1 virtualx
 
 DESCRIPTION="Gnome install & update software"
 HOMEPAGE="http://wiki.gnome.org/Apps/Software"
@@ -27,17 +26,22 @@ RDEPEND="
 	>=x11-libs/gtk+-3.16:3
 "
 DEPEND="${RDEPEND}
-	${PYTHON_DEPS}
 	app-text/docbook-xml-dtd:4.2
 	dev-libs/libxslt
 	>=dev-util/intltool-0.35
 	virtual/pkgconfig
-	test? ( dev-util/dogtail )
+	test? (
+		${PYTHON_DEPS}
+		$(python_gen_any_dep 'dev-util/dogtail[${PYTHON_USEDEP}]') )
 "
 # test? ( dev-util/valgrind )
 
+python_check_deps() {
+	use test && has_version "dev-util/dogtail[${PYTHON_USEDEP}]"
+}
+
 pkg_setup() {
-	python-any-r1_pkg_setup
+	use test && python-any-r1_pkg_setup
 }
 
 src_prepare() {
@@ -47,7 +51,7 @@ src_prepare() {
 
 	# From GNOME:
 	# 	https://git.gnome.org/browse/gnome-software/commit/?id=4de9bc66873f6bb054fe0b4d26f2b24079c8d354
-	epatch "${FILESDIR}"/${PN}-3.16.6-support-the-new-appstreamglib-v5.0-api.patch
+	eapply "${FILESDIR}"/${PN}-3.16.6-support-the-new-appstreamglib-v5.0-api.patch
 
 	gnome2_src_prepare
 }
@@ -59,5 +63,5 @@ src_configure() {
 }
 
 src_test() {
-	Xemake check TESTS_ENVIRONMENT="dbus-run-session"
+	virtx emake check TESTS_ENVIRONMENT="dbus-run-session"
 }

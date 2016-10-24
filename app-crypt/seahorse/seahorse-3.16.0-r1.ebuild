@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
-inherit autotools eutils gnome2
+inherit autotools gnome2
 
 DESCRIPTION="A GNOME application for managing encryption keys"
 HOMEPAGE="https://wiki.gnome.org/Apps/Seahorse"
@@ -49,7 +48,7 @@ src_prepare() {
 		-i configure.ac configure || die "sed 1 failed"
 
 	# Avoid binding seahorse to the build-time version of gpg (from 'master')
-	epatch "${FILESDIR}"/${PN}-3.16.0-gnupg-detection.patch
+	eapply "${FILESDIR}"/${PN}-3.16.0-gnupg-detection.patch
 
 	eautoreconf
 	gnome2_src_prepare

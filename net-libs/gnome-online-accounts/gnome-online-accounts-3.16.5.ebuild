@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit autotools eutils gnome2
+inherit autotools gnome2
 
 DESCRIPTION="GNOME framework for accessing online accounts"
 HOMEPAGE="https://wiki.gnome.org/Projects/GnomeOnlineAccounts"
@@ -13,7 +12,7 @@ LICENSE="LGPL-2+"
 SLOT="0/1"
 KEYWORDS="*"
 
-IUSE="gnome +introspection kerberos" # telepathy"
+IUSE="debug gnome +introspection kerberos" # telepathy"
 
 # pango used in goaeditablelabel
 # libsoup used in goaoauthprovider
@@ -59,7 +58,8 @@ QA_CONFIGURE_OPTIONS=".*"
 
 src_prepare() {
 	# https://bugzilla.gnome.org/show_bug.cgi?id=750897
-	epatch "${FILESDIR}"/${PN}-3.16.3-parallel-make.patch
+	eapply "${FILESDIR}"/${PN}-3.16.3-parallel-make.patch
+
 	eautoreconf
 	gnome2_src_prepare
 }
@@ -80,6 +80,7 @@ src_configure() {
 		--enable-pocket \
 		--enable-telepathy \
 		--enable-windows-live \
+		$(usex debug --enable-debug=yes ' ') \
 		$(use_enable kerberos)
 		#$(use_enable telepathy)
 	# gudev & cheese from sub-configure is overriden

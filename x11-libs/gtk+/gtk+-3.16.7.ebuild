@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit autotools eutils flag-o-matic gnome2 multilib virtualx multilib-minimal
+inherit autotools flag-o-matic gnome2 multilib virtualx multilib-minimal
 
 DESCRIPTION="Gimp ToolKit +"
 HOMEPAGE="http://www.gtk.org/"
@@ -23,7 +22,8 @@ REQUIRED_USE="
 # https://bugzilla.gnome.org/show_bug.cgi?id=768662#c1
 RESTRICT="test"
 
-# FIXME: introspection data is built against system installation of gtk+:3
+# FIXME: introspection data is built against system installation of gtk+:3,
+# bug #????
 # NOTE: cairo[svg] dep is due to bug 291283 (not patched to avoid eautoreconf)
 COMMON_DEPEND="
 	>=dev-libs/atk-2.15[introspection?,${MULTILIB_USEDEP}]
@@ -132,12 +132,11 @@ src_prepare() {
 	fi
 
 	# gtk-update-icon-cache is installed by dev-util/gtk-update-icon-cache
-	epatch "${FILESDIR}"/${PN}-3.16.2-remove_update-icon-cache.patch
+	eapply "${FILESDIR}"/${PN}-3.16.2-remove_update-icon-cache.patch
 
-	epatch_user
-
-	eautoreconf
+	# call eapply_user (implicitly) before eautoreconf
 	gnome2_src_prepare
+	eautoreconf
 }
 
 multilib_src_configure() {
@@ -177,29 +176,17 @@ multilib_src_configure() {
 
 multilib_src_test() {
 	"${EROOT}${GLIB_COMPILE_SCHEMAS}" --allow-any-name "${S}/gtk" || die
-
-	unset DBUS_SESSION_BUS_ADDRESS
-	unset DISPLAY #527682
-	GSETTINGS_SCHEMA_DIR="${S}/gtk" Xemake check
+	GSETTINGS_SCHEMA_DIR="${S}/gtk" virtx emake check
 }
 
 multilib_src_install() {
 	gnome2_src_install
-
-	# add -framework Carbon to the .pc files, bug #???
-	if use aqua ; then
-		for i in gtk+-3.0.pc gtk+-quartz-3.0.pc gtk+-unix-print-3.0.pc; do
-			sed -e "s:Libs\: :Libs\: -framework Carbon :" \
-				-i "${ED%/}"/usr/$(get_libdir)/pkgconfig/$i || die "sed failed"
-		done
-	fi
 }
 
 multilib_src_install_all() {
 	insinto /etc/gtk-3.0
 	doins "${FILESDIR}"/settings.ini
-
-	dodoc AUTHORS ChangeLog* HACKING NEWS* README*
+	einstalldocs
 }
 
 pkg_preinst() {

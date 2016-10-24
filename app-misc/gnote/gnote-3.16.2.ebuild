@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit gnome2 readme.gentoo
+inherit gnome2 readme.gentoo-r1
 
 DESCRIPTION="Desktop note-taking application"
 HOMEPAGE="https://wiki.gnome.org/Apps/Gnote"
@@ -43,6 +42,7 @@ DEPEND="${DEPEND}
 src_prepare() {
 	# Do not alter CFLAGS
 	sed 's/-DDEBUG -g/-DDEBUG/' -i configure.ac configure || die
+
 	gnome2_src_prepare
 
 	if has_version net-fs/wdfs; then

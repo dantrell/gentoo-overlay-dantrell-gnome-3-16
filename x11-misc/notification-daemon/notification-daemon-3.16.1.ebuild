@@ -1,6 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
+EAPI="6"
 
 inherit gnome.org
 
@@ -28,8 +28,6 @@ DEPEND="${RDEPEND}
 	sys-devel/gettext
 	virtual/pkgconfig
 "
-
-DOCS=( AUTHORS ChangeLog NEWS )
 
 src_install() {
 	default

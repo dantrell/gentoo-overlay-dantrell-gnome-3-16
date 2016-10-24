@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 VALA_MIN_API_VERSION="0.26"
 
 inherit gnome2 vala virtualx
@@ -23,7 +22,7 @@ COMMON_DEPEND="
 	>=media-libs/libcanberra-0.26[gtk3]
 	>=media-libs/clutter-1.13.2:1.0[introspection?]
 	>=media-libs/clutter-gtk-0.91.8:1.0
-	>=media-libs/clutter-gst-2.0.6:2.0
+	media-libs/clutter-gst:2.0
 	media-libs/cogl:1.0=[introspection?]
 
 	media-video/gnome-video-effects
@@ -75,13 +74,6 @@ src_configure() {
 		--disable-static
 }
 
-src_compile() {
-	# Clutter-related sandbox violations when USE="doc introspection" and
-	# FEATURES="-userpriv" (see bug #385917).
-	unset DISPLAY
-	gnome2_src_compile
-}
-
 src_test() {
-	Xemake check
+	virtx emake check
 }

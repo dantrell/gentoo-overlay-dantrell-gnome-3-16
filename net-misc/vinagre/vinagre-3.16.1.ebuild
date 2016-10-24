@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
 inherit gnome2 linux-info vala
 
@@ -54,14 +53,13 @@ pkg_pretend() {
 
 src_prepare() {
 	# Fix RDP initialization with recent FreeRDP (from 'master')
-	epatch "${FILESDIR}"/${PN}-3.16.1-freerdp.patch
+	eapply "${FILESDIR}"/${PN}-3.16.1-freerdp.patch
 
 	vala_src_prepare
 	gnome2_src_prepare
 }
 
 src_configure() {
-	DOCS="AUTHORS ChangeLog ChangeLog.pre-git NEWS README"
 	gnome2_src_configure \
 		$(use_enable rdp) \
 		$(use_enable ssh) \

@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 VALA_USE_DEPEND="vapigen"
 
 inherit gnome2 vala virtualx
@@ -16,7 +15,6 @@ KEYWORDS="*"
 IUSE="glade +introspection vala"
 REQUIRED_USE="vala? ( introspection )"
 
-# Note: has native OSX support, prefix teams, attack!
 RDEPEND="
 	>=dev-libs/glib-2.44:2
 	>=dev-libs/libxml2-2.6:2
@@ -47,11 +45,10 @@ src_configure() {
 }
 
 src_test() {
-	Xemake check
+	virtx emake check
 }
 
 src_install() {
-	DOCS="AUTHORS HACKING MAINTAINERS NEWS README"
 	gnome2_src_install
 
 	insinto /usr/share/${PN}-3.0/language-specs

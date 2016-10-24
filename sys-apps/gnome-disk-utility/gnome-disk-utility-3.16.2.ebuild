@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit autotools eutils gnome2
+inherit autotools gnome2
 
 DESCRIPTION="Disk Utility for GNOME using udisks"
 HOMEPAGE="https://git.gnome.org/browse/gnome-disk-utility"
@@ -28,7 +27,7 @@ RDEPEND="${COMMON_DEPEND}
 	>=media-libs/libdvdread-4.2.0
 	>=media-libs/libcanberra-0.1[gtk3]
 	>=x11-libs/libnotify-0.7:=
-	>=x11-themes/gnome-icon-theme-symbolic-2.91
+	x11-themes/adwaita-icon-theme
 	fat? ( sys-fs/dosfstools )
 	gnome? ( >=gnome-base/gnome-settings-daemon-3.8 )
 "
@@ -41,8 +40,8 @@ DEPEND="${COMMON_DEPEND}
 
 src_prepare() {
 	# Fix USE=-gnome, bug #478820
-	epatch "${FILESDIR}"/${PN}-3.10.0-kill-gsd-automagic.patch
-	epatch "${FILESDIR}"/${PN}-3.10.0-raise-gsd-dependency.patch
+	eapply "${FILESDIR}"/${PN}-3.10.0-kill-gsd-automagic.patch
+	eapply "${FILESDIR}"/${PN}-3.10.0-raise-gsd-dependency.patch
 
 	eautoreconf
 	gnome2_src_prepare

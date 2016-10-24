@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 
-inherit autotools eutils gnome2
+inherit autotools gnome2
 
 DESCRIPTION="GNOME 3 compositing window manager based on Clutter"
 HOMEPAGE="https://git.gnome.org/browse/mutter/"
@@ -13,6 +12,9 @@ SLOT="0"
 KEYWORDS="*"
 
 IUSE="+deprecated-background +introspection kms test wayland"
+REQUIRED_USE="
+	wayland? ( kms )
+"
 
 # libXi-1.7.4 or newer needed per:
 # https://bugzilla.gnome.org/show_bug.cgi?id=738944
@@ -21,7 +23,7 @@ COMMON_DEPEND="
 	>=x11-libs/cairo-1.10[X]
 	>=x11-libs/gtk+-3.9.11:3[X,introspection?]
 	>=dev-libs/glib-2.36.0:2[dbus]
-	>=media-libs/clutter-1.21.3:1.0[introspection?]
+	>=media-libs/clutter-1.21.3:1.0[X,introspection?]
 	>=media-libs/cogl-1.17.1:1.0=[introspection?]
 	>=media-libs/libcanberra-0.26[gtk3]
 	>=x11-libs/startup-notification-0.7
@@ -79,13 +81,11 @@ RDEPEND="${COMMON_DEPEND}
 
 src_prepare() {
 	# Fallback to a default keymap if getting it from X fails (from 'master')
-	epatch "${FILESDIR}"/${PN}-3.16.3-fallback-keymap.patch
+	eapply "${FILESDIR}"/${PN}-3.16.3-fallback-keymap.patch
 
 	if use deprecated-background; then
-		epatch "${FILESDIR}"/${PN}-3.16.2-restore-deprecated-background-code.patch
+		eapply "${FILESDIR}"/${PN}-3.16.2-restore-deprecated-background-code.patch
 	fi
-
-	epatch_user
 
 	eautoreconf
 	gnome2_src_prepare

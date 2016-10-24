@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 PYTHON_COMPAT=( python{3_3,3_4,3_5} )
 
 inherit gnome2 python-single-r1 virtualx
@@ -45,15 +44,15 @@ pkg_setup() {
 }
 
 src_configure() {
+	export PYTHON3_CONFIG="$(python_get_PYTHON_CONFIG)"
 	gnome2_src_configure \
 		--disable-static \
-		$(use_enable introspection) \
-		PYTHON3_CONFIG="$(python_get_PYTHON_CONFIG)"
+		$(use_enable introspection)
 }
 
 src_test() {
 	# FIXME: this should be handled at eclass level
 	"${EROOT}${GLIB_COMPILE_SCHEMAS}" --allow-any-name "${S}/data/gsettings" || die
 
-	GSETTINGS_SCHEMA_DIR="${S}/data/gsettings" Xemake check
+	GSETTINGS_SCHEMA_DIR="${S}/data/gsettings" virtx emake check
 }

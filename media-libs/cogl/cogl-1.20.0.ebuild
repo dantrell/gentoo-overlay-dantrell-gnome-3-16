@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 
 inherit gnome2 multilib virtualx
 
@@ -13,7 +12,7 @@ SLOT="1.0/20" # subslot = .so version
 KEYWORDS="*"
 
 # doc and profile disable for now due to bugs #484750 and #483332
-IUSE="examples gles2 gstreamer +introspection +kms +opengl +pango test wayland" # doc profile
+IUSE="debug examples gles2 gstreamer +introspection +kms +opengl +pango test wayland" # doc profile
 REQUIRED_USE="
 	wayland? ( gles2 )
 	|| ( gles2 opengl )
@@ -89,6 +88,7 @@ src_configure() {
 		--enable-deprecated        \
 		--enable-gdk-pixbuf        \
 		--enable-glib              \
+		$(use_enable debug)        \
 		$(use_enable opengl glx)   \
 		$(use_enable opengl gl)    \
 		$(use_enable gles2)        \
@@ -115,7 +115,7 @@ src_test() {
 		ewarn "# eselect opengl set xorg-x11"
 		return
 	fi
-	LIBGL_DRIVERS_PATH="${EROOT}/usr/$(get_libdir)/mesa" Xemake check
+	virtx emake check LIBGL_DRIVERS_PATH="${EROOT}/usr/$(get_libdir)/mesa"
 }
 
 src_install() {

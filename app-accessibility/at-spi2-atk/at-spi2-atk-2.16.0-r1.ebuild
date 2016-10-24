@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit autotools eutils gnome2 multilib-minimal
+inherit autotools gnome2 multilib-minimal virtualx
 
 DESCRIPTION="Gtk module for bridging AT-SPI to Atk"
 HOMEPAGE="https://wiki.gnome.org/Accessibility"
@@ -31,9 +30,11 @@ DEPEND="${COMMON_DEPEND}
 
 src_prepare() {
 	# https://bugzilla.gnome.org/show_bug.cgi?id=751137
-	epatch "${FILESDIR}"/${PN}-2.16.0-out-of-source.patch
+	eapply "${FILESDIR}"/${PN}-2.16.0-out-of-source.patch
+
 	# Fixed in upstream git
-	epatch "${FILESDIR}"/${P}-null-gobject.patch
+	eapply "${FILESDIR}"/${P}-null-gobject.patch
+
 	# Upstream forgot to put this in tarball :/
 	# https://bugzilla.gnome.org/show_bug.cgi?id=751138
 	cp -n "${FILESDIR}"/${PN}-2.16.0-atk_suite.h tests/atk_suite.h || die
@@ -46,12 +47,13 @@ src_prepare() {
 
 multilib_src_configure() {
 	ECONF_SOURCE=${S} \
-	gnome2_src_configure --enable-p2p $(use_with test tests)
+	gnome2_src_configure \
+		--enable-p2p \
+		$(use_with test tests)
 }
 
 multilib_src_test() {
-	unset DBUS_SESSION_BUS_ADDRESS
-	dbus-run-session -- emake check
+	virtx emake check TESTS_ENVIRONMENT="dbus-run-session"
 }
 
 multilib_src_compile() { gnome2_src_compile; }

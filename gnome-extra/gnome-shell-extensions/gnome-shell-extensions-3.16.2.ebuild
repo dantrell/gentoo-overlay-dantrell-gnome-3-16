@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
-inherit gnome2 readme.gentoo
+inherit gnome2 readme.gentoo-r1
 
 DESCRIPTION="JavaScript extensions for GNOME Shell"
 HOMEPAGE="https://wiki.gnome.org/Projects/GnomeShell/Extensions"
@@ -14,12 +13,11 @@ KEYWORDS="*"
 
 IUSE="examples"
 
-COMMON_DEPEND="
+PDEPEND="
 	>=dev-libs/glib-2.26:2
 	>=gnome-base/libgtop-2.28.3[introspection]
 	>=app-eselect/eselect-gnome-shell-extensions-20111211
-"
-RDEPEND="${COMMON_DEPEND}
+
 	>=dev-libs/gjs-1.29
 	dev-libs/gobject-introspection:=
 	dev-libs/atk[introspection]
@@ -30,9 +28,9 @@ RDEPEND="${COMMON_DEPEND}
 	x11-libs/gdk-pixbuf:2[introspection]
 	x11-libs/gtk+:3[introspection]
 	x11-libs/pango[introspection]
-	x11-themes/gnome-icon-theme-symbolic
+	x11-themes/adwaita-icon-theme
 "
-DEPEND="${COMMON_DEPEND}
+DEPEND="
 	>=dev-util/intltool-0.50
 	sys-devel/gettext
 	virtual/pkgconfig

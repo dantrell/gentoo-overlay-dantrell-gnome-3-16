@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
-inherit eutils gnome2 virtualx
+inherit gnome2 virtualx
 
 DESCRIPTION="PackageKit client for the GNOME desktop"
 HOMEPAGE="https://www.freedesktop.org/software/PackageKit/"
@@ -83,7 +82,5 @@ src_configure() {
 
 src_test() {
 	"${EROOT}${GLIB_COMPILE_SCHEMAS}" --allow-any-name "${S}/data" || die
-
-	unset DISPLAY
-	GSETTINGS_SCHEMA_DIR="${S}/data" Xemake check
+	GSETTINGS_SCHEMA_DIR="${S}/data" virtx emake check
 }

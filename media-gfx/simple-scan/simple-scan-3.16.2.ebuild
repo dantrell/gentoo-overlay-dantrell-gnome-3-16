@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
 inherit gnome2 vala versionator
 
@@ -29,9 +28,7 @@ COMMON_DEPEND="
 "
 RDEPEND="${COMMON_DEPEND}
 	x11-misc/xdg-utils
-	|| (
-		x11-themes/adwaita-icon-theme
-		x11-themes/gnome-icon-theme )
+	x11-themes/adwaita-icon-theme
 "
 DEPEND="${COMMON_DEPEND}
 	$(vala_depend)
@@ -43,9 +40,4 @@ DEPEND="${COMMON_DEPEND}
 src_prepare() {
 	vala_src_prepare
 	gnome2_src_prepare
-}
-
-src_configure() {
-	DOCS="NEWS README.md"
-	gnome2_src_configure
 }

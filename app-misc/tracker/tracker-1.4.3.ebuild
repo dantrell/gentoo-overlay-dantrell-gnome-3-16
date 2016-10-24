@@ -1,11 +1,10 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python2_7 )
 
-inherit autotools bash-completion-r1 eutils gnome2 linux-info multilib python-any-r1 vala versionator virtualx
+inherit autotools bash-completion-r1 gnome2 linux-info multilib python-any-r1 vala versionator virtualx
 
 DESCRIPTION="A tagging metadata database, search tool and indexer"
 HOMEPAGE="https://wiki.gnome.org/Projects/Tracker"
@@ -130,9 +129,6 @@ pkg_setup() {
 }
 
 src_prepare() {
-	# Fix position of AM_CONDITIONAL, bug #550910, upstream bug #750368
-	epatch "${FILESDIR}"/${PN}-1.4.0-have-gstreamer-fix.patch
-
 	# Don't run 'firefox --version' or 'thunderbird --version'; it results in
 	# access violations on some setups (bug #385347, #385495).
 	create_version_script "www-client/firefox" "Mozilla Firefox" firefox-version.sh
@@ -143,6 +139,9 @@ src_prepare() {
 		-o "${S}"/tests/libtracker-data/functions/functions-tracker-1.out || die
 	sort "${S}"/tests/libtracker-data/functions/functions-tracker-2.out \
 		-o "${S}"/tests/libtracker-data/functions/functions-tracker-2.out || die
+
+	# Fix position of AM_CONDITIONAL, bug #550910, upstream bug #750368
+	eapply "${FILESDIR}"/${PN}-1.4.0-have-gstreamer-fix.patch
 
 	eautoreconf # See bug #367975
 	gnome2_src_prepare
@@ -229,7 +228,7 @@ src_configure() {
 
 src_test() {
 	# G_MESSAGES_DEBUG, upstream bug #699401#c1
-	Xemake check TESTS_ENVIRONMENT="dbus-run-session" G_MESSAGES_DEBUG="all"
+	virtx emake check TESTS_ENVIRONMENT="dbus-run-session" G_MESSAGES_DEBUG="all"
 }
 
 src_install() {
