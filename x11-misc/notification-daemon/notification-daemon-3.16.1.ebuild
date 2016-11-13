@@ -15,7 +15,7 @@ IUSE=""
 
 RDEPEND="
 	>=dev-libs/glib-2.27:2
-	>=x11-libs/gtk+-3.15.2:3
+	>=x11-libs/gtk+-3.15.2:3[X]
 	sys-apps/dbus
 	media-libs/libcanberra[gtk3]
 	>=x11-libs/libnotify-0.7
