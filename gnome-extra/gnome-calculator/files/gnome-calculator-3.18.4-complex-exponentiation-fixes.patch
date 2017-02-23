@@ -1,0 +1,39 @@
+From b0427cf0e9349fad3ac02f551e1f1c84d9b9eebc Mon Sep 17 00:00:00 2001
+From: Robert Roth <robert.roth.off@gmail.com>
+Date: Mon, 6 Feb 2017 21:07:19 +0200
+Subject: Complex exponentiation fixes (lp:1566513)
+
+---
+ lib/number.vala | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/src/number.vala b/src/number.vala
+index 52475e9..2eb9d4c 100644
+--- a/src/number.vala
++++ b/src/number.vala
+@@ -513,6 +513,9 @@ public class Number : Object
+                 return pwr (y);
+         }
+ 
++        if (is_complex ())
++            return pwr (y);
++
+         Number t;
+         Number t2;
+         if (y.is_negative ())
+@@ -556,6 +559,12 @@ public class Number : Object
+             return new Number.integer (0);
+         }
+ 
++        if (is_complex ())
++        {
++            var y = new Number.integer (n);
++            return pwr (y);
++        }
++
+         Number t;
+         if (n < 0)
+         {
+-- 
+cgit v0.12
+

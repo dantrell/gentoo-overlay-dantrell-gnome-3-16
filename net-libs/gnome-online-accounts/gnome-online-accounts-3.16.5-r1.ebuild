@@ -53,16 +53,37 @@ DEPEND="${RDEPEND}
 "
 # eautoreconf needs gobject-introspection-common, gnome-common
 
-# Due to sub-configure
-QA_CONFIGURE_OPTIONS=".*"
+PATCHES=(
+	# From GNOME:
+	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=01882bde514aae12796c98e03818f8d30cbd13b9
+	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=53ce478c99d43f0cf8333e452edd228418112a2d
+	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=674330b0ccb816530ee6d31cea0f752e334f15d7
+	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=924689ce724cc0f1b893e1e0845c04f59eabd765
+	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=f5325f00c0d2cae9e5f6253c59c713c4b223af1f
+	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=782fdcd83a6b793321d7c4c429c51430cc924f8e
+	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=389ce7fad248998178778ca4a95dd8d09d4f38eb
+	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=236987b0dc06fb429e319bd29a2e9227b78b35e1
+	"${FILESDIR}"/${PN}-3.20.6-goa-identity-manager-get-identity-finish-should-return-a-new-ref.patch
+	"${FILESDIR}"/${PN}-3.20.6-identity-fix-the-error-handling-when-signing-out-an-identity.patch
+	"${FILESDIR}"/${PN}-3.20.6-identity-fix-ensure-credentials-for-accounts-leak.patch
+	"${FILESDIR}"/${PN}-3.20.6-identity-dont-leak-the-invocation-when-handling-exchangesecretkeys.patch
+	"${FILESDIR}"/${PN}-3.20.6-daemon-dont-leak-the-provider-when-coalescing-ensurecredential-calls.patch
+	"${FILESDIR}"/${PN}-3.20.6-daemon-dont-leak-the-list-of-providers-in-goa-daemon-init.patch
+	"${FILESDIR}"/${PN}-3.20.6-identity-dont-leak-operation-result-when-handling-exchangesecretkeys.patch
+	"${FILESDIR}"/${PN}-3.20.6-identity-dont-leak-the-invocation-when-handling-signout.patch
+)
 
 src_prepare() {
-	# https://bugzilla.gnome.org/show_bug.cgi?id=750897
+	# From GNOME:
+	# 	https://bugzilla.gnome.org/show_bug.cgi?id=750897
 	eapply "${FILESDIR}"/${PN}-3.16.3-parallel-make.patch
 
 	eautoreconf
 	gnome2_src_prepare
 }
+
+# Due to sub-configure
+QA_CONFIGURE_OPTIONS=".*"
 
 src_configure() {
 	# TODO: Give users a way to set the G/FB/Windows Live secrets

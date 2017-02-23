@@ -31,6 +31,14 @@ DEPEND="${COMMON_DEPEND}
 	virtual/pkgconfig
 "
 
+PATCHES=(
+	# From GNOME:
+	# 	https://git.gnome.org/browse/gnome-calculator/commit/?id=37cfdf497ced9d52930792c5e8581171420a7a66
+	# 	https://git.gnome.org/browse/gnome-calculator/commit/?id=b0427cf0e9349fad3ac02f551e1f1c84d9b9eebc
+	"${FILESDIR}"/${PN}-3.18.4-lib-prevents-segfault-when-elements-of-division-to-zero-have-null-assigned-tokens.patch
+	"${FILESDIR}"/${PN}-3.18.4-complex-exponentiation-fixes.patch
+)
+
 src_configure() {
 	gnome2_src_configure \
 		VALAC=$(type -P true)
