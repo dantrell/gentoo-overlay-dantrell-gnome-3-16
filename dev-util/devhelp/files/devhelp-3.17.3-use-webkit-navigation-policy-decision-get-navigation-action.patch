@@ -1,0 +1,139 @@
+From 05659428acc6da4e6a85d37d9e0d3b00e6adde9d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?S=C3=A9bastien=20Wilmet?= <swilmet@gnome.org>
+Date: Sat, 16 May 2015 14:03:04 +0200
+Subject: Use webkit_navigation_policy_decision_get_navigation_action()
+
+Because
+webkit_navigation_policy_decision_get_navigation_type(),
+webkit_navigation_policy_decision_get_request(), etc
+are deprecated.
+
+The replacement is trivial, but requires WebKit2GTK+ version >= 2.6.
+Anyway "webkit2gtk-3.0" was not correct, it should have been
+"webkitgtk-3.0", so I guess everyone was already using webkit2gtk-4.0.
+---
+ README                    |  2 +-
+ configure.ac              | 12 ++----------
+ data/libdevhelp-3.0.pc.in |  2 +-
+ src/dh-assistant-view.c   |  6 ++++--
+ src/dh-window.c           |  6 ++++--
+ 5 files changed, 12 insertions(+), 16 deletions(-)
+
+diff --git a/README b/README
+index 6781f8f..601d2ce 100644
+--- a/README
++++ b/README
+@@ -5,7 +5,7 @@ The following packages are required to compile Devhelp:
+ 
+ libwnck 2.10.0 (or greater, only for X11 build)
+ gconf 2.6.0 (or greater, only for X11 build)
+-webkit
++webkit2gtk-4.0 2.6 (or greater)
+ 
+ Devhelp's primary goal is to be an API documentation browser for
+ GNOME. When you build (or install) a GNOME library, it will build an
+diff --git a/configure.ac b/configure.ac
+index 80d0fe2..cf96d83 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -47,25 +47,17 @@ GNOME_COMPILE_WARNINGS([maximum])
+ AC_CHECK_LIBM
+ AC_SUBST(LIBM)
+ 
+-# Pick from supported API versions of WebKit2
+-PKG_CHECK_EXISTS([webkit2gtk-4.0], [
+-	WEBKIT_PKGCONFIG=webkit2gtk-4.0
+-], [
+-	WEBKIT_PKGCONFIG=webkit2gtk-3.0
+-])
+-AC_SUBST(WEBKIT_PKGCONFIG)
+-
+ PKG_CHECK_MODULES(DEVHELP, [
+   gthread-2.0 >= 2.10.0
+   gtk+-3.0 >= 3.13.4
+-  $WEBKIT_PKGCONFIG >= 2.0.0
++  webkit2gtk-4.0 >= 2.6.0
+   gio-2.0 >= 2.37.3
+ ])
+ 
+ PKG_CHECK_MODULES(LIBDEVHELP, [
+   gtk+-3.0 >= 3.12.0
+   gio-2.0 >= 2.37.3
+-  $WEBKIT_PKGCONFIG >= 2.0.0
++  webkit2gtk-4.0 >= 2.6.0
+ ])
+ 
+ AC_ARG_WITH(zlib, [  --with-zlib=DIR         use zlib in DIR], zlibdir=$with_zlib)
+diff --git a/data/libdevhelp-3.0.pc.in b/data/libdevhelp-3.0.pc.in
+index 6401ee3..615207f 100644
+--- a/data/libdevhelp-3.0.pc.in
++++ b/data/libdevhelp-3.0.pc.in
+@@ -5,7 +5,7 @@ includedir=@includedir@
+ 
+ Name: devhelp
+ Description: devhelp
+-Requires: gtk+-3.0 @WEBKIT_PKGCONFIG@
++Requires: gtk+-3.0 webkit2gtk-4.0
+ Version: @VERSION@
+ Libs: -L${libdir} -ldevhelp-3
+ Cflags: -I${includedir}/devhelp-3.0
+diff --git a/src/dh-assistant-view.c b/src/dh-assistant-view.c
+index 5abc0cb..a41e6cd 100644
+--- a/src/dh-assistant-view.c
++++ b/src/dh-assistant-view.c
+@@ -72,6 +72,7 @@ assistant_decide_policy (WebKitWebView           *web_view,
+         DhAssistantViewPriv            *priv;
+         const gchar                    *uri;
+         WebKitNavigationPolicyDecision *navigation_decision;
++        WebKitNavigationAction         *navigation_action;
+         WebKitNavigationType            navigation_type;
+         WebKitURIRequest               *request;
+ 
+@@ -83,7 +84,8 @@ assistant_decide_policy (WebKitWebView           *web_view,
+ 
+         priv = GET_PRIVATE (web_view);
+         navigation_decision = WEBKIT_NAVIGATION_POLICY_DECISION (decision);
+-        navigation_type = webkit_navigation_policy_decision_get_navigation_type (navigation_decision);
++        navigation_action = webkit_navigation_policy_decision_get_navigation_action (navigation_decision);
++        navigation_type = webkit_navigation_action_get_navigation_type (navigation_action);
+         if (navigation_type != WEBKIT_NAVIGATION_TYPE_LINK_CLICKED) {
+                 if (! priv->snippet_loaded) {
+                         priv->snippet_loaded = TRUE;
+@@ -95,7 +97,7 @@ assistant_decide_policy (WebKitWebView           *web_view,
+                 return TRUE;
+         }
+ 
+-        request = webkit_navigation_policy_decision_get_request (navigation_decision);
++        request = webkit_navigation_action_get_request (navigation_action);
+         uri = webkit_uri_request_get_uri (request);
+         if (strcmp (uri, "about:blank") == 0) {
+                 webkit_policy_decision_use (decision);
+diff --git a/src/dh-window.c b/src/dh-window.c
+index fdd58e3..55b31d4 100644
+--- a/src/dh-window.c
++++ b/src/dh-window.c
+@@ -891,17 +891,19 @@ window_web_view_decide_policy_cb (WebKitWebView           *web_view,
+ {
+         const char   *uri;
+         WebKitNavigationPolicyDecision *navigation_decision;
++        WebKitNavigationAction *navigation_action;
+ 
+         if (type != WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION)
+                 return FALSE;
+ 
+         navigation_decision = WEBKIT_NAVIGATION_POLICY_DECISION (policy_decision);
+-        uri = webkit_uri_request_get_uri (webkit_navigation_policy_decision_get_request (navigation_decision));
++        navigation_action = webkit_navigation_policy_decision_get_navigation_action (navigation_decision);
++        uri = webkit_uri_request_get_uri (webkit_navigation_action_get_request (navigation_action));
+ 
+         /* make sure to hide the info bar on page change */
+         gtk_widget_hide (window_get_active_info_bar (window));
+ 
+-        if (webkit_navigation_policy_decision_get_mouse_button (navigation_decision) == 2) { /* middle click */
++        if (webkit_navigation_action_get_mouse_button (navigation_action) == 2) { /* middle click */
+                 webkit_policy_decision_ignore (policy_decision);
+                 g_signal_emit (window, signals[OPEN_LINK], 0, uri, DH_OPEN_LINK_NEW_TAB);
+                 return TRUE;
+-- 
+cgit v0.12
+

@@ -23,7 +23,7 @@ COMMON_DEPEND="
 	>=dev-libs/libxslt-1.1.7
 	>=gnome-base/gsettings-desktop-schemas-0.0.1
 	>=net-dns/avahi-0.6.22[dbus]
-	>=net-libs/webkit-gtk-2.7.4:4=[jit?]
+	>=net-libs/webkit-gtk-2.13.2:4=[jit?]
 	>=net-libs/libsoup-2.48:2.4
 	>=x11-libs/gtk+-3.13:3
 	>=x11-libs/libnotify-0.5.1:=
@@ -58,6 +58,10 @@ PATCHES=(
 
 	# https://bugzilla.gnome.org/show_bug.cgi?id=751593
 	"${FILESDIR}"/${PN}-3.14.0-unittest-2.patch
+
+	# From GNOME:
+	# 	https://git.gnome.org/browse/epiphany/commit/?id=88f3ef095ec13a9e08ec31a0f145b72fea62fe60
+	"${FILESDIR}"/${PN}-3.16.3-update-for-webkitgtk-2-14-unstable-dom-api-abi-break.patch
 )
 
 src_configure() {

@@ -1,0 +1,26 @@
+diff '--exclude=.git' -urN a/configure b/configure
+--- a/configure	2015-07-09 09:29:05.000000000 -0400
++++ b/configure	2017-03-05 03:38:43.851316690 -0500
+@@ -14057,7 +14057,7 @@
+ GTK_REQUIRED=3.13.0
+ LIBXML_REQUIRED=2.6.12
+ LIBXSLT_REQUIRED=1.1.7
+-WEBKIT_GTK_REQUIRED=2.7.4
++WEBKIT_GTK_REQUIRED=2.13.2
+ LIBSOUP_REQUIRED=2.48.0
+ GNOME_DESKTOP_REQUIRED=2.91.2
+ LIBSECRET_REQUIRED=0.14
+diff '--exclude=.git' -urN a/embed/web-extension/ephy-web-overview.c b/embed/web-extension/ephy-web-overview.c
+--- a/embed/web-extension/ephy-web-overview.c	2015-07-09 06:05:15.000000000 -0400
++++ b/embed/web-extension/ephy-web-overview.c	2017-03-05 03:38:43.851316690 -0500
+@@ -142,8 +142,8 @@
+       item->url = g_strdup (url->url);
+ 
+       class_list = webkit_dom_element_get_class_list (webkit_dom_node_get_parent_element (WEBKIT_DOM_NODE (item->anchor)));
+-      if (class_list && webkit_dom_dom_token_list_contains (class_list, "removed", NULL))
+-        webkit_dom_dom_token_list_remove (class_list, "removed", NULL);
++      if (class_list && webkit_dom_dom_token_list_contains (class_list, "removed"))
++        webkit_dom_dom_token_list_remove (class_list, NULL, "removed", NULL);
+ 
+       webkit_dom_element_set_attribute (item->anchor, "href", url->url, NULL);
+       webkit_dom_element_set_attribute (item->anchor, "title", url->title, NULL);

@@ -5,7 +5,7 @@ EAPI="6"
 # https://bugzilla.redhat.com/show_bug.cgi?id=979450
 PYTHON_COMPAT=( python{3_4,3_5,3_6} )
 
-inherit gnome2 python-single-r1 toolchain-funcs
+inherit autotools gnome2 python-single-r1 toolchain-funcs
 
 DESCRIPTION="An API documentation browser for GNOME"
 HOMEPAGE="https://wiki.gnome.org/Apps/Devhelp"
@@ -46,6 +46,11 @@ src_prepare() {
 		sed -e '/SUBDIRS/ s/gedit-plugin//' -i misc/Makefile.{am,in} || die
 	fi
 
+	# From GNOME:
+	# 	https://git.gnome.org/browse/devhelp/commit/?id=05659428acc6da4e6a85d37d9e0d3b00e6adde9d
+	eapply "${FILESDIR}"/${PN}-3.17.3-use-webkit-navigation-policy-decision-get-navigation-action.patch
+
+	eautoreconf
 	gnome2_src_prepare
 }
 
