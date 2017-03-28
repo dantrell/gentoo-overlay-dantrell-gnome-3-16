@@ -1,0 +1,21 @@
+diff '--exclude=.git' -urN a/src/vteseq.c b/src/vteseq.c
+--- a/src/vteseq.c	2016-03-16 17:16:23.000000000 -0400
++++ b/src/vteseq.c	2017-03-26 16:29:23.408955832 -0400
+@@ -3248,7 +3248,7 @@
+ #define VTE_SEQUENCE_HANDLER(name) name
+ 
+ static const struct vteseq_n_struct *
+-vteseq_n_lookup (register const char *str, register unsigned int len);
++vteseq_n_lookup (register const char *str, register size_t len);
+ #include"vteseq-n.c"
+ 
+ #undef VTE_SEQUENCE_HANDLER
+@@ -3256,7 +3256,7 @@
+ static VteTerminalSequenceHandler
+ _vte_sequence_get_handler (const char *name)
+ {
+-	int len = strlen (name);
++	size_t len = strlen(name);
+ 
+ 	if (G_UNLIKELY (len < 2)) {
+ 		return NULL;

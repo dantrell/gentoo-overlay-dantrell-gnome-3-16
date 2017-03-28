@@ -3,7 +3,7 @@
 EAPI="6"
 VALA_USE_DEPEND="vapigen"
 
-inherit gnome2 vala
+inherit autotools gnome2 vala
 
 DESCRIPTION="Library providing a virtual terminal emulator widget"
 HOMEPAGE="https://wiki.gnome.org/action/show/Apps/Terminal/VTE"
@@ -35,6 +35,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-util/gtk-doc-am-1.13
 	>=dev-util/intltool-0.35
+	dev-util/gperf
 	dev-util/gtk-doc
 	sys-devel/gettext
 	virtual/pkgconfig
@@ -46,7 +47,13 @@ RDEPEND="${RDEPEND}
 "
 
 src_prepare() {
-	./autogen.sh
+	if has_version ">=dev-util/gperf-3.1"; then
+		# From GNOME:
+		# 	https://git.gnome.org/browse/vte/commit/?id=1226f58cd97aa06f0ce58791153ca1f58e89658a
+		eapply "${FILESDIR}"/${PN}-0.47.90-emulation-try-to-work-with-newer-gperf.patch
+	fi
+
+	eautoreconf
 	use vala && vala_src_prepare
 	gnome2_src_prepare
 }
