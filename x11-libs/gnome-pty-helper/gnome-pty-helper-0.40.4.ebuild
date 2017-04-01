@@ -3,7 +3,7 @@
 EAPI="6"
 GNOME_ORG_MODULE="vte"
 
-inherit gnome2
+inherit autotools gnome2
 
 DESCRIPTION="GNOME Setuid helper for opening ptys"
 HOMEPAGE="https://wiki.gnome.org/action/show/Apps/Terminal/VTE"
@@ -29,13 +29,12 @@ DEPEND="${RDEPEND}
 S="${WORKDIR}/${GNOME_ORG_MODULE}-${PV}/${PN}"
 
 src_prepare() {
-	cd "${WORKDIR}/${GNOME_ORG_MODULE}-${PV}"
-	./autogen.sh
-
 	# As recommended by upstream (/usr/libexec/$PN is a setgid binary)
 	if use hardened; then
 		export SUID_CFLAGS="-fPIE ${SUID_CFLAGS}"
 		export SUID_LDFLAGS="-pie ${SUID_LDFLAGS}"
 	fi
+
+	eautoreconf
 	gnome2_src_prepare
 }
