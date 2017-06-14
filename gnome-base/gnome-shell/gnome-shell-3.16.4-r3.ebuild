@@ -133,6 +133,10 @@ src_prepare() {
 
 	if use deprecated-background; then
 		eapply "${FILESDIR}"/${PN}-3.16.4-restore-deprecated-background-code.patch
+
+		# Provided by gnome-base/gnome-shell-common
+		sed -e '/.*calendar-today.svg.*/d' \
+			-i data/Makefile.am || die "sed failed"
 	fi
 
 	if ! use vanilla-motd; then

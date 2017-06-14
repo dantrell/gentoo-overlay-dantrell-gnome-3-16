@@ -13,11 +13,12 @@ KEYWORDS="*"
 
 IUSE="examples"
 
-PDEPEND="
+COMMON_DEPEND="
 	>=dev-libs/glib-2.26:2
 	>=gnome-base/libgtop-2.28.3[introspection]
 	>=app-eselect/eselect-gnome-shell-extensions-20111211
-
+"
+RDEPEND="${COMMON_DEPEND}
 	>=dev-libs/gjs-1.29
 	dev-libs/gobject-introspection:=
 	dev-libs/atk[introspection]
@@ -30,7 +31,7 @@ PDEPEND="
 	x11-libs/pango[introspection]
 	x11-themes/adwaita-icon-theme
 "
-DEPEND="
+DEPEND="${COMMON_DEPEND}
 	>=dev-util/intltool-0.50
 	sys-devel/gettext
 	virtual/pkgconfig
