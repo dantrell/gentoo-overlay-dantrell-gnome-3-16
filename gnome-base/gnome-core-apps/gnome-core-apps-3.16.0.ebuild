@@ -29,7 +29,7 @@ RDEPEND="
 	>=app-crypt/gcr-${PV}
 	>=gnome-base/nautilus-${PV}
 	>=gnome-base/gnome-keyring-${PV}
-	>=gnome-extra/evolution-data-server-3.12.11
+	>=gnome-extra/evolution-data-server-${PV}
 
 	>=app-crypt/seahorse-${PV}
 	>=app-editors/gedit-${PV}
