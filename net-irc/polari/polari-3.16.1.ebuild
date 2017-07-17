@@ -14,11 +14,11 @@ KEYWORDS="*"
 IUSE=""
 
 COMMON_DEPEND="
-	dev-libs/gjs
+	>=x11-libs/gtk+-3.15.6:3[introspection]
+	net-libs/telepathy-glib[introspection]
 	>=dev-libs/glib-2.43.4:2
 	>=dev-libs/gobject-introspection-0.9.6:=
-	net-libs/telepathy-glib[introspection]
-	>=x11-libs/gtk+-3.15.6:3[introspection]
+	dev-libs/gjs
 "
 RDEPEND="${COMMON_DEPEND}
 	>=net-irc/telepathy-idle-0.2
