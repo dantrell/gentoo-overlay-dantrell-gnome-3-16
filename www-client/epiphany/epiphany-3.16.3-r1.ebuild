@@ -3,37 +3,34 @@
 EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit gnome2 pax-utils virtualx
+inherit gnome2 virtualx
 
 DESCRIPTION="GNOME webbrowser based on Webkit"
 HOMEPAGE="https://wiki.gnome.org/Apps/Web"
 
-LICENSE="GPL-2"
+LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="+jit +nss test"
+IUSE="test"
 
 COMMON_DEPEND="
-	>=app-crypt/gcr-3.5.5:=
-	>=app-crypt/libsecret-0.14
-	>=app-text/iso-codes-0.35
-	>=dev-libs/glib-2.38:2[dbus]
-	>=dev-libs/libxml2-2.6.12:2
-	>=dev-libs/libxslt-1.1.7
-	>=gnome-base/gsettings-desktop-schemas-0.0.1
-	>=net-dns/avahi-0.6.22[dbus]
-	>=net-libs/webkit-gtk-2.13.2:4=[jit?]
-	>=net-libs/libsoup-2.48:2.4
-	>=x11-libs/gtk+-3.13:3
-	>=x11-libs/libnotify-0.5.1:=
-	gnome-base/gnome-desktop:3=
-
-	dev-db/sqlite:3
+	>=dev-libs/glib-2.38.0:2[dbus]
+	>=x11-libs/gtk+-3.13.0:3
+	>=net-libs/webkit-gtk-2.13.2:4=
 	x11-libs/libwnck:3
 	x11-libs/libX11
-
-	nss? ( dev-libs/nss )
+	>=app-crypt/gcr-3.5.5:=
+	>=gnome-base/gnome-desktop-2.91.2:3=
+	>=x11-libs/libnotify-0.5.1:=
+	>=app-crypt/libsecret-0.14
+	>=net-libs/libsoup-2.48:2.4
+	>=dev-libs/libxml2-2.6.12:2
+	>=dev-libs/libxslt-1.1.7
+	dev-db/sqlite:3
+	>=net-dns/avahi-0.6.22[dbus]
+	>=app-text/iso-codes-0.35
+	>=gnome-base/gsettings-desktop-schemas-0.0.1
 "
 # epiphany-extensions support was removed in 3.7; let's not pretend it still works
 RDEPEND="${COMMON_DEPEND}
@@ -65,20 +62,17 @@ PATCHES=(
 )
 
 src_configure() {
+	# Many years have passed since gecko based epiphany went away,
+	# hence, stop relying on nss for migrating from that versions.
 	gnome2_src_configure \
+		--disable-nss \
 		--enable-shared \
 		--disable-static \
 		--with-distributor-name=Gentoo \
-		$(use_enable nss) \
 		$(use_enable test tests)
 }
 
 src_test() {
 	"${EROOT}${GLIB_COMPILE_SCHEMAS}" --allow-any-name "${S}/data" || die
 	GSETTINGS_SCHEMA_DIR="${S}/data" virtx emake check
-}
-
-src_install() {
-	gnome2_src_install
-	use jit && pax-mark m "${ED}usr/bin/epiphany"
 }
