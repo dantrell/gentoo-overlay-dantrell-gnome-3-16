@@ -1,9 +1,10 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="6"
+GNOME2_EAUTORECONF="yes"
 GNOME2_LA_PUNT="yes"
 
-inherit autotools gnome2
+inherit gnome2
 
 DESCRIPTION="GNOME framework for accessing online accounts"
 HOMEPAGE="https://wiki.gnome.org/Projects/GnomeOnlineAccounts"
@@ -55,6 +56,11 @@ DEPEND="${RDEPEND}
 
 PATCHES=(
 	# From GNOME:
+	# 	https://bugzilla.gnome.org/show_bug.cgi?id=750897
+	"${FILESDIR}"/${PN}-3.16.3-parallel-make.patch
+
+	# From GNOME:
+	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=5dc30f43e6c721708a6d15fcfcd086a11d41bc2d
 	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=01882bde514aae12796c98e03818f8d30cbd13b9
 	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=53ce478c99d43f0cf8333e452edd228418112a2d
 	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=674330b0ccb816530ee6d31cea0f752e334f15d7
@@ -62,6 +68,11 @@ PATCHES=(
 	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=f5325f00c0d2cae9e5f6253c59c713c4b223af1f
 	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=389ce7fad248998178778ca4a95dd8d09d4f38eb
 	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=236987b0dc06fb429e319bd29a2e9227b78b35e1
+	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=ee460859029833c7e607f668270d5946525e7d18
+	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=2893345fb5a81ae2de631ea82d4e9ff467c610f6
+	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=1f18560d1c151d69f2f72b63c436cfe2b86443a1
+	# 	https://git.gnome.org/browse/gnome-online-accounts/commit/?id=5583ceb2d001655a492446238ac8074e31c7d2c9
+	"${FILESDIR}"/${PN}-3.20.5-build-new-api-key-for-google.patch
 	"${FILESDIR}"/${PN}-3.20.6-goa-identity-manager-get-identity-finish-should-return-a-new-ref.patch
 	"${FILESDIR}"/${PN}-3.20.6-identity-fix-the-error-handling-when-signing-out-an-identity.patch
 	"${FILESDIR}"/${PN}-3.20.6-identity-fix-ensure-credentials-for-accounts-leak.patch
@@ -69,16 +80,11 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.20.6-daemon-dont-leak-the-provider-when-coalescing-ensurecredential-calls.patch
 	"${FILESDIR}"/${PN}-3.20.6-identity-dont-leak-operation-result-when-handling-exchangesecretkeys.patch
 	"${FILESDIR}"/${PN}-3.20.6-identity-dont-leak-the-invocation-when-handling-signout.patch
+	"${FILESDIR}"/${PN}-3.20.8-google-update-is-identity-node-to-match-the-web-ui.patch
+	"${FILESDIR}"/${PN}-3.20.8-facebook-avoid-criticals-if-get-identity-sync-cant-parse-the-response.patch
+	"${FILESDIR}"/${PN}-3.20.8-facebook-make-it-work-with-graph-api-2-3.patch
+	"${FILESDIR}"/${PN}-3.20.8-facebook-update-readme.patch
 )
-
-src_prepare() {
-	# From GNOME:
-	# 	https://bugzilla.gnome.org/show_bug.cgi?id=750897
-	eapply "${FILESDIR}"/${PN}-3.16.3-parallel-make.patch
-
-	eautoreconf
-	gnome2_src_prepare
-}
 
 # Due to sub-configure
 QA_CONFIGURE_OPTIONS=".*"
