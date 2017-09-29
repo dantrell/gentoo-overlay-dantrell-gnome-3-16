@@ -50,6 +50,10 @@ src_prepare() {
 	# Avoid binding seahorse to the build-time version of gpg (from 'master')
 	eapply "${FILESDIR}"/${PN}-3.16.0-gnupg-detection.patch
 
+	# From GNOME:
+	# 	https://git.gnome.org/browse/seahorse/commit/?id=31a9a6ffc10f9737e70d7f0051ff590ff284ad07
+	eapply "${FILESDIR}"/${PN}-9999-accept-gnupg-2-2-x-as-supported-version.patch
+
 	eautoreconf
 	gnome2_src_prepare
 }
