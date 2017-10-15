@@ -11,7 +11,7 @@ SLOT="3.0"
 # double check none of the deps are still masked !
 KEYWORDS="*"
 
-IUSE="+bijiben boxes builder california epiphany +evolution flashback +fonts +games geary gnote latexila +share +shotwell +tracker"
+IUSE="+bijiben boxes builder california epiphany +evolution flashback +fonts +games geary gnote latexila +share +shotwell simple-scan +tracker"
 
 # Note to developers:
 #
@@ -89,6 +89,7 @@ RDEPEND="
 	latexila? ( >=app-editors/latexila-${PV} )
 	share? ( >=gnome-extra/gnome-user-share-3.14 )
 	shotwell? ( >=media-gfx/shotwell-0.24 )
+	simple-scan? ( >=media-gfx/simple-scan-${PV} )
 	tracker? (
 		>=app-misc/tracker-1.4
 		>=gnome-extra/gnome-documents-${PV}
