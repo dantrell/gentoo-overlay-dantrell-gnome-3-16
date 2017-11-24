@@ -1,0 +1,434 @@
+From 901b4fb82e007e9d93deb3f1e13cc36d5b2bf37b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marcos=20Chavarr=C3=ADa=20Teijeiro?=
+ <chavarria1991@gmail.com>
+Date: Wed, 12 Nov 2014 10:28:42 +0100
+Subject: yelp-view: Implement web extension to load resources
+
+I have split the libyelp library into two parts in order to avoid linking the webextension against libyelp. So now we have a libyelpuri with the yelp-uri, yelp-build-uri and their dependecies and the old libyelp with the remaining files. I have modified the yelp-build-uri logic to not have to use yelp-document because it implies to have to add to the new library most of libyelp classes.
+---
+ Makefile.am                                |  2 +-
+ libyelp/Makefile.am                        | 72 ++++++++++++++++++++++----
+ libyelp/web-extension/Makefile.am          | 13 +++--
+ libyelp/web-extension/yelp-web-extension.c | 82 ++++++++++++++++++++++++++++++
+ libyelp/yelp-uri-builder.c                 | 27 ++--------
+ libyelp/yelp-uri-builder.h                 |  4 +-
+ libyelp/yelp-uri.c                         |  1 -
+ libyelp/yelp-view.c                        | 46 ++++++++++++++++-
+ src/Makefile.am                            |  1 +
+ 9 files changed, 204 insertions(+), 44 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 0a25994..56e200c 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,6 +1,6 @@
+ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+ 
+-SUBDIRS = libyelp src po data tests docs
++SUBDIRS = libyelp libyelp/web-extension src po data tests docs
+ 
+ @INTLTOOL_DESKTOP_RULE@
+ 
+diff --git a/libyelp/Makefile.am b/libyelp/Makefile.am
+index fc8131f..0f7d3a3 100644
+--- a/libyelp/Makefile.am
++++ b/libyelp/Makefile.am
+@@ -1,6 +1,62 @@
+-SUBDIRS = web-extension
++lib_LTLIBRARIES = libyelpcommon.la
+ 
+-lib_LTLIBRARIES = libyelp.la
++libyelpcommon_la_SOURCES =      \
++	yelp-uri.c                  \
++	yelp-uri-builder.c          \
++	yelp-settings.c
++
++libyelpcommon_la_CFLAGS =               \
++	$(WARN_CFLAGS)				\
++	$(YELP_CFLAGS)                      \
++	-Wno-deprecated-declarations		\
++	-DDATADIR=\""$(datadir)"\"          \
++	-DYELP_ICON_PATH=\"$(YELP_ICON_PATH)\"
++
++
++libyelpcommon_la_LIBADD = $(YELP_LIBS)
++
++libyelpcommon_headers =               \
++	yelp-uri.h                  \
++	yelp-uri-builder.h          \
++	yelp-settings.h
++
++libyelpcommon_includedir = $(includedir)/libyelp/
++
++libyelpcommon_include_HEADERS = $(libyelpcommon_headers) yelp-common-types.h
++
++BUILT_SOURCES =                  \
++	yelp-common-types.c             \
++	yelp-common-types.h
++
++yelp-common-types.h: $(libyelpcommon_headers)
++	$(AM_V_GEN) (cd $(srcdir) && glib-mkenums \
++	--fhead "#ifndef __LIBYELPCOMMON_TYPES_H__\n" \
++	--fhead "#define __LIBYELPCOMMON_TYPES_H__\n\n" \
++	--fhead "#include <glib-object.h>\n\n" \
++	--fhead "G_BEGIN_DECLS\n\n" \
++	--ftail "G_END_DECLS\n\n" \
++	--ftail "#endif /* __LIBYELPCOMMON_TYPES_H__ */\n" \
++	--fprod "#include \"@filename@\"\n" \
++	--eprod "#define YELP_TYPE_@ENUMSHORT@ @enum_name@_get_type()\n" \
++	--eprod "GType @enum_name@_get_type (void);\n" \
++	$(libyelpcommon_headers)) > $@
++
++yelp-common-types.c: $(libyelpcommon_headers)
++	$(AM_V_GEN) (cd $(srcdir) && glib-mkenums \
++	--fhead "#include <glib-object.h>\n" \
++	--fhead "#include \"yelp-types.h\"\n\n" \
++	--fprod "\n/* enumerations from \"@filename@\" */" \
++	--vhead "static const G@Type@Value _@enum_name@_values[] = {" \
++	--vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
++	--vtail "  { 0, NULL, NULL }\n};\n\n" \
++	--vtail "GType\n@enum_name@_get_type (void)\n{\n" \
++	--vtail "  static GType type = 0;\n\n" \
++	--vtail "  if (!type)\n" \
++	--vtail "    type = g_@type@_register_static (\"@EnumName@\", _@enum_name@_values);\n\n" \
++	--vtail "  return type;\n}\n\n" \
++	$(libyelpcommon_headers)) > $@
++
++lib_LTLIBRARIES += libyelp.la
+ 
+ libyelp_la_SOURCES =                \
+ 	yelp-bookmarks.c            \
+@@ -17,14 +73,11 @@ libyelp_la_SOURCES =                \
+ 	yelp-man-parser.c           \
+ 	yelp-marshal.c              \
+ 	yelp-search-entry.c         \
+-	yelp-settings.c             \
+ 	yelp-simple-document.c      \
+ 	yelp-sqlite-storage.c       \
+ 	yelp-storage.c              \
+ 	yelp-transform.c            \
+-	yelp-uri.c                  \
+ 	yelp-types.c                \
+-	yelp-uri-builder.c          \
+ 	yelp-view.c
+ 
+ EXTRA_DIST =                        \
+@@ -59,7 +112,9 @@ libyelp_la_CFLAGS =                             \
+ libyelp_la_CPPFLAGS = \
+ 	-DYELP_WEB_EXTENSIONS_DIR=\""$(pkglibdir)/"web-extensions\"
+ 
+-libyelp_la_LIBADD = $(YELP_LIBS)
++libyelp_la_LIBADD =  \
++	$(YELP_LIBS)     \
++	libyelpcommon.la
+ 
+ libyelp_headers =                   \
+ 	yelp-bookmarks.h            \
+@@ -70,20 +125,17 @@ libyelp_headers =                   \
+ 	yelp-mallard-document.h     \
+ 	yelp-man-document.h         \
+ 	yelp-search-entry.h         \
+-	yelp-settings.h             \
+ 	yelp-simple-document.h      \
+ 	yelp-sqlite-storage.h       \
+ 	yelp-storage.h              \
+ 	yelp-transform.h            \
+-	yelp-uri.h                  \
+-	yelp-uri-builder.h          \
+ 	yelp-view.h
+ 
+ libyelp_includedir = $(includedir)/libyelp/
+ 
+ libyelp_include_HEADERS = $(libyelp_headers) yelp-types.h
+ 
+-BUILT_SOURCES =                  \
++BUILT_SOURCES +=                 \
+ 	yelp-marshal.c           \
+ 	yelp-marshal.h           \
+ 	yelp-types.c             \
+diff --git a/libyelp/web-extension/Makefile.am b/libyelp/web-extension/Makefile.am
+index 0cafe7a..62774d5 100644
+--- a/libyelp/web-extension/Makefile.am
++++ b/libyelp/web-extension/Makefile.am
+@@ -3,6 +3,13 @@ webextension_LTLIBRARIES = libyelpwebextension.la
+ webextensiondir = $(pkglibdir)/web-extensions
+ 
+ libyelpwebextension_la_SOURCES = yelp-web-extension.c
+-libyelpwebextension_la_CFLAGS = $(YELP_EXTENSION_CFLAGS)
+-libyelpwebextension_la_LIBADD = $(YELP_EXTENSION_LIBS)
+-libyelpwebextension_la_LDFLAGS = -module -avoid-version -no-undefined
++
++libyelpwebextension_la_CFLAGS = \
++	$(YELP_EXTENSION_CFLAGS)    \
++	-I$(top_srcdir)/libyelp
++
++libyelpwebextension_la_LIBADD =  \
++	$(YELP_EXTENSION_LIBS)       \
++	$(top_builddir)/libyelp/libyelpcommon.la
++
++libyelpwebextension_la_LDFLAGS = -module -avoid-version -no-undefined
+\ No newline at end of file
+diff --git a/libyelp/web-extension/yelp-web-extension.c b/libyelp/web-extension/yelp-web-extension.c
+index 76ef115..701cfbc 100644
+--- a/libyelp/web-extension/yelp-web-extension.c
++++ b/libyelp/web-extension/yelp-web-extension.c
+@@ -20,10 +20,86 @@
+ 
+ #include <webkit2/webkit-web-extension.h>
+ #include <string.h>
++#include <stdlib.h>
++#include "yelp-uri.h"
++#include "yelp-uri-builder.h"
+ 
+ #define WEBKIT_DOM_USE_UNSTABLE_API
+ #include <webkitdom/WebKitDOMElementUnstable.h>
+ 
++static YelpUri *current_uri;
++
++static gchar *
++get_resource_path (gchar *uri, YelpUri *document_uri)
++{
++    gchar *resource = NULL;
++    gchar *resource_path = 0;
++
++    if (!g_str_has_prefix (uri, "ghelp") &&
++        !g_str_has_prefix (uri, "gnome-help") &&
++        !g_str_has_prefix (uri, "help")) {
++        return NULL;
++    }
++
++    resource = strstr (uri, "/");
++    if (resource) {
++        resource[0] = '\0';
++        resource++;
++    }
++
++    if (resource && resource[0] != '\0')
++        resource_path = yelp_uri_locate_file_uri (document_uri, resource);
++
++    return resource_path;
++}
++
++static gboolean
++web_page_send_request (WebKitWebPage     *web_page,
++                       WebKitURIRequest  *request,
++                       WebKitURIResponse *redirected_response,
++                       gpointer           user_data)
++{
++    const gchar *wk_uri = webkit_uri_request_get_uri (request);
++    gchar *yelp_uri, *current_uri_canonical, *file_path;
++
++    if (!current_uri)
++        return FALSE;
++
++    yelp_uri = build_yelp_uri (wk_uri);
++    current_uri_canonical = yelp_uri_get_canonical_uri (current_uri);
++
++    file_path = get_resource_path (yelp_uri, current_uri);
++
++    if (file_path) {
++        webkit_uri_request_set_uri (request, file_path);
++        g_free (file_path);
++    }
++
++    g_free (yelp_uri);
++    g_free (current_uri_canonical);
++    return FALSE;
++}
++
++static void
++web_page_notify_uri (WebKitWebPage *web_page,
++                     GParamSpec    *pspec,
++                     gpointer       data)
++{
++    const gchar *uri = webkit_web_page_get_uri (web_page);
++    gchar *yelp_uri;
++
++    yelp_uri = build_yelp_uri (uri);
++
++    if (current_uri)
++        g_object_unref (current_uri);
++    current_uri = yelp_uri_new (yelp_uri);
++
++    if (!yelp_uri_is_resolved (current_uri))
++        yelp_uri_resolve_sync (current_uri);
++
++    g_free (yelp_uri);
++}
++
+ static gboolean
+ web_page_context_menu (WebKitWebPage          *web_page,
+                        WebKitContextMenu      *context_menu,
+@@ -133,6 +209,12 @@ web_page_created_callback (WebKitWebExtension *extension,
+     g_signal_connect (web_page, "context-menu",
+                       G_CALLBACK (web_page_context_menu),
+                       NULL);
++    g_signal_connect (web_page, "send-request",
++                      G_CALLBACK (web_page_send_request),
++                      NULL);
++    g_signal_connect (web_page, "notify::uri",
++                      G_CALLBACK (web_page_notify_uri),
++                      NULL);
+ }
+ 
+ G_MODULE_EXPORT void
+diff --git a/libyelp/yelp-uri-builder.c b/libyelp/yelp-uri-builder.c
+index 3c195e0..49ee024 100644
+--- a/libyelp/yelp-uri-builder.c
++++ b/libyelp/yelp-uri-builder.c
+@@ -24,17 +24,12 @@
+ #define BOGUS_PREFIX_LEN 6
+ 
+ gchar *
+-build_network_uri (YelpUri *uri, YelpDocument *document)
++build_network_uri (gchar *uri)
+ {
+     SoupURI *soup_uri;
+-    gchar *bogus_scheme;
+-    gchar *canonical;
+-    gchar *path;
+-    gchar *retval;
++    gchar *bogus_scheme, *path, *retval;
+ 
+-    canonical = yelp_uri_get_canonical_uri (uri);
+-    soup_uri = soup_uri_new (canonical);
+-    g_free (canonical);
++    soup_uri = soup_uri_new (uri);
+ 
+     /* Build the URI that will be passed to WebKit. Relative URIs will be
+        automatically reolved by WebKit, so we need to add a leading slash to
+@@ -60,22 +55,6 @@ build_network_uri (YelpUri *uri, YelpDocument *document)
+         g_free (path);
+     }
+ 
+-    /* We don't have actual page and frag IDs for DocBook. We just map IDs
+-       of block elements.  The result is that we get xref:someid#someid.
+-       If someid is really the page ID, we just drop the frag reference.
+-       Otherwise, normal page views scroll past the link trail.
+-    */
+-    if (soup_uri->fragment && YELP_IS_DOCBOOK_DOCUMENT (document)) {
+-        gchar *page_id = yelp_uri_get_page_id (uri);
+-        gchar *real_id = yelp_document_get_page_id (document, page_id);
+-
+-        if (g_str_equal (real_id, soup_uri->fragment))
+-            soup_uri_set_fragment (soup_uri, NULL);
+-
+-        g_free (real_id);
+-        g_free (page_id);
+-    }
+-
+     /* We need to use a different scheme from help or ghelp to be able to deal
+        with absolute uris in the HTML. Help uri schemes are help:gnome-help/...
+        they dont have a slash after the colon so WebKit resolves them as a relative
+diff --git a/libyelp/yelp-uri-builder.h b/libyelp/yelp-uri-builder.h
+index d6ca5d2..b890b10 100644
+--- a/libyelp/yelp-uri-builder.h
++++ b/libyelp/yelp-uri-builder.h
+@@ -21,10 +21,8 @@
+ #include <string.h>
+ #include <libsoup/soup.h>
+ 
+-#include "yelp-document.h"
+-#include "yelp-docbook-document.h"
+ #include "yelp-uri.h"
+ 
+-gchar * build_network_uri    (YelpUri *uri, YelpDocument *document);
++gchar * build_network_uri    (gchar *uri);
+ gchar * build_yelp_uri       (const gchar *uri);
+ gchar * build_network_scheme (const gchar *scheme);
+\ No newline at end of file
+diff --git a/libyelp/yelp-uri.c b/libyelp/yelp-uri.c
+index c36bd6f..84108d3 100644
+--- a/libyelp/yelp-uri.c
++++ b/libyelp/yelp-uri.c
+@@ -29,7 +29,6 @@
+ #include <gio/gio.h>
+ 
+ #include "yelp-uri.h"
+-#include "yelp-debug.h"
+ #include "yelp-settings.h"
+ 
+ static void           yelp_uri_dispose           (GObject        *object);
+diff --git a/libyelp/yelp-view.c b/libyelp/yelp-view.c
+index cb2b5bc..293823a 100644
+--- a/libyelp/yelp-view.c
++++ b/libyelp/yelp-view.c
+@@ -1927,11 +1927,43 @@ view_clear_load (YelpView *view)
+     }
+ }
+ 
++static gchar*
++fix_docbook_uri (YelpUri *docbook_uri, YelpDocument* document)
++{
++    SoupURI *soup_uri;
++    gchar *retval, *canonical;
++
++    canonical = yelp_uri_get_canonical_uri (docbook_uri);
++    soup_uri = soup_uri_new (canonical);
++    g_free (canonical);
++
++    /* We don't have actual page and frag IDs for DocBook. We just map IDs
++       of block elements.  The result is that we get xref:someid#someid.
++       If someid is really the page ID, we just drop the frag reference.
++       Otherwise, normal page views scroll past the link trail.
++    */
++    if (soup_uri->fragment && YELP_IS_DOCBOOK_DOCUMENT (document)) {
++        gchar *page_id = yelp_uri_get_page_id (docbook_uri);
++        gchar *real_id = yelp_document_get_page_id (document, page_id);
++
++        if (g_str_equal (real_id, soup_uri->fragment))
++            soup_uri_set_fragment (soup_uri, NULL);
++
++        g_free (real_id);
++        g_free (page_id);
++    }
++
++    retval = soup_uri_to_string (soup_uri, FALSE);
++    soup_uri_free (soup_uri);
++
++    return retval;
++}
++
+ static void
+ view_load_page (YelpView *view)
+ {
+     YelpViewPrivate *priv = GET_PRIV (view);
+-    gchar *uri_str;
++    gchar *uri_str, *tmp_uri;
+ 
+     g_return_if_fail (priv->cancellable == NULL);
+ 
+@@ -1956,7 +1988,17 @@ view_load_page (YelpView *view)
+         return;
+     }
+ 
+-    uri_str = build_network_uri (priv->uri, priv->document);
++    uri_str = yelp_uri_get_canonical_uri (priv->uri);
++
++    if (YELP_IS_DOCBOOK_DOCUMENT (priv->document)){
++      tmp_uri = uri_str;
++      uri_str = fix_docbook_uri (priv->uri, priv->document);
++      g_free (tmp_uri);
++    }
++
++    tmp_uri = uri_str;
++    uri_str = build_network_uri (uri_str);
++    g_free (tmp_uri);
+ 
+     g_signal_handler_block (view, priv->navigation_requested);
+     webkit_web_view_load_uri (WEBKIT_WEB_VIEW (view), uri_str);
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 5bf6f39..288a0ac 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -26,6 +26,7 @@ yelp_CFLAGS =					\
+ 
+ yelp_LDADD =					\
+ 	$(top_builddir)/libyelp/libyelp.la	\
++	$(top_builddir)/libyelp/libyelpcommon.la	\
+ 	$(YELP_LIBS)				\
+ 	$(POPT_LIBS)
+ 
+-- 
+cgit v0.12
+

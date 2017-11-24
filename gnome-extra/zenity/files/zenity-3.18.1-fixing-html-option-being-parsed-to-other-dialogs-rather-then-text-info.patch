@@ -1,0 +1,27 @@
+From fac40e9c46160a0915d528062dfd19c1afaeac0e Mon Sep 17 00:00:00 2001
+From: Arx Cruz <acruz@redhat.com>
+Date: Fri, 2 Oct 2015 13:41:57 +0200
+Subject: Fixing html option being parsed to other dialogs rather then
+ text-info
+
+---
+ src/option.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/option.c b/src/option.c
+index 3e35144..79a6f92 100644
+--- a/src/option.c
++++ b/src/option.c
+@@ -2074,6 +2074,9 @@ zenity_text_post_callback (GOptionContext *context,
+     if (zenity_text_font) 
+       zenity_option_error (zenity_option_get_name (text_options, &zenity_text_font),
+                            ERROR_SUPPORT);
++    if (zenity_text_enable_html)
++      zenity_option_error (zenity_option_get_name (text_options, &zenity_text_enable_html),
++                           ERROR_SUPPORT);
+   }
+   return TRUE;
+ }
+-- 
+cgit v0.12
+

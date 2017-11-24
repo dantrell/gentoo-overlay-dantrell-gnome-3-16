@@ -1,0 +1,34 @@
+From 74e6235ac72352a17843ab71bd7d0794d38b562f Mon Sep 17 00:00:00 2001
+From: Pierre-Yves Luyten <py@luyten.fr>
+Date: Wed, 8 Jul 2015 00:54:52 +0200
+Subject: note-view : disconnect from color-changed at finalize
+
+See RH BZ #1204815
+---
+ src/bjb-note-view.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/bjb-note-view.c b/src/bjb-note-view.c
+index bcacd0c..3283f76 100644
+--- a/src/bjb-note-view.c
++++ b/src/bjb-note-view.c
+@@ -57,7 +57,7 @@ struct _BjbNoteViewPrivate {
+ 
+ static void on_window_closed(GtkWidget *window,gpointer note);
+ static gboolean on_note_trashed (BijiNoteObj *note, BjbNoteView *view);
+-
++static void on_note_color_changed_cb (BijiNoteObj *note, BjbNoteView *self);
+ 
+ static void
+ bjb_note_view_disconnect (BjbNoteView *self)
+@@ -67,6 +67,7 @@ bjb_note_view_disconnect (BjbNoteView *self)
+   priv = self->priv;
+   g_signal_handlers_disconnect_by_func (priv->window, on_window_closed, priv->note);
+   g_signal_handlers_disconnect_by_func (priv->note, on_note_trashed, self);
++  g_signal_handlers_disconnect_by_func (priv->note, on_note_color_changed_cb, self);
+ }
+ 
+ 
+-- 
+cgit v0.12
+

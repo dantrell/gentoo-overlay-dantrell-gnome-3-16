@@ -1,0 +1,32 @@
+From 673b295a346774611412632f33a181b07ac00559 Mon Sep 17 00:00:00 2001
+From: Pierre-Yves Luyten <py@luyten.fr>
+Date: Mon, 13 Apr 2015 23:23:24 +0200
+Subject: tracker: do not forget callback
+
+Otherwise, some thread relying on the callback will entirely stop
+because of one single tracker error.
+
+One wrong note for example would stop a proider working.
+---
+ src/libbiji/biji-tracker.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/libbiji/biji-tracker.c b/src/libbiji/biji-tracker.c
+index 8acebbb..574472c 100644
+--- a/src/libbiji/biji-tracker.c
++++ b/src/libbiji/biji-tracker.c
+@@ -828,6 +828,11 @@ on_info_queried (GObject *source_object,
+   {
+     g_warning ("Check for Info : error %s", error->message);
+     g_error_free (error);
++
++    /* Something went wrong, callback and free memory
++       & leave tracker alone */
++    if (finisher->info_cb != NULL)
++      finisher->info_cb (retval, finisher->user_data);
+     biji_tracker_finisher_free (finisher);
+     return;
+   }
+-- 
+cgit v0.12
+

@@ -1,0 +1,29 @@
+From c0b1a7bbcd2f799546f628d64fd198d1afb10ee8 Mon Sep 17 00:00:00 2001
+From: Cosimo Cecchi <cosimoc@gnome.org>
+Date: Tue, 30 Jun 2015 23:58:11 +0200
+Subject: Both ID and name have to be non-NULL. Ensure they are.
+
+---
+ src/bijiben-shell-search-provider.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/bijiben-shell-search-provider.c b/src/bijiben-shell-search-provider.c
+index 044b067..dd1a2b7 100644
+--- a/src/bijiben-shell-search-provider.c
++++ b/src/bijiben-shell-search-provider.c
+@@ -284,10 +284,10 @@ add_single_note_meta (BijibenShellSearchProviderApp *self,
+ 
+     /* NIE:TITLE (name) is the title pushed by libbiji */
+     result = tracker_sparql_cursor_get_string (cursor, 1, 0);
++    if (result == NULL || result[0] == '\0')
++      result = _("Untitled");
+     g_variant_builder_add (results, "{sv}", "name", g_variant_new_string (result));
+ 
+-
+-
+    /* ICON is currently generic icon,        *
+     * TODO serialize icons in libbiji        *
+     *      or deserialize note here )        */
+-- 
+cgit v0.12
+

@@ -1,0 +1,27 @@
+From 946209d366a638cf0fbd4564f200869a00f8b516 Mon Sep 17 00:00:00 2001
+From: Pierre-Yves Luyten <py@luyten.fr>
+Date: Sun, 20 Sep 2015 09:27:45 +0200
+Subject: manager : get item@path => handle null
+
+---
+ src/libbiji/biji-manager.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/libbiji/biji-manager.c b/src/libbiji/biji-manager.c
+index 46a41ab..2e074f5 100644
+--- a/src/libbiji/biji-manager.c
++++ b/src/libbiji/biji-manager.c
+@@ -765,6 +765,10 @@ BijiItem *
+ biji_manager_get_item_at_path (BijiManager *manager, const gchar *path)
+ {
+   BijiItem *retval;
++  g_return_val_if_fail (BIJI_IS_MANAGER(manager), NULL);
++
++  if (path == NULL)
++    return NULL;
+ 
+   retval = g_hash_table_lookup (manager->priv->items, (gconstpointer) path);
+ 
+-- 
+cgit v0.12
+

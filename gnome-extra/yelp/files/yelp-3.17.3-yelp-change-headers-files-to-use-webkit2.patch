@@ -1,0 +1,63 @@
+From 3f6aa816e666dfeb7e409460553da292ef9cffb3 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marcos=20Chavarr=C3=ADa=20Teijeiro?=
+ <chavarria1991@gmail.com>
+Date: Wed, 10 Sep 2014 13:24:59 +0200
+Subject: yelp: Change headers files to use WebKit2
+
+---
+ libyelp/yelp-view.c | 2 +-
+ libyelp/yelp-view.h | 2 +-
+ tests/test-view.c   | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/libyelp/yelp-view.c b/libyelp/yelp-view.c
+index 67afd0a..5528997 100644
+--- a/libyelp/yelp-view.c
++++ b/libyelp/yelp-view.c
+@@ -29,7 +29,7 @@
+ #ifdef GDK_WINDOWING_X11
+ #include <gdk/gdkx.h>
+ #endif
+-#include <webkit/webkit.h>
++#include <webkit2/webkit2.h>
+ 
+ #include "yelp-debug.h"
+ #include "yelp-docbook-document.h"
+diff --git a/libyelp/yelp-view.h b/libyelp/yelp-view.h
+index 84af05a..3e9ac1d 100644
+--- a/libyelp/yelp-view.h
++++ b/libyelp/yelp-view.h
+@@ -22,7 +22,7 @@
+ #define __YELP_VIEW_H__
+ 
+ #include <gtk/gtk.h>
+-#include <webkit/webkit.h>
++#include <webkit2/webkit2.h>
+ 
+ #include "yelp-document.h"
+ #include "yelp-uri.h"
+diff --git a/tests/test-view.c b/tests/test-view.c
+index 5087d9e..284b146 100644
+--- a/tests/test-view.c
++++ b/tests/test-view.c
+@@ -19,7 +19,7 @@
+  */
+ 
+ #include <gtk/gtk.h>
+-#include <webkit/webkit.h>
++#include <webkit2/webkit2.h>
+ 
+ #include "yelp-view.h"
+ #include "yelp-uri.h"
+@@ -88,7 +88,7 @@ main (int argc, char **argv)
+     g_signal_connect (view, "notify::title",
+ 		      G_CALLBACK (title_cb), window);
+     gtk_container_add (GTK_CONTAINER (scroll), view);
+-			   
++
+ 
+     g_signal_connect (entry, "activate", G_CALLBACK (activate_cb), view);
+ 
+-- 
+cgit v0.12
+

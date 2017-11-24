@@ -1,0 +1,24 @@
+From af1a6933fc215235599c26109d80f41d5e870f17 Mon Sep 17 00:00:00 2001
+From: Pierre-Yves Luyten <py@luyten.fr>
+Date: Fri, 17 Jul 2015 23:57:04 +0200
+Subject: make : icons : remove obsolete hi scalable note
+
+---
+ data/icons/Makefile.am | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/data/icons/Makefile.am b/data/icons/Makefile.am
+index 0f6a28a..f3eb3d2 100644
+--- a/data/icons/Makefile.am
++++ b/data/icons/Makefile.am
+@@ -18,7 +18,6 @@ private_icons = \
+ 	hicolor_actions_16x16_note.png \
+ 	hicolor_actions_24x24_note.png \
+ 	hicolor_actions_48x48_note.png \
+-	hicolor_actions_scalable_note.svg \
+ 	hicolor_actions_scalable_link.svg \
+ 	$(NULL)
+ 
+-- 
+cgit v0.12
+

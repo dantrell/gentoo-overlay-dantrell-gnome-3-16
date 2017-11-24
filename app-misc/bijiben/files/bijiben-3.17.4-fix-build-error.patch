@@ -1,0 +1,25 @@
+From 80498fd382ae0aa091b6cbe12a6b96dfac07cbc8 Mon Sep 17 00:00:00 2001
+From: Yosef Or Boczko <yoseforb@src.gnome.org>
+Date: Wed, 15 Jul 2015 23:15:24 +0300
+Subject: Fix build error
+
+---
+ src/libbiji/biji-manager.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/libbiji/biji-manager.c b/src/libbiji/biji-manager.c
+index e50913d..46a41ab 100644
+--- a/src/libbiji/biji-manager.c
++++ b/src/libbiji/biji-manager.c
+@@ -652,7 +652,7 @@ biji_manager_constructed (GObject *object)
+   G_OBJECT_CLASS (biji_manager_parent_class)->constructed (object);
+ 
+ #ifdef BUILD_ZEITGEIST
+-  priv->log = biji_zeitgeist_init ();
++  BIJI_MANAGER (object)->priv->log = biji_zeitgeist_init ();
+ #endif /* BUILD_ZEITGEIST */
+ 
+   /* Ensure cache directory for icons */
+-- 
+cgit v0.12
+

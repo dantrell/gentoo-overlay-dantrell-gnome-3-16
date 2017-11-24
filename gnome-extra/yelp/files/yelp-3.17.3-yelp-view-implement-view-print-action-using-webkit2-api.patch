@@ -1,0 +1,58 @@
+From e36d442420eb746b85d75b2ed2691a0daf737699 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marcos=20Chavarr=C3=ADa=20Teijeiro?=
+ <chavarria1991@gmail.com>
+Date: Thu, 11 Sep 2014 14:05:42 +0200
+Subject: yelp-view: Implement view_print_action using WebKit2 API
+
+---
+ libyelp/yelp-view.c | 25 +++++++++----------------
+ 1 file changed, 9 insertions(+), 16 deletions(-)
+
+diff --git a/libyelp/yelp-view.c b/libyelp/yelp-view.c
+index 4067275..6088715 100644
+--- a/libyelp/yelp-view.c
++++ b/libyelp/yelp-view.c
+@@ -1592,31 +1592,24 @@ view_document_loaded (WebKitWebView   *view,
+ static void
+ view_print_action (GAction *action, GVariant *parameter, YelpView *view)
+ {
+-    WebKitWebFrame *main_frame;
+-    GtkPrintOperation *operation;
++    GtkWidget *window;
++    WebKitPrintOperation *print_operation;
+     GtkPrintSettings *settings;
+-    GError *error = NULL;
+     YelpViewPrivate *priv = GET_PRIV (view);
+ 
+-    main_frame = webkit_web_view_get_main_frame (WEBKIT_WEB_VIEW (view));
++    window = gtk_widget_get_toplevel (GTK_WIDGET (view));
++
++    print_operation = webkit_print_operation_new (WEBKIT_WEB_VIEW (view));
+ 
+-    operation = gtk_print_operation_new ();
+     settings = gtk_print_settings_new ();
+     gtk_print_settings_set (settings,
+                             GTK_PRINT_SETTINGS_OUTPUT_BASENAME,
+                             priv->page_title);
+-    gtk_print_operation_set_print_settings (operation, settings);
+-
+-    webkit_web_frame_print_full (main_frame, operation,
+-                                 GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG,
+-                                 &error);
+-
+-    if (error) {
+-        g_warning ("Error showing print dialog: %s", error->message);
+-        g_error_free (error);
+-    }
++    gtk_print_operation_set_print_settings (GTK_PRINT_OPERATION (print_operation),
++                                            settings);
+ 
+-    g_object_unref (operation);
++    webkit_print_operation_run_dialog (print_operation, GTK_WINDOW (window));
++    g_object_unref (print_operation);
+     g_object_unref (settings);
+ }
+ 
+-- 
+cgit v0.12
+

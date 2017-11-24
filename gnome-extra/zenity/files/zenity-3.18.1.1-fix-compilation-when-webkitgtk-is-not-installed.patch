@@ -1,0 +1,28 @@
+From 61c53a042418562c30e816fdd0c63caf2fa9f1b3 Mon Sep 17 00:00:00 2001
+From: Tom Schoonjans <Tom.Schoonjans@diamond.ac.uk>
+Date: Sat, 17 Oct 2015 17:52:44 +0100
+Subject: fix compilation when webkitgtk is not installed
+
+---
+ src/option.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/option.c b/src/option.c
+index 79a6f92..246cf22 100644
+--- a/src/option.c
++++ b/src/option.c
+@@ -2074,9 +2074,11 @@ zenity_text_post_callback (GOptionContext *context,
+     if (zenity_text_font) 
+       zenity_option_error (zenity_option_get_name (text_options, &zenity_text_font),
+                            ERROR_SUPPORT);
++#ifdef HAVE_WEBKITGTK
+     if (zenity_text_enable_html)
+       zenity_option_error (zenity_option_get_name (text_options, &zenity_text_enable_html),
+                            ERROR_SUPPORT);
++#endif
+   }
+   return TRUE;
+ }
+-- 
+cgit v0.12
+

@@ -1,0 +1,462 @@
+From 3598be880e631b1cd43164f3dd2e48bb8fa53976 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marcos=20Chavarr=C3=ADa=20Teijeiro?=
+ <chavarria1991@gmail.com>
+Date: Tue, 21 Oct 2014 12:45:42 +0200
+Subject: yelp-view: Implement web extension to deal with DOM tree
+
+---
+ configure.ac                               |   5 +
+ libyelp/Makefile.am                        |   5 +
+ libyelp/web-extension/Makefile.am          |   8 ++
+ libyelp/web-extension/yelp-web-extension.c | 144 +++++++++++++++++++++++++++++
+ libyelp/yelp-view.c                        | 140 +++++++++++-----------------
+ 5 files changed, 214 insertions(+), 88 deletions(-)
+ create mode 100644 libyelp/web-extension/Makefile.am
+ create mode 100644 libyelp/web-extension/yelp-web-extension.c
+
+diff --git a/configure.ac b/configure.ac
+index 1ecf2b2..c7a8ef2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -46,6 +46,10 @@ AC_SUBST([YELP_LIBS])
+ LT_PREREQ([2.2.6])
+ LT_INIT
+ 
++PKG_CHECK_MODULES([YELP_EXTENSION], [webkit2gtk-web-extension-4.0 >= 2.7.2])
++AC_SUBST(YELP_EXTENSION_CFLAGS)
++AC_SUBST(YELP_EXTENSION_LIBS)
++
+ # i18n stuff
+ AX_REQUIRE_DEFINED([IT_PROG_INTLTOOL])
+ IT_PROG_INTLTOOL([0.41.0])
+@@ -216,6 +220,7 @@ data/xslt/man2html.xsl
+ data/xslt/yelp-common.xsl
+ po/Makefile.in
+ tests/Makefile
++libyelp/web-extension/Makefile
+ yelp.desktop.in
+ ])
+ 
+diff --git a/libyelp/Makefile.am b/libyelp/Makefile.am
+index 0ae9d60..e721fd5 100644
+--- a/libyelp/Makefile.am
++++ b/libyelp/Makefile.am
+@@ -1,3 +1,5 @@
++SUBDIRS = web-extension
++
+ lib_LTLIBRARIES = libyelp.la
+ 
+ libyelp_la_SOURCES =                \
+@@ -53,6 +55,9 @@ libyelp_la_CFLAGS =                             \
+ 	-DDATADIR=\""$(datadir)"\"              \
+ 	-DYELP_ICON_PATH=\"$(YELP_ICON_PATH)\"
+ 
++libyelp_la_CPPFLAGS = \
++	-DYELP_WEB_EXTENSIONS_DIR=\""$(pkglibdir)/"web-extensions\"
++
+ libyelp_la_LIBADD = $(YELP_LIBS)
+ 
+ libyelp_headers =                   \
+diff --git a/libyelp/web-extension/Makefile.am b/libyelp/web-extension/Makefile.am
+new file mode 100644
+index 0000000..0cafe7a
+--- /dev/null
++++ b/libyelp/web-extension/Makefile.am
+@@ -0,0 +1,8 @@
++
++webextension_LTLIBRARIES = libyelpwebextension.la
++webextensiondir = $(pkglibdir)/web-extensions
++
++libyelpwebextension_la_SOURCES = yelp-web-extension.c
++libyelpwebextension_la_CFLAGS = $(YELP_EXTENSION_CFLAGS)
++libyelpwebextension_la_LIBADD = $(YELP_EXTENSION_LIBS)
++libyelpwebextension_la_LDFLAGS = -module -avoid-version -no-undefined
+diff --git a/libyelp/web-extension/yelp-web-extension.c b/libyelp/web-extension/yelp-web-extension.c
+new file mode 100644
+index 0000000..76ef115
+--- /dev/null
++++ b/libyelp/web-extension/yelp-web-extension.c
+@@ -0,0 +1,144 @@
++/* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
++/*
++ * Copyright (C) 2014 Igalia S.L.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this program; if not, write to the
++ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++ * Boston, MA 02111-1307, USA.
++ */
++
++#include <webkit2/webkit-web-extension.h>
++#include <string.h>
++
++#define WEBKIT_DOM_USE_UNSTABLE_API
++#include <webkitdom/WebKitDOMElementUnstable.h>
++
++static gboolean
++web_page_context_menu (WebKitWebPage          *web_page,
++                       WebKitContextMenu      *context_menu,
++                       WebKitWebHitTestResult *hit_test_result)
++{
++    WebKitDOMNode *node, *cur, *link_node = NULL, *code_node = NULL, *code_title_node = NULL;
++    gchar *popup_link_text = NULL;
++    GVariantDict user_data_dict;
++
++    node = webkit_web_hit_test_result_get_node (hit_test_result);
++
++    for (cur = node; cur != NULL; cur = webkit_dom_node_get_parent_node (cur)) {
++        if (WEBKIT_DOM_IS_ELEMENT (cur) &&
++            webkit_dom_element_webkit_matches_selector (WEBKIT_DOM_ELEMENT (cur),
++                                                        "a", NULL))
++            link_node = cur;
++
++        if (WEBKIT_DOM_IS_ELEMENT (cur) &&
++            webkit_dom_element_webkit_matches_selector (WEBKIT_DOM_ELEMENT (cur),
++                                                        "div.code", NULL)) {
++            WebKitDOMNode *title;
++            code_node = WEBKIT_DOM_NODE (
++                webkit_dom_element_query_selector (WEBKIT_DOM_ELEMENT (cur),
++                                                   "pre.contents", NULL));
++            title = webkit_dom_node_get_parent_node (cur);
++            if (WEBKIT_DOM_IS_ELEMENT (title) &&
++                webkit_dom_element_webkit_matches_selector (WEBKIT_DOM_ELEMENT (title),
++                                                            "div.contents", NULL)) {
++                title = webkit_dom_node_get_previous_sibling (title);
++                if (WEBKIT_DOM_IS_ELEMENT (title) &&
++                    webkit_dom_element_webkit_matches_selector (WEBKIT_DOM_ELEMENT (title),
++                                                                "div.title", NULL)) {
++                    code_title_node = title;
++                }
++            }
++        }
++    }
++
++    if (webkit_hit_test_result_context_is_link (WEBKIT_HIT_TEST_RESULT (hit_test_result)) && link_node) {
++        WebKitDOMNode *child;
++        gchar *tmp;
++        gint i, tmpi;
++        gboolean ws;
++
++        child = WEBKIT_DOM_NODE (
++            webkit_dom_element_query_selector (WEBKIT_DOM_ELEMENT (link_node),
++                                               "span.title", NULL));
++        if (child)
++            popup_link_text = webkit_dom_node_get_text_content (child);
++
++        if (!popup_link_text)
++            popup_link_text = webkit_dom_node_get_text_content (link_node);
++
++        tmp = g_new0 (gchar, strlen (popup_link_text) + 1);
++        ws = FALSE;
++        for (i = 0, tmpi = 0; popup_link_text[i] != '\0'; i++) {
++            if (popup_link_text[i] == ' ' || popup_link_text[i] == '\n') {
++                if (!ws) {
++                    tmp[tmpi] = ' ';
++                    tmpi++;
++                    ws = TRUE;
++                }
++            }
++            else {
++                tmp[tmpi] = popup_link_text[i];
++                tmpi++;
++                ws = FALSE;
++            }
++        }
++        tmp[tmpi] = '\0';
++        g_free (popup_link_text);
++        popup_link_text = tmp;
++    }
++
++    if (!(popup_link_text || code_node || code_title_node))
++        return FALSE;
++
++    g_variant_dict_init (&user_data_dict, NULL);
++
++    if (popup_link_text) {
++        g_variant_dict_insert_value (&user_data_dict, "link-title",
++            g_variant_new_take_string (popup_link_text));
++    }
++
++    if (code_node) {
++        gchar *code_code = webkit_dom_node_get_text_content (code_node);
++        g_variant_dict_insert_value (&user_data_dict, "code-text",
++            g_variant_new_take_string (code_code));
++    }
++
++    if (code_title_node) {
++        gchar *code_title = webkit_dom_node_get_text_content (code_title_node);
++        g_variant_dict_insert_value (&user_data_dict, "code-title",
++            g_variant_new_take_string (code_title));
++    }
++
++    webkit_context_menu_set_user_data (context_menu, g_variant_dict_end (&user_data_dict));
++
++    return FALSE;
++}
++
++static void
++web_page_created_callback (WebKitWebExtension *extension,
++                           WebKitWebPage      *web_page,
++                           gpointer            user_data)
++{
++    g_signal_connect (web_page, "context-menu",
++                      G_CALLBACK (web_page_context_menu),
++                      NULL);
++}
++
++G_MODULE_EXPORT void
++webkit_web_extension_initialize (WebKitWebExtension *extension)
++{
++    g_signal_connect (extension, "page-created",
++                      G_CALLBACK (web_page_created_callback),
++                      NULL);
++}
+diff --git a/libyelp/yelp-view.c b/libyelp/yelp-view.c
+index 4613095..cca02b9 100644
+--- a/libyelp/yelp-view.c
++++ b/libyelp/yelp-view.c
+@@ -130,6 +130,7 @@ static void        document_callback              (YelpDocument       *document,
+ static void        gtk_xft_dpi_changed            (GtkSettings        *gtk_settings,
+                                                    GParamSpec         *pspec,
+                                                    gpointer            user_data);
++static void        yelp_view_register_extensions  (void);
+ 
+ static gchar *nautilus_sendto = NULL;
+ 
+@@ -211,9 +212,8 @@ struct _YelpViewPrivate {
+     gchar         *popup_link_uri;
+     gchar         *popup_link_text;
+     gchar         *popup_image_uri;
+-    WebKitDOMNode *popup_code_node;
+-    WebKitDOMNode *popup_code_title;
+     gchar         *popup_code_text;
++    gchar         *popup_code_title;
+ 
+     YelpViewState  state;
+     YelpViewState  prevstate;
+@@ -449,6 +449,7 @@ yelp_view_finalize (GObject *object)
+     g_free (priv->popup_link_text);
+     g_free (priv->popup_image_uri);
+     g_free (priv->popup_code_text);
++    g_free (priv->popup_code_title);
+ 
+     g_free (priv->page_id);
+     g_free (priv->root_title);
+@@ -486,6 +487,8 @@ yelp_view_class_init (YelpViewClass *klass)
+                       NULL);
+     settings_show_text_cursor (settings);
+ 
++    yelp_view_register_extensions ();
++
+     klass->external_uri = view_external_uri;
+ 
+     object_class->dispose = yelp_view_dispose;
+@@ -786,6 +789,16 @@ yelp_view_get_active_link_text (YelpView *view)
+ 
+ /******************************************************************************/
+ 
++static void
++yelp_view_register_extensions (void)
++{
++    WebKitWebContext *context = webkit_web_context_get_default ();
++
++    webkit_web_context_set_web_extensions_directory (context, YELP_WEB_EXTENSIONS_DIR);
++}
++
++/******************************************************************************/
++
+ static gboolean
+ view_external_uri (YelpView *view,
+                    YelpUri  *uri)
+@@ -1207,10 +1220,13 @@ popup_copy_code (GtkAction   *action,
+                  YelpView    *view)
+ {
+     YelpViewPrivate *priv = GET_PRIV (view);
+-    GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
+-    gchar *content = webkit_dom_node_get_text_content (priv->popup_code_node);
+-    gtk_clipboard_set_text (clipboard, content, -1);
+-    g_free (content);
++    GtkClipboard *clipboard;
++
++    if (!priv->popup_code_text)
++        return;
++
++    clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
++    gtk_clipboard_set_text (clipboard, priv->popup_code_text, -1);
+ }
+ 
+ static void
+@@ -1221,8 +1237,9 @@ popup_save_code (GtkAction   *action,
+     GtkWidget *dialog, *window;
+     gint res;
+ 
+-    g_free (priv->popup_code_text);
+-    priv->popup_code_text = webkit_dom_node_get_text_content (priv->popup_code_node);
++    if (!priv->popup_code_text)
++        return;
++
+     if (!g_str_has_suffix (priv->popup_code_text, "\n")) {
+         gchar *tmp = g_strconcat (priv->popup_code_text, "\n", NULL);
+         g_free (priv->popup_code_text);
+@@ -1240,11 +1257,10 @@ popup_save_code (GtkAction   *action,
+                                           GTK_STOCK_SAVE, GTK_RESPONSE_OK,
+                                           NULL);
+     gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog), TRUE);
+-    if (priv->popup_code_title) {
+-        gchar *filename = webkit_dom_node_get_text_content (priv->popup_code_title);
+-        gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog), filename);
+-        g_free (filename);
+-    }
++
++    if (priv->popup_code_title)
++        gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog), priv->popup_code_title);
++
+     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog),
+                                          g_get_user_special_dir (G_USER_DIRECTORY_DOCUMENTS));
+ 
+@@ -1285,11 +1301,6 @@ popup_save_code (GtkAction   *action,
+         g_object_unref (file);
+     }
+ 
+-    priv->popup_code_node = NULL;
+-    priv->popup_code_title = NULL;
+-    g_free (priv->popup_code_text);
+-    priv->popup_code_text = NULL;
+-
+     gtk_widget_destroy (dialog);
+ }
+ 
+@@ -1310,36 +1321,15 @@ view_populate_context_menu (YelpView            *view,
+     YelpViewPrivate *priv = GET_PRIV (view);
+     WebKitContextMenuItem *item;
+     GtkAction *action;
+-    WebKitDOMNode *node, *cur, *link_node = NULL, *code_node = NULL, *code_title_node = NULL;
++    GVariant *dom_info_variant;
++    GVariantDict dom_info_dict;
+ 
+     webkit_context_menu_remove_all (context_menu);
+ 
+-    for (cur = node; cur != NULL; cur = webkit_dom_node_get_parent_node (cur)) {
+-        if (WEBKIT_DOM_IS_ELEMENT (cur) &&
+-            webkit_dom_element_webkit_matches_selector ((WebKitDOMElement *) cur,
+-                                                        "a", NULL))
+-            link_node = cur;
+-
+-        if (WEBKIT_DOM_IS_ELEMENT (cur) &&
+-            webkit_dom_element_webkit_matches_selector ((WebKitDOMElement *) cur,
+-                                                        "div.code", NULL)) {
+-            WebKitDOMNode *title;
+-            code_node = (WebKitDOMNode *)
+-                webkit_dom_element_query_selector ((WebKitDOMElement *) cur,
+-                                                   "pre.contents", NULL);
+-            title = webkit_dom_node_get_parent_node (cur);
+-            if (title != NULL && WEBKIT_DOM_IS_ELEMENT (title) &&
+-                webkit_dom_element_webkit_matches_selector ((WebKitDOMElement *) title,
+-                                                            "div.contents", NULL)) {
+-                title = webkit_dom_node_get_previous_sibling (title);
+-                if (title != NULL && WEBKIT_DOM_IS_ELEMENT (title) &&
+-                    webkit_dom_element_webkit_matches_selector ((WebKitDOMElement *) title,
+-                                                                "div.title", NULL)) {
+-                    code_title_node = title;
+-                }
+-            }
+-        }
+-    }
++    /* We extract the info about the dom tree that we build in the web-extension.*/
++    dom_info_variant = webkit_context_menu_get_user_data (context_menu);
++    if (dom_info_variant)
++      g_variant_dict_init (&dom_info_dict, dom_info_variant);
+ 
+     if (webkit_hit_test_result_context_is_link (hit_test_result)) {
+         gchar *uri;
+@@ -1347,46 +1337,13 @@ view_populate_context_menu (YelpView            *view,
+         g_free (priv->popup_link_uri);
+         priv->popup_link_uri = uri;
+ 
+-        g_free (priv->popup_link_text);
+-        priv->popup_link_text = NULL;
+-        if (link_node != NULL) {
+-            WebKitDOMNode *child;
+-            gchar *tmp;
+-            gint i, tmpi;
+-            gboolean ws;
+-
+-            child = (WebKitDOMNode *)
+-                webkit_dom_element_query_selector (WEBKIT_DOM_ELEMENT (link_node),
+-                                                   "span.title", NULL);
+-            if (child != NULL)
+-                priv->popup_link_text = webkit_dom_node_get_text_content (child);
+-
+-            if (priv->popup_link_text == NULL)
+-                priv->popup_link_text = webkit_dom_node_get_text_content (link_node);
+-
+-            tmp = g_new0 (gchar, strlen(priv->popup_link_text) + 1);
+-            ws = FALSE;
+-            for (i = 0, tmpi = 0; priv->popup_link_text[i] != '\0'; i++) {
+-                if (priv->popup_link_text[i] == ' ' || priv->popup_link_text[i] == '\n') {
+-                    if (!ws) {
+-                        tmp[tmpi] = ' ';
+-                        tmpi++;
+-                        ws = TRUE;
+-                    }
+-                }
+-                else {
+-                    tmp[tmpi] = priv->popup_link_text[i];
+-                    tmpi++;
+-                    ws = FALSE;
+-                }
+-            }
+-            tmp[tmpi] = '\0';
+-            g_free (priv->popup_link_text);
+-            priv->popup_link_text = tmp;
+-        }
+-        else {
++        g_clear_pointer (&priv->popup_link_text, g_free);
++        if (dom_info_variant)
++          g_variant_dict_lookup (&dom_info_dict, "link-title", "s",
++                                     &(priv->popup_link_text));
++
++        if (!priv->popup_link_text)
+             priv->popup_link_text = g_strdup (uri);
+-        }
+ 
+         if (g_str_has_prefix (priv->popup_link_uri, "mailto:")) {
+             gchar *label = g_strdup_printf (_("Send email to %s"),
+@@ -1503,13 +1460,20 @@ view_populate_context_menu (YelpView            *view,
+         webkit_context_menu_append (context_menu, item);
+     }
+ 
+-    if (code_node != NULL) {
++    g_clear_pointer (&priv->popup_code_title, g_free);
++    if (dom_info_variant)
++      g_variant_dict_lookup (&dom_info_dict, "code-title",
++            "s", &(priv->popup_code_title));
++
++    g_clear_pointer (&priv->popup_code_text, g_free);
++    if (dom_info_variant)
++      g_variant_dict_lookup (&dom_info_dict, "code-text",
++        "s", &(priv->popup_code_text));
++
++    if (priv->popup_code_text) {
+         item = webkit_context_menu_item_new_separator ();
+         webkit_context_menu_append (context_menu, item);
+ 
+-        priv->popup_code_node = code_node;
+-        priv->popup_code_title = code_title_node;
+-
+         action = gtk_action_group_get_action (priv->popup_actions,
+                                               "CopyCode");
+         item = webkit_context_menu_item_new (action);
+-- 
+cgit v0.12
+

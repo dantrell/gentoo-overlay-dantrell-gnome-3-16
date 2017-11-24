@@ -41,6 +41,8 @@ DEPEND="${COMMON_DEPEND}
 	>=dev-util/intltool-0.50.1
 	dev-util/itstool
 	virtual/pkgconfig
+
+	app-text/yelp-tools
 "
 # eautoreconf requires yelp-tools
 

@@ -1,0 +1,636 @@
+From c375c64c5f3c917be14252d70cb15087e06053f8 Mon Sep 17 00:00:00 2001
+From: Cosimo Cecchi <cosimoc@gnome.org>
+Date: Wed, 1 Jul 2015 00:03:53 +0200
+Subject: Instead of pixbufs. This enables crisp rendering of overview
+ thumbnails on hidpi displays.
+
+This commit also removes the abilty to load and save icons to disk,
+since we don't want to cache them while their appearance changes e.g.
+due to the theme.
+The only consequence for now is that we won't get full icons in the
+search provider, but that will be fixed in a later commit.
+---
+ src/bjb-controller.c                              | 15 ++--
+ src/libbiji/biji-item.c                           | 21 +++---
+ src/libbiji/biji-item.h                           | 19 +++--
+ src/libbiji/biji-note-obj.c                       | 90 ++++++++---------------
+ src/libbiji/biji-notebook.c                       | 61 +++++++--------
+ src/libbiji/deserializer/biji-lazy-deserializer.c | 23 ------
+ src/libbiji/provider/biji-own-cloud-note.c        |  1 -
+ src/libbiji/serializer/biji-lazy-serializer.c     | 23 ------
+ src/libbiji/serializer/biji-lazy-serializer.h     |  6 --
+ 9 files changed, 98 insertions(+), 161 deletions(-)
+
+diff --git a/src/bjb-controller.c b/src/bjb-controller.c
+index 67d6777..b7a2fa2 100644
+--- a/src/bjb-controller.c
++++ b/src/bjb-controller.c
+@@ -103,7 +103,7 @@ bjb_controller_init (BjbController *self)
+                               G_TYPE_STRING,      // uri
+                               G_TYPE_STRING,      // name
+                               G_TYPE_STRING,      // author
+-                              GDK_TYPE_PIXBUF,    // icon then note
++                              CAIRO_GOBJECT_TYPE_SURFACE, // icon then note
+                               G_TYPE_INT64,       // mtime
+                               G_TYPE_BOOLEAN,     // state
+                               G_TYPE_UINT);       // pulse
+@@ -251,9 +251,10 @@ bjb_controller_add_item (BjbController *self,
+ {
+   GtkTreeIter    iter;
+   GtkListStore  *store;
+-  GdkPixbuf     *pix = NULL;
++  cairo_surface_t *surface = NULL;
+   const gchar   *uuid;
+   BjbWindowBase  *win;
++  gint scale;
+ 
+   g_return_if_fail (BIJI_IS_ITEM (item));
+   store = GTK_LIST_STORE (self->priv->model);
+@@ -277,14 +278,16 @@ bjb_controller_add_item (BjbController *self,
+   /* First , if there is a gd main view , and if gd main view
+    * is a list, then load the smaller emblem */
+   win = self->priv->window;
++  scale = gtk_widget_get_scale_factor (GTK_WIDGET (win));
++
+   if (bjb_window_base_get_main_view (win)
+       && bjb_main_view_get_view_type
+                 (bjb_window_base_get_main_view (win)) == GD_MAIN_VIEW_LIST)
+-    pix = biji_item_get_emblem (item);
++    surface = biji_item_get_emblem (item, scale);
+ 
+   /* Else, load the icon */
+-  if (!pix)
+-    pix = biji_item_get_icon (item);
++  if (!surface)
++    surface = biji_item_get_icon (item, scale);
+ 
+   /* Appart from pixbuf, both icon & list view types
+    * currently use the same model */
+@@ -295,7 +298,7 @@ bjb_controller_add_item (BjbController *self,
+        GD_MAIN_COLUMN_URI, uuid,
+        GD_MAIN_COLUMN_PRIMARY_TEXT, biji_item_get_title (item),
+        GD_MAIN_COLUMN_SECONDARY_TEXT, NULL,
+-       GD_MAIN_COLUMN_ICON, pix,
++       GD_MAIN_COLUMN_ICON, surface,
+        GD_MAIN_COLUMN_MTIME, biji_item_get_mtime (item),
+        -1);
+ 
+diff --git a/src/libbiji/biji-item.c b/src/libbiji/biji-item.c
+index 8223d73..9189e04 100644
+--- a/src/libbiji/biji-item.c
++++ b/src/libbiji/biji-item.c
+@@ -191,28 +191,31 @@ biji_item_get_manager     (BijiItem *item)
+ }
+ 
+ 
+-GdkPixbuf *
+-biji_item_get_icon          (BijiItem *item)
++cairo_surface_t *
++biji_item_get_icon          (BijiItem *item,
++                             gint scale)
+ {
+   g_return_val_if_fail (BIJI_IS_ITEM (item), NULL);
+ 
+-  return BIJI_ITEM_GET_CLASS (item)->get_icon (item);
++  return BIJI_ITEM_GET_CLASS (item)->get_icon (item, scale);
+ }
+ 
+-GdkPixbuf *
+-biji_item_get_emblem        (BijiItem *item)
++cairo_surface_t *
++biji_item_get_emblem        (BijiItem *item,
++                             gint scale)
+ {
+   g_return_val_if_fail (BIJI_IS_ITEM (item), NULL);
+ 
+-  return BIJI_ITEM_GET_CLASS (item)->get_emblem (item);
++  return BIJI_ITEM_GET_CLASS (item)->get_emblem (item, scale);
+ }
+ 
+-GdkPixbuf *
+-biji_item_get_pristine        (BijiItem *item)
++cairo_surface_t *
++biji_item_get_pristine        (BijiItem *item,
++                               gint scale)
+ {
+   g_return_val_if_fail (BIJI_IS_ITEM (item), NULL);
+ 
+-  return BIJI_ITEM_GET_CLASS (item)->get_pristine (item);
++  return BIJI_ITEM_GET_CLASS (item)->get_pristine (item, scale);
+ }
+ 
+ 
+diff --git a/src/libbiji/biji-item.h b/src/libbiji/biji-item.h
+index 7f1a193..64aa5a5 100644
+--- a/src/libbiji/biji-item.h
++++ b/src/libbiji/biji-item.h
+@@ -21,6 +21,7 @@
+ #ifndef BIJI_ITEM_H_
+ #define BIJI_ITEM_H_ 1
+ 
++#include <cairo-gobject.h>
+ #include <glib-object.h>
+ #include <gtk/gtk.h>
+ 
+@@ -59,9 +60,12 @@ struct BijiItemClass_
+ 
+   const gchar * (*get_title)            (BijiItem *item);
+   const gchar * (*get_uuid)             (BijiItem *item);
+-  GdkPixbuf *   (*get_icon)             (BijiItem *item);
+-  GdkPixbuf *   (*get_emblem)           (BijiItem *item);
+-  GdkPixbuf *   (*get_pristine)         (BijiItem *item);
++  cairo_surface_t * (*get_icon)         (BijiItem *item,
++                                         gint scale);
++  cairo_surface_t * (*get_emblem)       (BijiItem *item,
++                                         gint scale);
++  cairo_surface_t * (*get_pristine)     (BijiItem *item,
++                                         gint scale);
+ 
+   /* Just return some provider information */
+   const gchar * (*get_place)            (BijiItem *item);
+@@ -101,13 +105,16 @@ gpointer         biji_item_get_manager         (BijiItem *item);
+ gboolean         biji_item_has_color           (BijiItem *item);
+ 
+ 
+-GdkPixbuf *      biji_item_get_icon            (BijiItem *item);
++cairo_surface_t * biji_item_get_icon           (BijiItem *item,
++                                                gint scale);
+ 
+ 
+-GdkPixbuf *      biji_item_get_emblem          (BijiItem *item);
++cairo_surface_t * biji_item_get_emblem         (BijiItem *item,
++                                                gint scale);
+ 
+ 
+-GdkPixbuf *      biji_item_get_pristine        (BijiItem *item);
++cairo_surface_t * biji_item_get_pristine       (BijiItem *item,
++                                                gint scale);
+ 
+ 
+ const gchar *    biji_item_get_place           (BijiItem *item);
+diff --git a/src/libbiji/biji-note-obj.c b/src/libbiji/biji-note-obj.c
+index 3914c60..34eba31 100644
+--- a/src/libbiji/biji-note-obj.c
++++ b/src/libbiji/biji-note-obj.c
+@@ -47,9 +47,9 @@ struct _BijiNoteObjPrivate
+ 
+   /* Icon might be null untill usefull
+    * Emblem is smaller & just shows the color */
+-  GdkPixbuf             *icon;
+-  GdkPixbuf             *emblem;
+-  GdkPixbuf             *pristine;
++  cairo_surface_t       *icon;
++  cairo_surface_t       *emblem;
++  cairo_surface_t       *pristine;
+ 
+   /* Tags
+    * In Tomboy, templates are 'system:notebook:%s' tags.*/
+@@ -164,13 +164,13 @@ biji_note_obj_finalize (GObject *object)
+   g_hash_table_destroy (priv->labels);
+ 
+   if (priv->icon)
+-    g_object_unref (priv->icon);
++    cairo_surface_destroy (priv->icon);
+ 
+   if (priv->emblem)
+-    g_object_unref (priv->emblem);
++    cairo_surface_destroy (priv->emblem);
+ 
+   if (priv->pristine)
+-    g_object_unref (priv->pristine);
++    cairo_surface_destroy (priv->pristine);
+ 
+   gdk_rgba_free (priv->color);
+ 
+@@ -403,9 +403,9 @@ biji_note_obj_set_note_create_date (BijiNoteObj* n, gint64 time)
+ static void
+ biji_note_obj_clear_icons (BijiNoteObj *note)
+ {
+-  g_clear_pointer (&note->priv->icon, g_object_unref);
+-  g_clear_pointer (&note->priv->emblem, g_object_unref);
+-  g_clear_pointer (&note->priv->pristine, g_object_unref);
++  g_clear_pointer (&note->priv->icon, cairo_surface_destroy);
++  g_clear_pointer (&note->priv->emblem, cairo_surface_destroy);
++  g_clear_pointer (&note->priv->pristine, cairo_surface_destroy);
+ }
+ 
+ static void
+@@ -610,30 +610,17 @@ biji_note_obj_get_icon_file (BijiNoteObj *note)
+   return filename;
+ }
+ 
+-void
+-biji_note_obj_set_icon (BijiNoteObj *note, GdkPixbuf *pix)
+-{
+-  g_return_if_fail (BIJI_IS_NOTE_OBJ (note));
+-
+-  if (!note->priv->icon)
+-    note->priv->icon = pix;
+-
+-  else
+-    g_warning ("Cannot use _set_icon_ with iconified note. This has no sense.");
+-}
+-
+-static GdkPixbuf *
+-biji_note_obj_get_icon (BijiItem *item)
++static cairo_surface_t *
++biji_note_obj_get_icon (BijiItem *item,
++                        gint scale)
+ {
+   GdkRGBA               note_color;
+   const gchar           *text;
+   cairo_t               *cr;
+   PangoLayout           *layout;
+   PangoFontDescription  *desc;
+-  GdkPixbuf             *ret = NULL;
+   cairo_surface_t       *surface = NULL;
+   GtkBorder              frame_slice = { 4, 3, 3, 6 };
+-
+   BijiNoteObj *note = BIJI_NOTE_OBJ (item);
+ 
+   if (note->priv->icon)
+@@ -641,8 +628,9 @@ biji_note_obj_get_icon (BijiItem *item)
+ 
+   /* Create & Draw surface */
+   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+-                                        BIJI_ICON_WIDTH,
+-                                        BIJI_ICON_HEIGHT) ;
++                                        BIJI_ICON_WIDTH * scale,
++                                        BIJI_ICON_HEIGHT * scale) ;
++  cairo_surface_set_device_scale (surface, scale, scale);
+   cr = cairo_create (surface);
+ 
+   /* Background */
+@@ -681,21 +669,16 @@ biji_note_obj_get_icon (BijiItem *item)
+ 
+   cairo_destroy (cr);
+ 
+-  ret = gdk_pixbuf_get_from_surface (surface,
+-                                     0, 0,
+-                                     BIJI_ICON_WIDTH,
+-                                     BIJI_ICON_HEIGHT);
++  note->priv->icon = gd_embed_surface_in_frame (surface, "resource:///org/gnome/bijiben/thumbnail-frame.png",
++                                                &frame_slice, &frame_slice);
+   cairo_surface_destroy (surface);
+ 
+-  note->priv->icon = gd_embed_image_in_frame (ret, "resource:///org/gnome/bijiben/thumbnail-frame.png",
+-                                              &frame_slice, &frame_slice);
+-  g_clear_object (&ret);
+-
+   return note->priv->icon;
+ }
+ 
+-static GdkPixbuf *
+-biji_note_obj_get_pristine (BijiItem *item)
++static cairo_surface_t *
++biji_note_obj_get_pristine (BijiItem *item,
++                            gint scale)
+ {
+   GdkRGBA                note_color;
+   cairo_t               *cr;
+@@ -707,8 +690,9 @@ biji_note_obj_get_pristine (BijiItem *item)
+ 
+   /* Create & Draw surface */
+   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+-                                        BIJI_EMBLEM_WIDTH,
+-                                        BIJI_EMBLEM_HEIGHT) ;
++                                        BIJI_EMBLEM_WIDTH * scale,
++                                        BIJI_EMBLEM_HEIGHT * scale) ;
++  cairo_surface_set_device_scale (surface, scale, scale);
+   cr = cairo_create (surface);
+ 
+   /* Background */
+@@ -719,18 +703,13 @@ biji_note_obj_get_pristine (BijiItem *item)
+   cairo_fill (cr);
+   cairo_destroy (cr);
+ 
+-  note->priv->pristine = gdk_pixbuf_get_from_surface (surface,
+-                                                      0, 0,
+-                                                      BIJI_EMBLEM_WIDTH,
+-                                                      BIJI_EMBLEM_HEIGHT);
+-
+-  cairo_surface_destroy (surface);
+-
++  note->priv->pristine = surface;
+   return note->priv->pristine;
+ }
+ 
+-static GdkPixbuf *
+-biji_note_obj_get_emblem (BijiItem *item)
++static cairo_surface_t *
++biji_note_obj_get_emblem (BijiItem *item,
++                          gint scale)
+ {
+   GdkRGBA                note_color;
+   cairo_t               *cr;
+@@ -742,8 +721,9 @@ biji_note_obj_get_emblem (BijiItem *item)
+ 
+   /* Create & Draw surface */
+   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+-                                        BIJI_EMBLEM_WIDTH,
+-                                        BIJI_EMBLEM_HEIGHT) ;
++                                        BIJI_EMBLEM_WIDTH * scale,
++                                        BIJI_EMBLEM_HEIGHT * scale) ;
++  cairo_surface_set_device_scale (surface, scale, scale);
+   cr = cairo_create (surface);
+ 
+   /* Background */
+@@ -755,19 +735,13 @@ biji_note_obj_get_emblem (BijiItem *item)
+ 
+   /* Border */
+   cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 1);
+-  cairo_set_line_width (cr, 1);
++  cairo_set_line_width (cr, 1 * scale);
+   cairo_rectangle (cr, 0, 0, BIJI_EMBLEM_WIDTH, BIJI_EMBLEM_HEIGHT);
+   cairo_stroke (cr);
+ 
+   cairo_destroy (cr);
+ 
+-  note->priv->emblem = gdk_pixbuf_get_from_surface (surface,
+-                                                    0, 0,
+-                                                    BIJI_EMBLEM_WIDTH,
+-                                                    BIJI_EMBLEM_HEIGHT);
+-
+-  cairo_surface_destroy (surface);
+-
++  note->priv->emblem = surface;
+   return note->priv->emblem;
+ }
+ 
+diff --git a/src/libbiji/biji-notebook.c b/src/libbiji/biji-notebook.c
+index 7949590..ec5ca8c 100644
+--- a/src/libbiji/biji-notebook.c
++++ b/src/libbiji/biji-notebook.c
+@@ -46,8 +46,8 @@ struct BijiNotebookPrivate_
+   gchar           *name;
+   gint64           mtime;
+ 
+-  GdkPixbuf       *icon;
+-  GdkPixbuf       *emblem;
++  cairo_surface_t *icon;
++  cairo_surface_t *emblem;
+ 
+   GList           *collected_items;
+ };
+@@ -101,13 +101,11 @@ biji_notebook_get_uuid (BijiItem *coll)
+ }
+ 
+ 
+-static GdkPixbuf *
+-biji_create_notebook_icon (gint base_size, GList *pixbufs)
++static cairo_surface_t *
++biji_create_notebook_icon (gint base_size, gint scale, GList *surfaces)
+ {
+-  cairo_surface_t *surface;
++  cairo_surface_t *surface, *pix;
+   cairo_t *cr;
+-  GdkPixbuf *pix;
+-  GdkPixbuf *ret_val;
+   GList *l;
+   GtkStyleContext *context;
+   GtkWidgetPath *path;
+@@ -117,6 +115,8 @@ biji_create_notebook_icon (gint base_size, GList *pixbufs)
+   gint padding;
+   gint pix_height;
+   gint pix_width;
++  gdouble pix_scale_x;
++  gdouble pix_scale_y;
+   gint scale_size;
+   gint tile_size;
+ 
+@@ -133,12 +133,14 @@ biji_create_notebook_icon (gint base_size, GList *pixbufs)
+   gtk_style_context_set_path (context, path);
+   gtk_widget_path_unref (path);
+ 
+-  surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, base_size, base_size);
++  surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, base_size * scale, base_size * scale);
++  cairo_surface_set_device_scale (surface, scale, scale);
+   cr = cairo_create (surface);
+ 
++  gtk_render_frame (context, cr, 0, 0, base_size, base_size);
+   gtk_render_background (context, cr, 0, 0, base_size, base_size);
+ 
+-  l = pixbufs;
++  l = surfaces;
+   idx = 0;
+   cur_x = padding;
+   cur_y = padding;
+@@ -147,8 +149,9 @@ biji_create_notebook_icon (gint base_size, GList *pixbufs)
+   while (l != NULL && idx < 4)
+     {
+       pix = l->data;
+-      pix_width = gdk_pixbuf_get_width (pix);
+-      pix_height = gdk_pixbuf_get_height (pix);
++      cairo_surface_get_device_scale (pix, &pix_scale_x, &pix_scale_y);
++      pix_width = cairo_image_surface_get_width (pix) / (gint) pix_scale_x;
++      pix_height = cairo_image_surface_get_height (pix) / (gint) pix_scale_y;
+ 
+       scale_size = MIN (pix_width, pix_height);
+ 
+@@ -161,7 +164,7 @@ biji_create_notebook_icon (gint base_size, GList *pixbufs)
+       cairo_clip (cr);
+ 
+       cairo_scale (cr, (gdouble) tile_size / (gdouble) scale_size, (gdouble) tile_size / (gdouble) scale_size);
+-      gdk_cairo_set_source_pixbuf (cr, pix, 0, 0);
++      cairo_set_source_surface (cr, pix, 0, 0);
+ 
+       cairo_paint (cr);
+       cairo_restore (cr);
+@@ -180,17 +183,15 @@ biji_create_notebook_icon (gint base_size, GList *pixbufs)
+       l = l->next;
+     }
+ 
+-  ret_val = gdk_pixbuf_get_from_surface (surface, 0, 0, base_size, base_size);
+-
+-  cairo_surface_destroy (surface);
+   cairo_destroy (cr);
+   g_object_unref (context);
+ 
+-  return ret_val;
++  return surface;
+ }
+ 
+ static GList *
+-get_collected_pix (BijiNotebook *self)
++get_collected_pix (BijiNotebook *self,
++                   gint scale)
+ {
+   GList *result = NULL, *l;
+ 
+@@ -199,22 +200,23 @@ get_collected_pix (BijiNotebook *self)
+     if (BIJI_IS_ITEM (l->data))
+       result = g_list_prepend (
+                         result,
+-                        biji_item_get_pristine (BIJI_ITEM (l->data)));
++                        biji_item_get_pristine (BIJI_ITEM (l->data), scale));
+   }
+ 
+   return result;
+ }
+ 
+-static GdkPixbuf *
+-biji_notebook_get_icon (BijiItem *coll)
++static cairo_surface_t *
++biji_notebook_get_icon (BijiItem *coll,
++                        gint scale)
+ {
+   BijiNotebook *self = BIJI_NOTEBOOK (coll);
+   GList *pix;
+ 
+   if (!self->priv->icon)
+   {
+-    pix = get_collected_pix (self);
+-    self->priv->icon = biji_create_notebook_icon (BIJI_ICON_WIDTH, pix);
++    pix = get_collected_pix (self, scale);
++    self->priv->icon = biji_create_notebook_icon (BIJI_ICON_WIDTH, scale, pix);
+     g_list_free (pix);
+   }
+ 
+@@ -222,17 +224,18 @@ biji_notebook_get_icon (BijiItem *coll)
+ }
+ 
+ 
+-static GdkPixbuf *
+-biji_notebook_get_emblem (BijiItem *coll)
++static cairo_surface_t *
++biji_notebook_get_emblem (BijiItem *coll,
++                          gint scale)
+ {
+   BijiNotebook *self = BIJI_NOTEBOOK (coll);
+   GList *pix;
+ 
+   if (!self->priv->emblem)
+   {
+-    pix = get_collected_pix (self);
+-    self->priv->emblem = biji_create_notebook_icon (BIJI_EMBLEM_WIDTH,
+-                                                      get_collected_pix (self));
++    pix = get_collected_pix (self, scale);
++    self->priv->emblem = biji_create_notebook_icon (BIJI_EMBLEM_WIDTH, scale,
++                                                    get_collected_pix (self, scale));
+     g_list_free (pix);
+   }
+ 
+@@ -395,8 +398,8 @@ biji_notebook_update_collected (GList *result,
+   GList *l;
+ 
+   g_clear_pointer (&priv->collected_items, g_list_free);
+-  g_clear_pointer (&priv->icon, g_object_unref);
+-  g_clear_pointer (&priv->emblem, g_object_unref);
++  g_clear_pointer (&priv->icon, cairo_surface_destroy);
++  g_clear_pointer (&priv->emblem, cairo_surface_destroy);
+ 
+   priv->collected_items = result;
+ 
+diff --git a/src/libbiji/deserializer/biji-lazy-deserializer.c b/src/libbiji/deserializer/biji-lazy-deserializer.c
+index aa242cf..e3c3603 100644
+--- a/src/libbiji/deserializer/biji-lazy-deserializer.c
++++ b/src/libbiji/deserializer/biji-lazy-deserializer.c
+@@ -634,27 +634,6 @@ biji_lazy_deserializer_new (BijiNoteObj *note)
+                        NULL);
+ }
+ 
+-/* As soon as a deserializer is there, 
+- * the note HAS a path, a GFile, and most probably an icon.*/
+-static void
+-biji_note_obj_load_icon (BijiNoteObj *note)
+-{
+-  gchar *filename;
+-  GdkPixbuf *retval;
+-  GError *error = NULL;
+-
+-  filename = biji_note_obj_get_icon_file (note);
+-  retval = gdk_pixbuf_new_from_file (filename, &error);
+-
+-  if (error)
+-     g_error_free (error);
+-
+-  else
+-     biji_note_obj_set_icon (note, retval);
+-
+-  g_free (filename);
+-}
+-
+ gboolean
+ biji_lazy_deserialize (BijiNoteObj *note)
+ {
+@@ -665,7 +644,5 @@ biji_lazy_deserialize (BijiNoteObj *note)
+   result = biji_lazy_deserialize_internal (bld);
+   g_clear_object (&bld);
+ 
+-  biji_note_obj_load_icon (note);
+-
+   return result;
+ }
+diff --git a/src/libbiji/provider/biji-own-cloud-note.c b/src/libbiji/provider/biji-own-cloud-note.c
+index b3568bc..c85f287 100644
+--- a/src/libbiji/provider/biji-own-cloud-note.c
++++ b/src/libbiji/provider/biji-own-cloud-note.c
+@@ -176,7 +176,6 @@ on_content_replaced  (GObject *source_object,
+ 
+   else
+   {
+-    biji_note_obj_save_icon (user_data);
+     ocloud_note_ensure_ressource (user_data);
+   }
+ }
+diff --git a/src/libbiji/serializer/biji-lazy-serializer.c b/src/libbiji/serializer/biji-lazy-serializer.c
+index bf9a7c1..15ba46b 100644
+--- a/src/libbiji/serializer/biji-lazy-serializer.c
++++ b/src/libbiji/serializer/biji-lazy-serializer.c
+@@ -269,27 +269,6 @@ biji_lazy_serialize_internal (BijiLazySerializer *self)
+   return retval;
+ }
+ 
+-/* No matter if icon is saved or not.
+- * We just try */
+-void
+-biji_note_obj_save_icon (BijiNoteObj *note)
+-{
+-  gchar *filename;
+-  GError *error = NULL;
+-
+-  /* Png */
+-  filename = biji_note_obj_get_icon_file (note);
+-  gdk_pixbuf_save (biji_item_get_icon (BIJI_ITEM (note)), filename, "png", &error, NULL);
+-
+-  if (error)
+-  {
+-    g_warning ("%s", error->message);
+-    g_error_free (error);
+-  }
+-
+-  g_free (filename);
+-}
+-
+ gboolean
+ biji_lazy_serialize (BijiNoteObj *note)
+ {
+@@ -301,8 +280,6 @@ biji_lazy_serialize (BijiNoteObj *note)
+   result = biji_lazy_serialize_internal (self);
+   g_object_unref (self);
+ 
+-  biji_note_obj_save_icon (note);
+-
+   return result;
+ }
+ 
+diff --git a/src/libbiji/serializer/biji-lazy-serializer.h b/src/libbiji/serializer/biji-lazy-serializer.h
+index 4cfa8ec..b0822e1 100644
+--- a/src/libbiji/serializer/biji-lazy-serializer.h
++++ b/src/libbiji/serializer/biji-lazy-serializer.h
+@@ -58,12 +58,6 @@ GType            biji_lazy_serializer_get_type           (void) G_GNUC_CONST;
+ 
+ gboolean         biji_lazy_serialize                     (BijiNoteObj *note);
+ 
+-
+-/* biji_lazy_serialize is for local notes & include icon save
+- * however, icon can still be saved separately */
+-
+-void             biji_note_obj_save_icon                 (BijiNoteObj *note);
+-
+ G_END_DECLS
+ 
+ #endif /* _BIJI_LAZY_SERIALIZER_H_ */
+-- 
+cgit v0.12
+

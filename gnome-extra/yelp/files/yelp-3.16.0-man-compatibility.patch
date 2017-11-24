@@ -28,7 +28,7 @@ index 0ae9d60..0037ecd 100644
 --- a/libyelp/Makefile.am
 +++ b/libyelp/Makefile.am
 @@ -1,4 +1,5 @@
- lib_LTLIBRARIES = libyelp.la
+ lib_LTLIBRARIES = libyelpcommon.la
 +libexec_SCRIPTS = yelp-groff
  
  libyelp_la_SOURCES =                \

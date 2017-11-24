@@ -24,12 +24,21 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	dev-util/itstool
+	gnome-base/gnome-common
 	>=sys-devel/gettext-0.19.4
 	virtual/pkgconfig
 	test? ( app-text/yelp-tools )
 "
-# eautoreconf needs:
-#	>=gnome-base/gnome-common-2.12
+
+src_prepare() {
+	# From GNOME:
+	# 	https://git.gnome.org/browse/zenity/commit/?id=fac40e9c46160a0915d528062dfd19c1afaeac0e
+	# 	https://git.gnome.org/browse/zenity/commit/?id=61c53a042418562c30e816fdd0c63caf2fa9f1b3
+	eapply "${FILESDIR}"/${PN}-3.18.1-fixing-html-option-being-parsed-to-other-dialogs-rather-then-text-info.patch
+	eapply "${FILESDIR}"/${PN}-3.18.1.1-fix-compilation-when-webkitgtk-is-not-installed.patch
+
+	gnome2_src_prepare
+}
 
 src_configure() {
 	gnome2_src_configure \

@@ -1,0 +1,50 @@
+From b84e95e76d5e4d36ac6c1743d821684045f6168c Mon Sep 17 00:00:00 2001
+From: Pierre-Yves Luyten <py@luyten.fr>
+Date: Wed, 8 Jul 2015 00:46:15 +0200
+Subject: get_last_change_date_str : add exceptions
+
+This function sometimes crashes.
+See rh BZ#1204815
+---
+ src/libbiji/biji-note-id.c  | 4 ++++
+ src/libbiji/biji-note-obj.c | 2 ++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/src/libbiji/biji-note-id.c b/src/libbiji/biji-note-id.c
+index e4d515a..a64a795 100644
+--- a/src/libbiji/biji-note-id.c
++++ b/src/libbiji/biji-note-id.c
+@@ -261,6 +261,8 @@ biji_note_id_get_content (BijiNoteID *id)
+ gint64
+ biji_note_id_get_mtime (BijiNoteID *n)
+ {
++  g_return_val_if_fail (BIJI_IS_NOTE_ID (n), 0);
++
+   return n->priv->mtime;
+ }
+ 
+@@ -268,6 +270,8 @@ biji_note_id_get_mtime (BijiNoteID *n)
+ gboolean
+ biji_note_id_set_mtime (BijiNoteID *n, gint64 time)
+ {
++  g_return_if_fail (BIJI_IS_NOTE_ID (n));
++
+   if (n->priv->mtime != time)
+   {
+     n->priv->mtime = time;
+diff --git a/src/libbiji/biji-note-obj.c b/src/libbiji/biji-note-obj.c
+index 34eba31..c69295c 100644
+--- a/src/libbiji/biji-note-obj.c
++++ b/src/libbiji/biji-note-obj.c
+@@ -370,6 +370,8 @@ biji_note_obj_get_mtime (BijiItem *note)
+ gchar *
+ biji_note_obj_get_last_change_date_string (BijiNoteObj *self)
+ {
++  g_return_val_if_fail (BIJI_IS_NOTE_OBJ (self), "");
++
+   return biji_get_time_diff_with_time (
+              biji_note_id_get_mtime (self->priv->id));
+ }
+-- 
+cgit v0.12
+

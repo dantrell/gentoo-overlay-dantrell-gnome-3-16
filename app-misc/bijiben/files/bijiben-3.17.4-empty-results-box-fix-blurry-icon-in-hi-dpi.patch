@@ -1,0 +1,157 @@
+From de0858918b5e63dbc711f56d686c4a66b54f4007 Mon Sep 17 00:00:00 2001
+From: Cosimo Cecchi <cosimoc@gnome.org>
+Date: Wed, 1 Jul 2015 00:13:12 +0200
+Subject: empty-results-box: fix blurry icon in hi-dpi
+
+Just put the icon in our GResource instead of loading it from disk. Also
+don't use the pixbuf loader directly, or we won't get scaling factor and
+CSS styling.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=751683
+---
+ data/icons/hicolor_actions_scalable_note.svg | 23 ---------------------
+ src/Makefile.am                              |  1 +
+ src/bjb-empty-results-box.c                  | 31 +++++++---------------------
+ src/bjb.gresource.xml                        |  1 +
+ src/resources/note-symbolic.svg              | 23 +++++++++++++++++++++
+ 5 files changed, 33 insertions(+), 46 deletions(-)
+ delete mode 100644 data/icons/hicolor_actions_scalable_note.svg
+ create mode 100644 src/resources/note-symbolic.svg
+
+diff --git a/data/icons/hicolor_actions_scalable_note.svg b/data/icons/hicolor_actions_scalable_note.svg
+deleted file mode 100644
+index 825e130..0000000
+--- a/data/icons/hicolor_actions_scalable_note.svg
++++ /dev/null
+@@ -1,23 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+-<!-- Created with Inkscape (http://www.inkscape.org/) -->
+-<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="16" height="16" id="svg6320" version="1.1" inkscape:version="0.48.4 r9939" sodipodi:docname="New document 3">
+-  <defs id="defs6322"/>
+-  <sodipodi:namedview id="base" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:zoom="22" inkscape:cx="4.6043651" inkscape:cy="12.443382" inkscape:current-layer="layer1" showgrid="true" inkscape:document-units="px" inkscape:grid-bbox="true" inkscape:window-width="1920" inkscape:window-height="1134" inkscape:window-x="0" inkscape:window-y="27" inkscape:window-maximized="1">
+-    <inkscape:grid type="xygrid" id="grid6339" empspacing="5" visible="true" enabled="true" snapvisiblegridlinesonly="true"/>
+-  </sodipodi:namedview>
+-  <metadata id="metadata6325">
+-    <rdf:RDF>
+-      <cc:Work rdf:about="">
+-        <dc:format>image/svg+xml</dc:format>
+-        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+-        <dc:title/>
+-      </cc:Work>
+-    </rdf:RDF>
+-  </metadata>
+-  <g id="layer1" inkscape:label="Layer 1" inkscape:groupmode="layer" transform="translate(0,-48)">
+-    <g style="display:inline;enable-background:new" transform="translate(-377,-317)" id="g6293">
+-      <rect style="fill:#ef2929;fill-opacity:0;stroke:none" id="rect6295" width="16" height="16" x="377" y="365"/>
+-      <path style="fill:#bebebe;fill-opacity:1;stroke:none" d="m 378,366.00026 0,14.02148 9,-0.0217 0,-5 5,0 0,-9.00017 z M 388.00634,376 388,380 l 4,-4 z" id="path6297" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccccccccc"/>
+-    </g>
+-  </g>
+-</svg>
+\ No newline at end of file
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 1075ab1..e8e1811 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -35,6 +35,7 @@ bijiben_LDFLAGS = \
+ resource_files = \
+ 	resources/Adwaita.css \
+ 	resources/app-menu.ui \
++	resources/note-symbolic.svg \
+ 	resources/thumbnail-frame.png
+ 
+ bjb-resources.c: bjb.gresource.xml $(resource_files)
+diff --git a/src/bjb-empty-results-box.c b/src/bjb-empty-results-box.c
+index 9ea56f2..200c446 100644
+--- a/src/bjb-empty-results-box.c
++++ b/src/bjb-empty-results-box.c
+@@ -48,10 +48,10 @@ bjb_empty_results_box_constructed (GObject *object)
+   BjbEmptyResultsBox *self;
+   BjbEmptyResultsBoxPrivate *priv;
+   GtkStyleContext *context;
+-  GdkPixbuf *pixbuf;
+   GtkWidget *labels_grid;
+-  gchar *label, *icons_path, *note_icon_path, *markup;
+-  GError *error;
++  gchar *label, *markup;
++  GFile *note_icon_file;
++  GIcon *icon;
+ 
+   G_OBJECT_CLASS (bjb_empty_results_box_parent_class)->constructed (object);
+   self = BJB_EMPTY_RESULTS_BOX (object);
+@@ -68,27 +68,12 @@ bjb_empty_results_box_constructed (GObject *object)
+   context = gtk_widget_get_style_context (GTK_WIDGET (self));
+   gtk_style_context_add_class (context, "dim-label");
+ 
+-  icons_path = (gchar*) bijiben_get_bijiben_dir ();
+-  note_icon_path = g_build_filename (icons_path,
+-                                "bijiben",
+-                                "icons",
+-                                "hicolor",
+-                                "scalable",
+-                                "actions",
+-                                "note.svg",
+-                                NULL);
++  note_icon_file = g_file_new_for_uri ("resource://org/gnome/bijiben/note-symbolic.svg");
++  icon = g_file_icon_new (note_icon_file);
++  g_object_unref (note_icon_file);
+ 
+-  error = NULL;
+-  pixbuf = gdk_pixbuf_new_from_file_at_size (note_icon_path, 64, 64, &error);
+-
+-  if (error)
+-  {
+-    g_warning ("%s", error->message);
+-    g_error_free (error);
+-  }
+-
+-  priv->image  = gtk_image_new_from_pixbuf (pixbuf);
+-  g_free (note_icon_path);
++  priv->image  = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_DIALOG);
++  g_object_unref (icon);
+ 
+   gtk_container_add (GTK_CONTAINER (self), priv->image);
+ 
+diff --git a/src/bjb.gresource.xml b/src/bjb.gresource.xml
+index f156788..792c555 100644
+--- a/src/bjb.gresource.xml
++++ b/src/bjb.gresource.xml
+@@ -4,5 +4,6 @@
+     <file alias="Adwaita.css">resources/Adwaita.css</file>
+     <file alias="app-menu.ui">resources/app-menu.ui</file>
+     <file alias="thumbnail-frame.png">resources/thumbnail-frame.png</file>
++    <file alias="note-symbolic.svg">resources/note-symbolic.svg</file>
+   </gresource>
+ </gresources>
+diff --git a/src/resources/note-symbolic.svg b/src/resources/note-symbolic.svg
+new file mode 100644
+index 0000000..825e130
+--- /dev/null
++++ b/src/resources/note-symbolic.svg
+@@ -0,0 +1,23 @@
++<?xml version="1.0" encoding="UTF-8" standalone="no"?>
++<!-- Created with Inkscape (http://www.inkscape.org/) -->
++<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="16" height="16" id="svg6320" version="1.1" inkscape:version="0.48.4 r9939" sodipodi:docname="New document 3">
++  <defs id="defs6322"/>
++  <sodipodi:namedview id="base" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:zoom="22" inkscape:cx="4.6043651" inkscape:cy="12.443382" inkscape:current-layer="layer1" showgrid="true" inkscape:document-units="px" inkscape:grid-bbox="true" inkscape:window-width="1920" inkscape:window-height="1134" inkscape:window-x="0" inkscape:window-y="27" inkscape:window-maximized="1">
++    <inkscape:grid type="xygrid" id="grid6339" empspacing="5" visible="true" enabled="true" snapvisiblegridlinesonly="true"/>
++  </sodipodi:namedview>
++  <metadata id="metadata6325">
++    <rdf:RDF>
++      <cc:Work rdf:about="">
++        <dc:format>image/svg+xml</dc:format>
++        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
++        <dc:title/>
++      </cc:Work>
++    </rdf:RDF>
++  </metadata>
++  <g id="layer1" inkscape:label="Layer 1" inkscape:groupmode="layer" transform="translate(0,-48)">
++    <g style="display:inline;enable-background:new" transform="translate(-377,-317)" id="g6293">
++      <rect style="fill:#ef2929;fill-opacity:0;stroke:none" id="rect6295" width="16" height="16" x="377" y="365"/>
++      <path style="fill:#bebebe;fill-opacity:1;stroke:none" d="m 378,366.00026 0,14.02148 9,-0.0217 0,-5 5,0 0,-9.00017 z M 388.00634,376 388,380 l 4,-4 z" id="path6297" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccccccccc"/>
++    </g>
++  </g>
++</svg>
+\ No newline at end of file
+-- 
+cgit v0.12
+
