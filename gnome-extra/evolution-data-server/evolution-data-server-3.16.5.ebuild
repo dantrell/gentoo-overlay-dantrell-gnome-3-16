@@ -74,13 +74,6 @@ pkg_setup() {
 }
 
 src_prepare() {
-	# Fix compilation flags crazyness, upstream bug #653157
-	sed 's/^\(AM_CFLAGS="\)$WARNING_FLAGS/\1/' \
-		-i configure || die "sed failed"
-
-	# Fix relink issues in src_install
-	ELTCONF="--reverse-deps"
-
 	use vala && vala_src_prepare
 	gnome2_src_prepare
 }
