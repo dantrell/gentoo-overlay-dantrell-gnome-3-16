@@ -126,16 +126,16 @@ pkg_setup() {
 
 src_prepare() {
 	# make custom session work, bug #216984, upstream bug #737578
-	eapply "${FILESDIR}/${PN}-3.2.1.1-custom-session.patch"
+	eapply "${FILESDIR}"/${PN}-3.2.1.1-custom-session.patch
 
 	# ssh-agent handling must be done at xinitrc.d, bug #220603
-	eapply "${FILESDIR}/${PN}-2.32.0-xinitrc-ssh-agent.patch"
+	eapply "${FILESDIR}"/${PN}-2.32.0-xinitrc-ssh-agent.patch
 
 	# Gentoo does not have a fingerprint-auth pam stack
-	eapply "${FILESDIR}/${PN}-3.8.4-fingerprint-auth.patch"
+	eapply "${FILESDIR}"/${PN}-3.8.4-fingerprint-auth.patch
 
 	# Show logo when branding is enabled
-	use branding && eapply "${FILESDIR}/${PN}-3.8.4-logo.patch"
+	use branding && eapply "${FILESDIR}"/${PN}-3.8.4-logo.patch
 
 	if use elogind; then
 		eapply "${FILESDIR}"/${PN}-3.16.4-remove-deprecated-consolekit-code.patch
@@ -200,8 +200,8 @@ src_install() {
 	fi
 
 	exeinto /etc/X11/xinit/xinitrc.d
-	newexe "${FILESDIR}/49-keychain-r1" 49-keychain
-	newexe "${FILESDIR}/50-ssh-agent-r1" 50-ssh-agent
+	newexe "${FILESDIR}"/49-keychain-r1 49-keychain
+	newexe "${FILESDIR}"/50-ssh-agent-r1 50-ssh-agent
 
 	# gdm user's home directory
 	keepdir /var/lib/gdm
