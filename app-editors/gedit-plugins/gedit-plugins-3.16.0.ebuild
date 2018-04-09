@@ -54,7 +54,7 @@ DEPEND="${RDEPEND}
 "
 
 pkg_setup() {
-	use python && [[ ${MERGE_TYPE} != binary ]] && python-single-r1_pkg_setup
+	use python && python-single-r1_pkg_setup
 }
 
 src_configure() {
