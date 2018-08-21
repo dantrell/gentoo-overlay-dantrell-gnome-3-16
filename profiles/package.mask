@@ -109,6 +109,7 @@ gnome-base/gnome-desktop::gnome-kit
 gnome-base/gnome-extra-apps::gentoo
 gnome-base/gnome-extra-apps::gnome-kit
 gnome-base/gnome-flashback::gentoo
+gnome-base/gnome-flashback::gnome-kit
 gnome-base/gnome-keyring::gentoo
 gnome-base/gnome-keyring::gnome-kit
 gnome-base/gnome-light::gentoo
@@ -255,5 +256,6 @@ x11-themes/gnome-themes-standard::gnome-kit
 x11-themes/gtk-engines-adwaita::gentoo
 x11-themes/gtk-engines-adwaita::gnome-kit
 x11-wm/metacity::gentoo
+x11-wm/metacity::gnome-kit
 x11-wm/mutter::gentoo
 x11-wm/mutter::gnome-kit
