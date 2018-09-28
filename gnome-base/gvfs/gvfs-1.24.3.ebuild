@@ -72,8 +72,8 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	# From GNOME:
-	# 	https://git.gnome.org/browse/gvfs/commit/?id=48877cbca19d13f4bdb9aae4bf366e78831cedc4
-	# 	https://git.gnome.org/browse/gvfs/commit/?id=3424bef7ef71dc3a8c2c71310671cd6d39e7b3e7
+	# 	https://gitlab.gnome.org/GNOME/gvfs/commit/48877cbca19d13f4bdb9aae4bf366e78831cedc4
+	# 	https://gitlab.gnome.org/GNOME/gvfs/commit/3424bef7ef71dc3a8c2c71310671cd6d39e7b3e7
 	eapply "${FILESDIR}"/${PN}-1.24.4-gvfs-open-also-replace-dashes-when-computing-object-path.patch
 	eapply "${FILESDIR}"/${PN}-1.31.4-metadata-include-headers-for-device-number-functionality.patch
 

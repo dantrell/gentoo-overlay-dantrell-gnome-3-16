@@ -55,7 +55,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.14.0-unittest-2.patch
 
 	# From GNOME:
-	# 	https://git.gnome.org/browse/epiphany/commit/?id=88f3ef095ec13a9e08ec31a0f145b72fea62fe60
+	# 	https://gitlab.gnome.org/GNOME/epiphany/commit/88f3ef095ec13a9e08ec31a0f145b72fea62fe60
 	"${FILESDIR}"/${PN}-3.16.3-update-for-webkitgtk-2-14-unstable-dom-api-abi-break.patch
 )
 

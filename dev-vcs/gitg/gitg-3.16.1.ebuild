@@ -66,8 +66,8 @@ src_prepare() {
 		-e 's/name="WebKit2" version="3.0"/name="WebKit2" version="4.0"/' \
 		-i Gitg-1.0.gir || die
 
-	gnome2_src_prepare
 	vala_src_prepare
+	gnome2_src_prepare
 }
 
 src_configure() {

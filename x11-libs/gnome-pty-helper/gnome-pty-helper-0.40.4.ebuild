@@ -8,7 +8,7 @@ inherit autotools gnome2
 DESCRIPTION="GNOME Setuid helper for opening ptys"
 HOMEPAGE="https://wiki.gnome.org/action/show/Apps/Terminal/VTE"
 # gnome-pty-helper is inside vte
-SRC_URI="https://git.gnome.org/browse/${GNOME_ORG_MODULE}/snapshot/${GNOME_ORG_MODULE}-${PV}.tar.xz"
+SRC_URI="https://gitlab.gnome.org/GNOME/${GNOME_ORG_MODULE}/-/archive/${PV}/${GNOME_ORG_MODULE}-${PV}.tar.bz2"
 
 LICENSE="LGPL-2"
 SLOT="0"

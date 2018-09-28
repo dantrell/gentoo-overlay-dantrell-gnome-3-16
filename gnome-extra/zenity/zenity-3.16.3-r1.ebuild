@@ -32,8 +32,8 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	# From GNOME:
-	# 	https://git.gnome.org/browse/zenity/commit/?id=fac40e9c46160a0915d528062dfd19c1afaeac0e
-	# 	https://git.gnome.org/browse/zenity/commit/?id=61c53a042418562c30e816fdd0c63caf2fa9f1b3
+	# 	https://gitlab.gnome.org/GNOME/zenity/commit/fac40e9c46160a0915d528062dfd19c1afaeac0e
+	# 	https://gitlab.gnome.org/GNOME/zenity/commit/61c53a042418562c30e816fdd0c63caf2fa9f1b3
 	eapply "${FILESDIR}"/${PN}-3.18.1-fixing-html-option-being-parsed-to-other-dialogs-rather-then-text-info.patch
 	eapply "${FILESDIR}"/${PN}-3.18.1.1-fix-compilation-when-webkitgtk-is-not-installed.patch
 

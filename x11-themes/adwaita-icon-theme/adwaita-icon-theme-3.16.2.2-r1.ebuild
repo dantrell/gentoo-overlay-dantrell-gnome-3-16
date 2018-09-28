@@ -5,7 +5,7 @@ EAPI="6"
 inherit gnome2
 
 DESCRIPTION="GNOME default icon theme"
-HOMEPAGE="https://git.gnome.org/browse/adwaita-icon-theme/"
+HOMEPAGE="https://gitlab.gnome.org/GNOME/adwaita-icon-theme/"
 SRC_URI="${SRC_URI}
 	branding? ( https://www.mail-archive.com/tango-artists@lists.freedesktop.org/msg00043/tango-gentoo-v1.1.tar.gz )
 "
@@ -40,7 +40,7 @@ DEPEND="${COMMON_DEPEND}
 
 src_prepare() {
 	# From GNOME:
-	# 	https://git.gnome.org/browse/adwaita-icon-theme/commit/?id=f07e61189a779a825bfa531849454d307c70c1b9
+	# 	https://gitlab.gnome.org/GNOME/adwaita-icon-theme/commit/f07e61189a779a825bfa531849454d307c70c1b9
 	eapply "${FILESDIR}"/${PN}-3.17.3-fix-intltool-locale-directory-location.patch
 
 	if use branding; then

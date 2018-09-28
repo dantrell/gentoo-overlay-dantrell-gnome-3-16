@@ -39,7 +39,7 @@ DEPEND="${COMMON_DEPEND}
 
 src_prepare() {
 	# From GNOME:
-	# 	https://git.gnome.org/browse/libgweather/commit/?id=6b0586d95f5632c92b2fbbcb68426bfe5be51098
+	# 	https://gitlab.gnome.org/GNOME/libgweather/commit/6b0586d95f5632c92b2fbbcb68426bfe5be51098
 	eapply "${FILESDIR}"/${PN}-3.18.2-switch-to-new-metar-data-provider.patch
 
 	use vala && vala_src_prepare

@@ -47,7 +47,7 @@ src_prepare() {
 	fi
 
 	# From GNOME:
-	# 	https://git.gnome.org/browse/devhelp/commit/?id=05659428acc6da4e6a85d37d9e0d3b00e6adde9d
+	# 	https://gitlab.gnome.org/GNOME/devhelp/commit/05659428acc6da4e6a85d37d9e0d3b00e6adde9d
 	eapply "${FILESDIR}"/${PN}-3.17.3-use-webkit-navigation-policy-decision-get-navigation-action.patch
 
 	eautoreconf

@@ -136,8 +136,8 @@ src_prepare() {
 	eapply "${FILESDIR}"/${PN}-1.4.0-have-gstreamer-fix.patch
 
 	eautoreconf # See bug #367975
-	gnome2_src_prepare
 	vala_src_prepare
+	gnome2_src_prepare
 }
 
 src_configure() {

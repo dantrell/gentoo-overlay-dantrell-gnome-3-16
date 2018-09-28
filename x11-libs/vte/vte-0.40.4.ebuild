@@ -7,7 +7,7 @@ inherit autotools gnome2 vala
 
 DESCRIPTION="Library providing a virtual terminal emulator widget"
 HOMEPAGE="https://wiki.gnome.org/action/show/Apps/Terminal/VTE"
-SRC_URI="https://git.gnome.org/browse/${PN}/snapshot/${P}.tar.xz"
+SRC_URI="https://gitlab.gnome.org/GNOME/${PN}/-/archive/${PV}/${P}.tar.bz2"
 
 LICENSE="LGPL-2+"
 SLOT="2.91"
@@ -49,7 +49,7 @@ RDEPEND="${RDEPEND}
 src_prepare() {
 	if has_version ">=dev-util/gperf-3.1"; then
 		# From GNOME:
-		# 	https://git.gnome.org/browse/vte/commit/?id=1226f58cd97aa06f0ce58791153ca1f58e89658a
+		# 	https://gitlab.gnome.org/GNOME/vte/commit/1226f58cd97aa06f0ce58791153ca1f58e89658a
 		eapply "${FILESDIR}"/${PN}-0.47.90-emulation-try-to-work-with-newer-gperf.patch
 	fi
 
