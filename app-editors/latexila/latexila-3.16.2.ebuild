@@ -17,7 +17,7 @@ IUSE="+introspection +latexmk rubber"
 
 COMMON_DEPEND="
 	$(vala_depend)
-	app-text/enchant
+	app-text/enchant:0=
 	>=app-text/gtkspell-3.0.4:3
 	>=dev-libs/glib-2.40:2[dbus]
 	>=dev-libs/libgee-0.10:0.8=
