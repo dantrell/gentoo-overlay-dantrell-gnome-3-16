@@ -1,0 +1,24 @@
+From f8b24884b5cc6fbd582eae5e7aab3e234b3c4c26 Mon Sep 17 00:00:00 2001
+From: Matthias Clasen <mclasen@redhat.com>
+Date: Wed, 18 Nov 2015 10:21:15 -0500
+Subject: [PATCH] Document GDK_TOUCHPAD_GESTURE_MASK
+
+---
+ gdk/gdktypes.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/gdk/gdktypes.h b/gdk/gdktypes.h
+index 252922d569..bcd499dddb 100644
+--- a/gdk/gdktypes.h
++++ b/gdk/gdktypes.h
+@@ -392,6 +392,7 @@ typedef enum
+  * @GDK_SCROLL_MASK: receive scroll events
+  * @GDK_TOUCH_MASK: receive touch events. Since 3.4
+  * @GDK_SMOOTH_SCROLL_MASK: receive smooth scrolling events. Since 3.4
++   @GDK_TOUCHPAD_GESTURE_MASK: receive touchpad gesture events. Since 3.18
+  * @GDK_ALL_EVENTS_MASK: the combination of all the above event masks.
+  *
+  * A set of bit-flags to indicate which events a window is to receive.
+-- 
+2.18.1
+

@@ -3,7 +3,7 @@
 EAPI="6"
 PYTHON_COMPAT=( python{2_7,3_4,3_5,3_6,3_7} )
 
-inherit gnome2 python-r1
+inherit autotools gnome2 python-r1
 
 DESCRIPTION="Python binding to at-spi library"
 HOMEPAGE="https://wiki.gnome.org/Accessibility"
@@ -42,6 +42,7 @@ PATCHES=(
 )
 
 src_prepare() {
+	eautoreconf
 	gnome2_src_prepare
 	python_copy_sources
 }

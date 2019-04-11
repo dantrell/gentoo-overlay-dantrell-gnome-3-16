@@ -1,0 +1,42 @@
+From 8c2b3930daa6d3886626907fbc79b812579b42d7 Mon Sep 17 00:00:00 2001
+From: Carlos Garnacho <carlosg@gnome.org>
+Date: Thu, 9 Jul 2015 18:42:35 +0200
+Subject: [PATCH] gdk: Add GDK_TOUCHPAD_GESTURE_MASK to GdkEventMask
+
+Users will need to manually select on this in order to receive gesture
+events.
+---
+ gdk/gdktypes.h  | 1 +
+ gdk/gdkwindow.c | 4 +++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/gdk/gdktypes.h b/gdk/gdktypes.h
+index 6ff71a7b3f..4c355aa5eb 100644
+--- a/gdk/gdktypes.h
++++ b/gdk/gdktypes.h
+@@ -440,6 +440,7 @@ typedef enum
+   GDK_SCROLL_MASK               = 1 << 21,
+   GDK_TOUCH_MASK                = 1 << 22,
+   GDK_SMOOTH_SCROLL_MASK        = 1 << 23,
++  GDK_TOUCHPAD_GESTURE_MASK     = 1 << 24,
+   GDK_ALL_EVENTS_MASK           = 0xFFFFFE
+ } GdkEventMask;
+ 
+diff --git a/gdk/gdkwindow.c b/gdk/gdkwindow.c
+index 18ba8ac8af..752cb7f822 100644
+--- a/gdk/gdkwindow.c
++++ b/gdk/gdkwindow.c
+@@ -7565,7 +7565,9 @@ static const guint type_masks[] = {
+   GDK_TOUCH_MASK, /* GDK_TOUCH_BEGIN = 37 */
+   GDK_TOUCH_MASK, /* GDK_TOUCH_UPDATE = 38 */
+   GDK_TOUCH_MASK, /* GDK_TOUCH_END = 39 */
+-  GDK_TOUCH_MASK /* GDK_TOUCH_CANCEL = 40 */
++  GDK_TOUCH_MASK, /* GDK_TOUCH_CANCEL = 40 */
++  GDK_TOUCHPAD_GESTURE_MASK, /* GDK_TOUCHPAD_SWIPE = 41 */
++  GDK_TOUCHPAD_GESTURE_MASK, /* GDK_TOUCHPAD_PINCH = 42 */
+ };
+ G_STATIC_ASSERT (G_N_ELEMENTS (type_masks) == GDK_EVENT_LAST);
+ 
+-- 
+2.18.1
+

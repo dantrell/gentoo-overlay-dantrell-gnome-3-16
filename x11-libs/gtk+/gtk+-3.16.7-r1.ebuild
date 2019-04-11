@@ -105,6 +105,16 @@ src_prepare() {
 	# 	https://gitlab.gnome.org/GNOME/gtk+/commit/631f6b536485829a0bd00532f5826ad302b4951b
 	eapply "${FILESDIR}"/${PN}-3.21.3-configure-fix-detecting-cups-2-x.patch
 
+	# From GNOME:
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/a3b402a9498787d2704f6ab228d3814683c946eb
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/8c2b3930daa6d3886626907fbc79b812579b42d7
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/5092febaf841939c7b3539ef447f43e1ce464037
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/f8b24884b5cc6fbd582eae5e7aab3e234b3c4c26
+	eapply "${FILESDIR}"/${PN}-3.17.7-gdk-add-touchpad-gesture-events-and-event-types.patch
+	eapply "${FILESDIR}"/${PN}-3.17.7-gdk-add-gdk-touchpad-gesture-mask-to-gdkeventmask.patch
+	eapply "${FILESDIR}"/${PN}-3.17.7-gdk-proxy-touchpad-events-through-the-client-side-window-hierarchy.patch
+	eapply "${FILESDIR}"/${PN}-3.18.6-document-gdk-touchpad-gesture-mask.patch
+
 	# -O3 and company cause random crashes in applications. Bug #133469
 	replace-flags -O3 -O2
 	strip-flags

@@ -6,7 +6,7 @@ VALA_USE_DEPEND="vapigen"
 inherit autotools gnome2 vala
 
 DESCRIPTION="Library providing a virtual terminal emulator widget"
-HOMEPAGE="https://wiki.gnome.org/action/show/Apps/Terminal/VTE"
+HOMEPAGE="https://wiki.gnome.org/Apps/Terminal/VTE"
 SRC_URI="https://gitlab.gnome.org/GNOME/${PN}/-/archive/${PV}/${P}.tar.bz2"
 
 LICENSE="LGPL-2+"
