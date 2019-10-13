@@ -23,7 +23,7 @@ RDEPEND="
 	>=dev-libs/libgcrypt-1.2.2:0=
 	>=sys-apps/dbus-1.1.1
 	caps? ( sys-libs/libcap-ng )
-	pam? ( virtual/pam )
+	pam? ( sys-libs/pam )
 	selinux? ( sec-policy/selinux-gnome )
 	>=app-crypt/gnupg-2.0.28:=
 "
