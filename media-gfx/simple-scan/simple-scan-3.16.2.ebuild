@@ -21,7 +21,7 @@ COMMON_DEPEND="
 	>=media-gfx/sane-backends-1.0.20:=
 	>=sys-libs/zlib-1.2.3.1:=
 	virtual/jpeg:0=
-	virtual/libgudev:=
+	dev-libs/libgudev:=
 	x11-libs/cairo:=
 	>=x11-libs/gtk+-3:3
 	>=x11-misc/colord-0.1.24:=[udev]
