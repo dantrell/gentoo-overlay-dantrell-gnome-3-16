@@ -14,6 +14,8 @@ KEYWORDS="*"
 
 IUSE="test"
 
+RESTRICT="!test? ( test )"
+
 COMMON_DEPEND="
 	>=app-accessibility/at-spi2-core-2.15.5[${MULTILIB_USEDEP}]
 	>=dev-libs/atk-2.15.4[${MULTILIB_USEDEP}]
