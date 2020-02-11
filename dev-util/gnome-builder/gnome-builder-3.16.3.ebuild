@@ -5,7 +5,7 @@ PYTHON_COMPAT=( python{3_6,3_7,3_8} )
 
 inherit gnome2 python-single-r1 virtualx
 
-DESCRIPTION="Builder attempts to be an IDE for writing software for GNOME"
+DESCRIPTION="An IDE for writing GNOME-based software"
 HOMEPAGE="https://wiki.gnome.org/Apps/Builder"
 
 LICENSE="GPL-3+ GPL-2+ LGPL-3+ LGPL-2+ MIT CC-BY-SA-3.0 CC0-1.0"
