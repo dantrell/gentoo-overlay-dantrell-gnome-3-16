@@ -74,7 +74,6 @@ src_configure() {
 	gnome2_src_configure \
 		--disable-static \
 		--disable-deprecations \
-		--disable-dependency-tracking \
 		$(use_enable debug) \
 		$(use_enable glade glade-catalog) \
 		$(use_enable python)

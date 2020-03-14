@@ -40,6 +40,6 @@ src_prepare() {
 src_configure() {
 	# Workaround until we know how to fix bug #475318
 	gnome2_src_configure \
-		--prefix="${EPREFIX}/usr" \
+		--prefix="${EPREFIX}"/usr \
 		--bindir="${GAMES_BINDIR}"
 }
