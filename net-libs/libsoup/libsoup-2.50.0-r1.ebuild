@@ -2,7 +2,7 @@
 
 EAPI="6"
 GNOME2_LA_PUNT="yes"
-PYTHON_COMPAT=( python{3_6,3_7,3_8} )
+PYTHON_COMPAT=( python{3_6,3_7,3_8,3_9} )
 
 inherit gnome2 multilib-minimal python-any-r1
 
@@ -30,7 +30,7 @@ DEPEND="${RDEPEND}
 	>=dev-util/gtk-doc-am-1.10
 	>=dev-util/intltool-0.35
 	sys-devel/gettext
-	>=virtual/pkgconfig-0-r1[${MULTILIB_USEDEP}]
+	virtual/pkgconfig
 	test? ( >=dev-libs/glib-2.40:2[${MULTILIB_USEDEP}] )
 "
 #	test? (	www-servers/apache[ssl,apache2_modules_auth_digest,apache2_modules_alias,apache2_modules_auth_basic,
