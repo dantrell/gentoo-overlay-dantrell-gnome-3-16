@@ -29,7 +29,7 @@ DEPEND="${RDEPEND}
 S="${WORKDIR}/${GNOME_ORG_MODULE}-${PV}/${PN}"
 
 src_prepare() {
-	# As recommended by upstream (/usr/libexec/$PN is a setgid binary)
+	# As recommended by upstream (/usr/libexec/${PN} is a setgid binary)
 	if use hardened; then
 		export SUID_CFLAGS="-fPIE ${SUID_CFLAGS}"
 		export SUID_LDFLAGS="-pie ${SUID_LDFLAGS}"
