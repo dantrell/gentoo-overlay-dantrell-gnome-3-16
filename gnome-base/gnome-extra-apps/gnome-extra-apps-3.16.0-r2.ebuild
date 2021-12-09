@@ -88,7 +88,7 @@ RDEPEND="
 	shotwell? ( >=media-gfx/shotwell-0.24 )
 	simple-scan? ( >=media-gfx/simple-scan-${PV} )
 	tracker? (
-		>=app-misc/tracker-1.4
+		>=app-misc/tracker-1.4:0=
 		>=gnome-extra/gnome-documents-${PV}
 		>=media-gfx/gnome-photos-${PV}
 		>=media-sound/gnome-music-${PV} )

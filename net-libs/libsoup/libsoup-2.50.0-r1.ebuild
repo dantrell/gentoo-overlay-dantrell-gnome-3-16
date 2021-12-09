@@ -6,7 +6,7 @@ PYTHON_COMPAT=( python{3_8,3_9,3_10} )
 
 inherit gnome2 multilib-minimal python-any-r1
 
-DESCRIPTION="An HTTP library implementation in C"
+DESCRIPTION="HTTP client/server library for GNOME"
 HOMEPAGE="https://wiki.gnome.org/Projects/libsoup"
 
 LICENSE="LGPL-2+"

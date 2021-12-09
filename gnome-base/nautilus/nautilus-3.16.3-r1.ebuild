@@ -12,7 +12,7 @@ LICENSE="GPL-2+ LGPL-2+ FDL-1.1"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="exif gnome +introspection packagekit +previewer sendto tracker vanilla-icon vanilla-icon-grid vanilla-menu vanilla-rename vanilla-thumbnailer xmp"
+IUSE="exif gnome +introspection +previewer sendto tracker vanilla-icon vanilla-icon-grid vanilla-menu vanilla-rename vanilla-thumbnailer xmp"
 REQUIRED_USE="!vanilla-icon-grid? ( !vanilla-icon )"
 
 # FIXME: tests fails under Xvfb, but pass when building manually
@@ -38,7 +38,7 @@ COMMON_DEPEND="
 
 	exif? ( >=media-libs/libexif-0.6.20 )
 	introspection? ( >=dev-libs/gobject-introspection-0.6.4:= )
-	tracker? ( >=app-misc/tracker-0.16:= )
+	tracker? ( >=app-misc/tracker-0.16:0= )
 	xmp? ( >=media-libs/exempi-2.1.0 )
 "
 DEPEND="${COMMON_DEPEND}
@@ -51,7 +51,6 @@ DEPEND="${COMMON_DEPEND}
 	x11-base/xorg-proto
 "
 RDEPEND="${COMMON_DEPEND}
-	packagekit? ( app-admin/packagekit-base )
 	sendto? ( !<gnome-extra/nautilus-sendto-3.0.1 )
 "
 
@@ -134,7 +133,7 @@ src_configure() {
 		--disable-update-mimedb \
 		$(use_enable exif libexif) \
 		$(use_enable introspection) \
-		$(use_enable packagekit) \
+		--disable-packagekit \
 		$(use_enable sendto nst-extension) \
 		$(use_enable tracker) \
 		$(use_enable xmp)

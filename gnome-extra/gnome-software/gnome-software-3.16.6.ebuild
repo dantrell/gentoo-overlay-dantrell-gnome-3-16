@@ -1,10 +1,10 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="6"
+EAPI="7"
 
 inherit gnome2 virtualx
 
-DESCRIPTION="Gnome install & update software"
+DESCRIPTION="GNOME utility for installing and updating applications"
 HOMEPAGE="https://wiki.gnome.org/Apps/Software"
 
 LICENSE="GPL-2+"
@@ -12,8 +12,6 @@ SLOT="0"
 KEYWORDS="*"
 
 IUSE=""
-
-RESTRICT="test"
 
 RDEPEND="
 	>=app-admin/packagekit-base-1
@@ -26,7 +24,8 @@ RDEPEND="
 	sys-auth/polkit
 	>=x11-libs/gtk+-3.16:3
 "
-DEPEND="${RDEPEND}
+DEPEND="${RDEPEND}"
+BDEPEND="
 	app-text/docbook-xml-dtd:4.2
 	dev-libs/libxslt
 	>=dev-util/intltool-0.35
@@ -45,4 +44,13 @@ src_configure() {
 	gnome2_src_configure \
 		--enable-man \
 		--disable-dogtail
+}
+
+src_install() {
+	default
+
+	# From AppStream (the /usr/share/appdata location is deprecated):
+	# 	https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#spec-component-location
+	# 	https://bugs.gentoo.org/709450
+	mv "${ED}"/usr/share/{appdata,metainfo} || die
 }
