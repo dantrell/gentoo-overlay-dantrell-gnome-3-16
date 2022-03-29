@@ -22,7 +22,7 @@ DEPEND="
 	dev-libs/libgudev:=
 	x11-libs/cairo:=
 	>=x11-libs/gtk+-3:3
-	>=x11-misc/colord-0.1.24:=[udev]
+	>=x11-misc/colord-0.1.24:=[udev(+)]
 "
 RDEPEND="${DEPEND}
 	x11-misc/xdg-utils
