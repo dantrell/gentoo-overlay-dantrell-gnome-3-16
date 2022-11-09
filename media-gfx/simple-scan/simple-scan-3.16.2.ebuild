@@ -18,7 +18,7 @@ DEPEND="
 	>=dev-libs/glib-2.32:2
 	>=media-gfx/sane-backends-1.0.20:=
 	>=sys-libs/zlib-1.2.3.1:=
-	virtual/jpeg:0=
+	media-libs/libjpeg-turbo:0=
 	dev-libs/libgudev:=
 	x11-libs/cairo:=
 	>=x11-libs/gtk+-3:3

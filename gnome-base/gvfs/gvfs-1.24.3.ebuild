@@ -43,7 +43,7 @@ RDEPEND="
 		>=app-pda/libimobiledevice-1.1.5:=
 		>=app-pda/libplist-1:= )
 	mtp? ( >=media-libs/libmtp-1.1.6 )
-	nfs? ( >=net-fs/libnfs-1.9.7 )
+	nfs? ( >=net-fs/libnfs-1.9.7:= )
 	samba? (
 		sys-libs/libunwind:=
 		>=net-fs/samba-4[client] )
