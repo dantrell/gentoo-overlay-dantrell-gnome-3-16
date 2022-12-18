@@ -1,0 +1,26 @@
+From e55b3c6501c01c085ca0583e05e1f95b4705a70f Mon Sep 17 00:00:00 2001
+From: Carlos Garnacho <carlosg@gnome.org>
+Date: Thu, 9 Jul 2015 19:35:12 +0200
+Subject: gtkgesture: Add touchpad gesture event bit to the controller evmask
+
+---
+ gtk/gtkgesture.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/gtk/gtkgesture.c b/gtk/gtkgesture.c
+index 5fc909ee6a..03733a30f9 100644
+--- a/gtk/gtkgesture.c
++++ b/gtk/gtkgesture.c
+@@ -998,7 +998,8 @@ gtk_gesture_init (GtkGesture *gesture)
+   priv->points = g_hash_table_new_full (NULL, NULL, NULL,
+                                         (GDestroyNotify) g_free);
+   gtk_event_controller_set_event_mask (GTK_EVENT_CONTROLLER (gesture),
+-                                       GDK_TOUCH_MASK);
++                                       GDK_TOUCH_MASK |
++                                       GDK_TOUCHPAD_GESTURE_MASK);
+ 
+   priv->group_link = g_list_prepend (NULL, gesture);
+ }
+-- 
+cgit v1.2.3
+

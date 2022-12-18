@@ -1,0 +1,59 @@
+From 97e67e21a1e21215f1191a5be1f2fb102fb2d6a0 Mon Sep 17 00:00:00 2001
+From: Carlos Garnacho <carlosg@gnome.org>
+Date: Thu, 9 Jul 2015 19:04:59 +0200
+Subject: gtkgesture: Filter out touchpad events by default.
+
+The gestures that don't want touchpad gesture events are majority,
+even those that want such events will only listen to subsets (eg.
+pinch, swipe,...).
+
+So it makes sense to ignore touchpad events by default, and let
+subclasses opt those in.
+---
+ gtk/gtkgesture.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/gtk/gtkgesture.c b/gtk/gtkgesture.c
+index 827d66d685..e6eefafc9e 100644
+--- a/gtk/gtkgesture.c
++++ b/gtk/gtkgesture.c
+@@ -158,6 +158,9 @@ static guint signals[N_SIGNALS] = { 0 };
+ 
+ #define BUTTONS_MASK (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK)
+ 
++#define EVENT_IS_TOUCHPAD_GESTURE(e) ((e)->type == GDK_TOUCHPAD_SWIPE || \
++                                      (e)->type == GDK_TOUCHPAD_PINCH)
++
+ GList * _gtk_gesture_get_group_link (GtkGesture *gesture);
+ 
+ G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GtkGesture, gtk_gesture, GTK_TYPE_EVENT_CONTROLLER)
+@@ -561,6 +564,18 @@ gesture_within_window (GtkGesture *gesture,
+   return FALSE;
+ }
+ 
++static gboolean
++gtk_gesture_filter_event (GtkEventController *controller,
++                          const GdkEvent     *event)
++{
++  /* Even though GtkGesture handles these events, we want
++   * touchpad gestures disabled by default, it will be
++   * subclasses which punch the holes in for the events
++   * they can possibly handle.
++   */
++  return EVENT_IS_TOUCHPAD_GESTURE (event);
++}
++
+ static gboolean
+ gtk_gesture_handle_event (GtkEventController *controller,
+                           const GdkEvent     *event)
+@@ -681,6 +696,7 @@ gtk_gesture_class_init (GtkGestureClass *klass)
+   object_class->set_property = gtk_gesture_set_property;
+   object_class->finalize = gtk_gesture_finalize;
+ 
++  controller_class->filter_event = gtk_gesture_filter_event;
+   controller_class->handle_event = gtk_gesture_handle_event;
+   controller_class->reset = gtk_gesture_reset;
+ 
+-- 
+cgit v1.2.3
+

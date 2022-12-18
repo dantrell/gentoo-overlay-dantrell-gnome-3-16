@@ -1,0 +1,29 @@
+From 862cac7fe63c712d54936548a245707f2a966e78 Mon Sep 17 00:00:00 2001
+From: Carlos Garnacho <carlosg@gnome.org>
+Date: Fri, 24 Jul 2015 11:47:27 +0200
+Subject: GtkGesture: minor cleanup
+
+We're not really using the coordinates in that function, we just
+double check it's not an unrelated event.
+---
+ gtk/gtkgesture.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/gtk/gtkgesture.c b/gtk/gtkgesture.c
+index 826b741ab1..15111c5522 100644
+--- a/gtk/gtkgesture.c
++++ b/gtk/gtkgesture.c
+@@ -417,9 +417,8 @@ _gtk_gesture_update_point (GtkGesture     *gesture,
+   GdkDevice *device;
+   gboolean existed;
+   PointData *data;
+-  gdouble x, y;
+ 
+-  if (!gdk_event_get_coords (event, &x, &y))
++  if (!gdk_event_get_coords (event, NULL, NULL))
+     return FALSE;
+ 
+   device = gdk_event_get_device (event);
+-- 
+cgit v1.2.3
+

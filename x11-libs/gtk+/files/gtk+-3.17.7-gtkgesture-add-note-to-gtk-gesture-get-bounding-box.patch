@@ -1,0 +1,31 @@
+From dc77989a1c67bce242873de0e7dc0b2f9ded6cb7 Mon Sep 17 00:00:00 2001
+From: Carlos Garnacho <carlosg@gnome.org>
+Date: Fri, 24 Jul 2015 12:59:59 +0200
+Subject: gtkgesture: Add note to gtk_gesture_get_bounding_box()
+
+This is the only function that's will be semantically confusing
+with touchpad gesture events, explain what's to be expected there.
+---
+ gtk/gtkgesture.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/gtk/gtkgesture.c b/gtk/gtkgesture.c
+index 03733a30f9..f3556de718 100644
+--- a/gtk/gtkgesture.c
++++ b/gtk/gtkgesture.c
+@@ -1352,6 +1352,12 @@ _gtk_gesture_get_last_update_time (GtkGesture       *gesture,
+  * box containing all active touches. Otherwise, %FALSE will be
+  * returned.
+  *
++ * Note: This function will yield unexpected results on touchpad
++ * gestures. Since there is no correlation between physical and
++ * pixel distances, these will look as if constrained in an
++ * infinitely small area, @rect width and height will thus be 0
++ * regardless of the number of touchpoints.
++ *
+  * Returns: %TRUE if there are active touches, %FALSE otherwise
+  *
+  * Since: 3.14
+-- 
+cgit v1.2.3
+

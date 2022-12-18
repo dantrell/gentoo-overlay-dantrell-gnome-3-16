@@ -1,0 +1,53 @@
+From 3808322f80e322195165a8162d9c8765a68bcc52 Mon Sep 17 00:00:00 2001
+From: Carlos Garnacho <carlosg@gnome.org>
+Date: Thu, 9 Jul 2015 18:55:32 +0200
+Subject: eventcontroller: Add private ::filter method
+
+This will be used right before handle_event() in order to filter
+out events, useful to make the previous "no touchpad events" behavior
+the default, and have gesture subclasses include manually the touchpad
+events they handle.
+---
+ gtk/gtkeventcontroller.c        | 4 ++++
+ gtk/gtkeventcontrollerprivate.h | 3 +++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/gtk/gtkeventcontroller.c b/gtk/gtkeventcontroller.c
+index a5cfde1e3e..5449846371 100644
+--- a/gtk/gtkeventcontroller.c
++++ b/gtk/gtkeventcontroller.c
+@@ -145,6 +145,7 @@ gtk_event_controller_class_init (GtkEventControllerClass *klass)
+ {
+   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+ 
++  klass->filter_event = gtk_event_controller_handle_event_default;
+   klass->handle_event = gtk_event_controller_handle_event_default;
+ 
+   object_class->set_property = gtk_event_controller_set_property;
+@@ -218,6 +219,9 @@ gtk_event_controller_handle_event (GtkEventController *controller,
+ 
+   controller_class = GTK_EVENT_CONTROLLER_GET_CLASS (controller);
+ 
++  if (controller_class->filter_event (controller, event))
++    return retval;
++
+   if (controller_class->handle_event)
+     {
+       g_object_ref (controller);
+diff --git a/gtk/gtkeventcontrollerprivate.h b/gtk/gtkeventcontrollerprivate.h
+index 603da71a7d..2f66ecccbc 100644
+--- a/gtk/gtkeventcontrollerprivate.h
++++ b/gtk/gtkeventcontrollerprivate.h
+@@ -36,6 +36,9 @@ struct _GtkEventControllerClass
+   void     (* reset)        (GtkEventController *controller);
+ 
+   /*<private>*/
++
++  gboolean (* filter_event) (GtkEventController *controller,
++                             const GdkEvent     *event);
+   gpointer padding[10];
+ };
+ 
+-- 
+cgit v1.2.3
+

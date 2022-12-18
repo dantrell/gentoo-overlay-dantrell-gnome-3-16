@@ -1,0 +1,33 @@
+From 777ac92862529d9b9065a2f9e86f055bbfdd4b61 Mon Sep 17 00:00:00 2001
+From: Carlos Garnacho <carlosg@gnome.org>
+Date: Thu, 9 Jul 2015 18:48:41 +0200
+Subject: gtkwidget: Ensure touchpad events trigger the bubbling phase
+
+For all other events, we run the bubble phase deep in the specific
+::motion/button-press/release/touch handlers.
+
+For touchpad events, it doesn't make sense to use GtkWidgetClass
+slots if the intended way to deal with these are gestures, so we
+run the bubble phase directly from gtk_widget_event_internal().
+---
+ gtk/gtkwidget.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/gtk/gtkwidget.c b/gtk/gtkwidget.c
+index 2f3b142352..4c158b3a71 100644
+--- a/gtk/gtkwidget.c
++++ b/gtk/gtkwidget.c
+@@ -7717,6 +7717,10 @@ gtk_widget_event_internal (GtkWidget *widget,
+ 
+       switch (event->type)
+ 	{
++        case GDK_TOUCHPAD_SWIPE:
++        case GDK_TOUCHPAD_PINCH:
++          return_val |= _gtk_widget_run_controllers (widget, event, GTK_PHASE_BUBBLE);
++          /* Fall through */
+ 	case GDK_EXPOSE:
+ 	case GDK_NOTHING:
+ 	  signal_num = -1;
+-- 
+cgit v1.2.3
+

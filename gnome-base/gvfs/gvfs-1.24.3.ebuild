@@ -79,6 +79,10 @@ src_prepare() {
 	eapply "${FILESDIR}"/${PN}-1.24.4-gvfs-open-also-replace-dashes-when-computing-object-path.patch
 	eapply "${FILESDIR}"/${PN}-1.31.4-metadata-include-headers-for-device-number-functionality.patch
 
+	# From GNOME:
+	# 	https://gitlab.gnome.org/GNOME/gvfs/-/commit/b78cc85d2dda10e5488cf23cb63008ca339836dc
+	eapply "${FILESDIR}"/${PN}-1.25.3-metadata-get-tree-from-udev-via-dbus.patch
+
 	if ! use udev; then
 		sed -e 's/gvfsd-burn/ /' \
 			-e 's/burn.mount.in/ /' \

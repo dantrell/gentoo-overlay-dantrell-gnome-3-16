@@ -12,7 +12,7 @@ LICENSE="LGPL-2+"
 SLOT="3/16" # From WebKit: http://trac.webkit.org/changeset/195811
 KEYWORDS="*"
 
-IUSE="aqua broadway cloudprint colord cups examples +introspection test vim-syntax wayland X xinerama"
+IUSE="aqua broadway cloudprint colord cups examples +introspection test +vanilla-touchpad vim-syntax wayland X xinerama"
 REQUIRED_USE="
 	|| ( aqua wayland X )
 	xinerama? ( X )
@@ -29,7 +29,7 @@ COMMON_DEPEND="
 	>=dev-libs/glib-2.43.4:2[${MULTILIB_USEDEP}]
 	media-libs/fontconfig[${MULTILIB_USEDEP}]
 	>=media-libs/libepoxy-1.0[X(+)?,${MULTILIB_USEDEP}]
-	>=x11-libs/cairo-1.14[aqua?,glib,svg,X?,${MULTILIB_USEDEP}]
+	>=x11-libs/cairo-1.14[aqua?,glib,svg(+),X?,${MULTILIB_USEDEP}]
 	>=x11-libs/gdk-pixbuf-2.30:2[introspection?,${MULTILIB_USEDEP}]
 	>=x11-libs/pango-1.36.7[introspection?,${MULTILIB_USEDEP}]
 	x11-misc/shared-mime-info
@@ -107,14 +107,53 @@ src_prepare() {
 	eapply "${FILESDIR}"/${PN}-3.21.3-configure-fix-detecting-cups-2-x.patch
 
 	# From GNOME:
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/862cac7fe63c712d54936548a245707f2a966e78
+	#
 	# 	https://gitlab.gnome.org/GNOME/gtk/commit/a3b402a9498787d2704f6ab228d3814683c946eb
 	# 	https://gitlab.gnome.org/GNOME/gtk/commit/8c2b3930daa6d3886626907fbc79b812579b42d7
 	# 	https://gitlab.gnome.org/GNOME/gtk/commit/5092febaf841939c7b3539ef447f43e1ce464037
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/6cd45af8b0afb3758df6bc7679b651033b39c9c4
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/777ac92862529d9b9065a2f9e86f055bbfdd4b61
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/3808322f80e322195165a8162d9c8765a68bcc52
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/8b1c9c0687e4d2deb65a7235e97bd1a2e63447ab
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/97e67e21a1e21215f1191a5be1f2fb102fb2d6a0
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/67ae7322e9569d106328ddab39296ffc9f64961a
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/4457be688da16811d2e558519b566b2605de346d
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/e736e8dcb997da651747804f069b5db8417c43bf
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/d756463d9b2ad1cf84c0ca4313a19227a89796b4
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/e55b3c6501c01c085ca0583e05e1f95b4705a70f
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/dc77989a1c67bce242873de0e7dc0b2f9ded6cb7
+
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/defa1e9c0da70b270b63093eb2bc7c11968dab2e
 	# 	https://gitlab.gnome.org/GNOME/gtk/commit/f8b24884b5cc6fbd582eae5e7aab3e234b3c4c26
-	eapply "${FILESDIR}"/${PN}-3.17.7-gdk-add-touchpad-gesture-events-and-event-types.patch
-	eapply "${FILESDIR}"/${PN}-3.17.7-gdk-add-gdk-touchpad-gesture-mask-to-gdkeventmask.patch
-	eapply "${FILESDIR}"/${PN}-3.17.7-gdk-proxy-touchpad-events-through-the-client-side-window-hierarchy.patch
-	eapply "${FILESDIR}"/${PN}-3.18.6-document-gdk-touchpad-gesture-mask.patch
+	# 	https://gitlab.gnome.org/GNOME/gtk/commit/809c27e5d87821862a1010c5a0d4cb2f9e2fa8b1
+	if ! use vanilla-touchpad; then
+		eapply "${FILESDIR}"/${PN}-3.17.6-gtkgesture-minor-cleanup.patch
+
+		eapply "${FILESDIR}"/${PN}-3.17.7-gdk-add-touchpad-gesture-events-and-event-types.patch
+		eapply "${FILESDIR}"/${PN}-3.17.7-gdk-add-gdk-touchpad-gesture-mask-to-gdkeventmask.patch
+		eapply "${FILESDIR}"/${PN}-3.17.7-gdk-proxy-touchpad-events-through-the-client-side-window-hierarchy.patch
+		eapply "${FILESDIR}"/${PN}-3.17.7-gtkmain-handle-rewriting-of-event-fields-during-grabs-for-touchpad-events.patch
+		eapply "${FILESDIR}"/${PN}-3.17.7-gtkwidget-ensure-touchpad-events-trigger-the-bubbling-phase.patch
+		eapply "${FILESDIR}"/${PN}-3.17.7-eventcontroller-add-private-filter-method.patch
+		eapply "${FILESDIR}"/${PN}-3.17.7-gtkgesture-refactor-gtk-gesture-handle-event.patch
+		eapply "${FILESDIR}"/${PN}-3.17.7-gtkgesture-filter-out-touchpad-events-by-default.patch
+		eapply "${FILESDIR}"/${PN}-3.17.7-gtkgesture-refactor-n-points-querying-into-a-single-function.patch
+		eapply "${FILESDIR}"/${PN}-3.17.7-gtkgesture-handle-touchpad-events.patch
+		eapply "${FILESDIR}"/${PN}-3.17.7-gtkgesture-accumulate-touchpad-events-dx-dy-in-point-data.patch
+		eapply "${FILESDIR}"/${PN}-3.17.7-gtkgesture-add-docs-blurb-about-touchpad-gestures.patch
+		eapply "${FILESDIR}"/${PN}-3.17.7-gtkgesture-add-touchpad-gesture-event-bit-to-the-controller-evmask.patch
+		eapply "${FILESDIR}"/${PN}-3.17.7-gtkgesture-add-note-to-gtk-gesture-get-bounding-box.patch
+
+		eapply "${FILESDIR}"/${PN}-3.18.0-gesture-strengthen-against-destroyed-windows.patch
+		eapply "${FILESDIR}"/${PN}-3.18.6-document-gdk-touchpad-gesture-mask.patch
+		eapply "${FILESDIR}"/${PN}-3.18.7-gestures-add-some-nullable-annotations.patch
+	fi
+
+	if ! use vanilla-touchpad; then
+		eapply "${FILESDIR}"/${PN}-3.14.15-gdkenumtypes.patch
+	fi
+
 
 	# -O3 and company cause random crashes in applications. Bug #133469
 	replace-flags -O3 -O2

@@ -1,0 +1,48 @@
+From 809c27e5d87821862a1010c5a0d4cb2f9e2fa8b1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Timm=20B=C3=A4der?= <mail@baedert.org>
+Date: Fri, 11 Dec 2015 10:05:37 +0100
+Subject: Gestures: Add some nullable annotations
+
+---
+ gtk/gtkgesture.c       | 4 ++--
+ gtk/gtkgesturesingle.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/gtk/gtkgesture.c b/gtk/gtkgesture.c
+index ab4f20b5b8..9da765426b 100644
+--- a/gtk/gtkgesture.c
++++ b/gtk/gtkgesture.c
+@@ -1240,7 +1240,7 @@ gtk_gesture_get_sequences (GtkGesture *gesture)
+  *
+  * Returns the #GdkEventSequence that was last updated on @gesture.
+  *
+- * Returns: The last updated sequence
++ * Returns: (nullable): The last updated sequence
+  *
+  * Since: 3.14
+  **/
+@@ -1263,7 +1263,7 @@ gtk_gesture_get_last_updated_sequence (GtkGesture *gesture)
+  *
+  * Returns the last event that was processed for @sequence.
+  *
+- * Returns: (transfer none): The last event from @sequence
++ * Returns: (transfer none) (nullable): The last event from @sequence
+  **/
+ const GdkEvent *
+ gtk_gesture_get_last_event (GtkGesture       *gesture,
+diff --git a/gtk/gtkgesturesingle.c b/gtk/gtkgesturesingle.c
+index 065d55877e..5aa0978050 100644
+--- a/gtk/gtkgesturesingle.c
++++ b/gtk/gtkgesturesingle.c
+@@ -510,7 +510,7 @@ gtk_gesture_single_get_current_button (GtkGestureSingle *gesture)
+  * Returns the event sequence currently interacting with @gesture.
+  * This is only meaningful if gtk_gesture_is_active() returns %TRUE.
+  *
+- * Returns: the current sequence
++ * Returns: (nullable): the current sequence
+  *
+  * Since: 3.14
+  **/
+-- 
+cgit v1.2.3
+

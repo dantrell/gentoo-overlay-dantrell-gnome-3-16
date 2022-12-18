@@ -1,0 +1,461 @@
+From b78cc85d2dda10e5488cf23cb63008ca339836dc Mon Sep 17 00:00:00 2001
+From: Ondrej Holy <oholy@redhat.com>
+Date: Fri, 29 May 2015 13:06:16 +0200
+Subject: [PATCH] metadata: Get tree from udev via dbus
+
+We don't want to have dependency on udev in client part of gvfs due
+to app sandboxing. Thus move the code into the metadata daemon and
+get tree name via dbus.
+
+Common code to get metadata proxy has to be moved in metatree code.
+
+Mentioned changes caused that unistd.h is also included in
+meta-get-tree.c and cause symbol redeclaration error. Variable
+"pause" has to be renamed to avoid this conflict.
+---
+ client/gdaemonfile.c        |  11 ++--
+ client/gdaemonvfs.c         |  37 +++----------
+ client/gdaemonvfs.h         |   6 ---
+ metadata/Makefile.am        |   6 +--
+ metadata/dbus-interface.xml |   5 ++
+ metadata/meta-daemon.c      |  48 +++++++++++++++++
+ metadata/meta-get-tree.c    |   6 +--
+ metadata/metatree.c         | 103 +++++++++++++++++++-----------------
+ metadata/metatree.h         |   4 ++
+ 9 files changed, 130 insertions(+), 96 deletions(-)
+
+diff --git a/client/gdaemonfile.c b/client/gdaemonfile.c
+index b744d532..cc9edea8 100644
+--- a/client/gdaemonfile.c
++++ b/client/gdaemonfile.c
+@@ -2666,9 +2666,14 @@ set_metadata_attribute (GFile *file,
+     }
+ 
+   res = FALSE;
+-  proxy = _g_daemon_vfs_get_metadata_proxy (cancellable, error);
+-
+-  if (proxy)
++  proxy = meta_tree_get_metadata_proxy ();
++  if (proxy == NULL)
++    {
++      g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
++                   _("Error setting file metadata: %s"),
++                   _("can't get metadata proxy"));
++    }
++  else
+     {
+       builder = g_variant_builder_new (G_VARIANT_TYPE_VARDICT);
+ 
+diff --git a/client/gdaemonvfs.c b/client/gdaemonvfs.c
+index 6b9612f2..3b0337dc 100644
+--- a/client/gdaemonvfs.c
++++ b/client/gdaemonvfs.c
+@@ -76,9 +76,6 @@ G_DEFINE_DYNAMIC_TYPE (GDaemonVfs, g_daemon_vfs, G_TYPE_VFS)
+ 
+ static GDaemonVfs *the_vfs = NULL;
+ 
+-G_LOCK_DEFINE_STATIC (metadata_proxy);
+-static GVfsMetadata *metadata_proxy = NULL;
+-
+ G_LOCK_DEFINE_STATIC(mount_cache);
+ 
+ 
+@@ -1204,31 +1201,6 @@ _g_daemon_vfs_append_metadata_for_set (GVariantBuilder *builder,
+   return res;
+ }
+ 
+-GVfsMetadata *
+-_g_daemon_vfs_get_metadata_proxy (GCancellable *cancellable, GError **error)
+-{
+-  GVfsMetadata *proxy;
+-
+-  G_LOCK (metadata_proxy);
+-
+-  proxy = NULL;
+-  if (metadata_proxy == NULL)
+-    {
+-      metadata_proxy = gvfs_metadata_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
+-                                                             G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS | G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
+-                                                             G_VFS_DBUS_METADATA_NAME,
+-                                                             G_VFS_DBUS_METADATA_PATH,
+-                                                             cancellable,
+-                                                             error);
+-    }
+-
+-  proxy = metadata_proxy;
+-
+-  G_UNLOCK (metadata_proxy);
+-
+-  return proxy;
+-}
+-
+ static gboolean
+ g_daemon_vfs_local_file_set_attributes (GVfs       *vfs,
+ 					const char *filename,
+@@ -1290,9 +1262,12 @@ g_daemon_vfs_local_file_set_attributes (GVfs       *vfs,
+             }
+           else
+             {
+-	      proxy = _g_daemon_vfs_get_metadata_proxy (NULL, error);
++	      proxy = meta_tree_get_metadata_proxy ();
+ 	      if (proxy == NULL)
+ 		{
++		  g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
++			       _("Error setting file metadata: %s"),
++			       _("can't get metadata proxy"));
+ 		  res = FALSE;
+ 		  error = NULL; /* Don't set further errors */
+ 		}
+@@ -1382,7 +1357,7 @@ g_daemon_vfs_local_file_removed (GVfs       *vfs,
+ 					&tree_path);
+   if (tree)
+     {
+-      proxy = _g_daemon_vfs_get_metadata_proxy (NULL, NULL);
++      proxy = meta_tree_get_metadata_proxy ();
+       if (proxy)
+         {
+           metatreefile = meta_tree_get_filename (tree);
+@@ -1429,7 +1404,7 @@ g_daemon_vfs_local_file_moved (GVfs       *vfs,
+ 					 &tree_path2);
+   if (tree1 && tree2 && tree1 == tree2)
+     {
+-      proxy = _g_daemon_vfs_get_metadata_proxy (NULL, NULL);
++      proxy = meta_tree_get_metadata_proxy ();
+       if (proxy)
+         {
+           metatreefile = meta_tree_get_filename (tree1);
+diff --git a/client/gdaemonvfs.h b/client/gdaemonvfs.h
+index 5d5195d4..e20b619a 100644
+--- a/client/gdaemonvfs.h
++++ b/client/gdaemonvfs.h
+@@ -28,7 +28,6 @@
+ #include "gmounttracker.h"
+ #include "gvfsuriutils.h"
+ #include <metatree.h>
+-#include <metadata-dbus.h>
+ 
+ G_BEGIN_DECLS
+ 
+@@ -77,11 +76,6 @@ int             _g_daemon_vfs_append_metadata_for_set  (GVariantBuilder *builder
+ 							GFileAttributeType type,
+ 							gpointer   value);
+ 
+-GVfsMetadata *  _g_daemon_vfs_get_metadata_proxy       (GCancellable             *cancellable,
+-                                                        GError                  **error);
+-
+-
+-
+ G_END_DECLS
+ 
+ #endif /* __G_DAEMON_VFS_H__ */
+diff --git a/metadata/Makefile.am b/metadata/Makefile.am
+index 767033e1..905e8057 100644
+--- a/metadata/Makefile.am
++++ b/metadata/Makefile.am
+@@ -32,7 +32,6 @@ libexec_PROGRAMS =\
+ 
+ AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/common \
+ 	$(LIBXML_CFLAGS) $(GLIB_CFLAGS) \
+-	$(UDEV_CFLAGS) \
+ 	-DGVFS_LOCALEDIR=\""$(localedir)"\"     \
+ 	-DG_LOG_DOMAIN=\"GVFS\" \
+ 	-DDBUS_API_SUBJECT_TO_CHANGE
+@@ -44,7 +43,7 @@ libmetadata_la_SOURCES = 		\
+ 	$(dbus_built_sources)		\
+ 	$(NULL)
+ 
+-libmetadata_la_LIBADD = $(GLIB_LIBS) $(UDEV_LIBS)
++libmetadata_la_LIBADD = $(GLIB_LIBS)
+ 
+ meta_ls_LDADD = libmetadata.la ../common/libgvfscommon.la
+ meta_ls_SOURCES = meta-ls.c
+@@ -61,8 +60,9 @@ meta_get_tree_SOURCES = meta-get-tree.c
+ convert_nautilus_metadata_LDADD = libmetadata.la $(LIBXML_LIBS)
+ convert_nautilus_metadata_SOURCES = metadata-nautilus.c
+ 
+-gvfsd_metadata_LDADD = libmetadata.la ../common/libgvfscommon.la
++gvfsd_metadata_LDADD = libmetadata.la ../common/libgvfscommon.la $(UDEV_LIBS)
+ gvfsd_metadata_SOURCES = meta-daemon.c
++gvfsd_metadata_CFLAFGS = $(UDEV_CFLAGS)
+ 
+ # D-BUS service file
+ %.service: %.service.in ../config.log
+diff --git a/metadata/dbus-interface.xml b/metadata/dbus-interface.xml
+index 263994a3..990a95cb 100644
+--- a/metadata/dbus-interface.xml
++++ b/metadata/dbus-interface.xml
+@@ -40,6 +40,11 @@
+       <arg type='ay' name='path' direction='in'/>
+       <arg type='ay' name='dest_path' direction='in'/>
+     </method>
++    <method name="GetTreeFromDevice">
++      <arg type='u' name='major' direction='in'/>
++      <arg type='u' name='minor' direction='in'/>
++      <arg type='s' name='tree' direction='out'/>
++    </method>
+ 
+   </interface>
+ </node>
+diff --git a/metadata/meta-daemon.c b/metadata/meta-daemon.c
+index d3643d17..984ee7f9 100644
+--- a/metadata/meta-daemon.c
++++ b/metadata/meta-daemon.c
+@@ -31,6 +31,11 @@
+ #include "gvfsdaemonprotocol.h"
+ #include "metadata-dbus.h"
+ 
++#ifdef HAVE_LIBUDEV
++#define LIBUDEV_I_KNOW_THE_API_IS_SUBJECT_TO_CHANGE
++#include <libudev.h>
++#endif
++
+ #define WRITEOUT_TIMEOUT_SECS 60
+ #define WRITEOUT_TIMEOUT_SECS_NFS 15
+ 
+@@ -290,6 +295,48 @@ handle_move (GVfsMetadata *object,
+   return TRUE;
+ }
+ 
++static gboolean
++handle_get_tree_from_device (GVfsMetadata *object,
++                             GDBusMethodInvocation *invocation,
++                             guint arg_major,
++                             guint arg_minor)
++{
++  char *res = NULL;
++
++#ifdef HAVE_LIBUDEV
++  dev_t devnum = makedev (arg_major, arg_minor);
++  struct udev_device *dev;
++  const char *uuid, *label;
++  static struct udev *udev;
++
++  if (udev == NULL)
++    udev = udev_new ();
++
++  dev = udev_device_new_from_devnum (udev, 'b', devnum);
++  uuid = udev_device_get_property_value (dev, "ID_FS_UUID_ENC");
++
++  res = NULL;
++  if (uuid)
++    {
++      res = g_strconcat ("uuid-", uuid, NULL);
++    }
++  else
++    {
++      label = udev_device_get_property_value (dev, "ID_FS_LABEL_ENC");
++
++      if (label)
++        res = g_strconcat ("label-", label, NULL);
++    }
++
++  udev_device_unref (dev);
++#endif
++
++  gvfs_metadata_complete_get_tree_from_device (object, invocation, res ? res : "");
++  g_free (res);
++
++  return TRUE;
++}
++
+ static void
+ on_name_lost (GDBusConnection *connection,
+               const gchar     *name,
+@@ -400,6 +447,7 @@ main (int argc, char *argv[])
+   g_signal_connect (skeleton, "handle-set", G_CALLBACK (handle_set), skeleton);
+   g_signal_connect (skeleton, "handle-remove", G_CALLBACK (handle_remove), skeleton);
+   g_signal_connect (skeleton, "handle-move", G_CALLBACK (handle_move), skeleton);
++  g_signal_connect (skeleton, "handle-get-tree-from-device", G_CALLBACK (handle_get_tree_from_device), skeleton);
+ 
+   error = NULL;
+   if (!g_dbus_interface_skeleton_export (G_DBUS_INTERFACE_SKELETON (skeleton), conn,
+diff --git a/metadata/meta-get-tree.c b/metadata/meta-get-tree.c
+index 23ce9e42..e4f29816 100644
+--- a/metadata/meta-get-tree.c
++++ b/metadata/meta-get-tree.c
+@@ -4,11 +4,11 @@
+ 
+ /*static gboolean recursive = FALSE;*/
+ static gboolean verbose = FALSE;
+-static gboolean pause = FALSE;
++static gboolean do_pause = FALSE;
+ static GOptionEntry entries[] =
+ {
+   { "verbose", 'l', 0, G_OPTION_ARG_NONE, &verbose, "Verbose", NULL },
+-  { "pause", 'p', 0, G_OPTION_ARG_NONE, &pause, "Pause", NULL },
++  { "pause", 'p', 0, G_OPTION_ARG_NONE, &do_pause, "Pause", NULL },
+   { NULL }
+ };
+ 
+@@ -51,7 +51,7 @@ main (int argc,
+       else
+ 	g_print ("tree lookup failed\n");
+ 
+-      if (pause)
++      if (do_pause)
+ 	{
+ 	  char buffer[1000];
+ 	  g_print ("Pausing, press enter\n");
+diff --git a/metadata/metatree.c b/metadata/metatree.c
+index 4964c682..59be3dfe 100644
+--- a/metadata/metatree.c
++++ b/metadata/metatree.c
+@@ -15,11 +15,8 @@
+ #include <glib/gstdio.h>
+ #include "gvfsutils.h"
+ #include "crc32.h"
+-
+-#ifdef HAVE_LIBUDEV
+-#define LIBUDEV_I_KNOW_THE_API_IS_SUBJECT_TO_CHANGE
+-#include <libudev.h>
+-#endif
++#include "metadata-dbus.h"
++#include "gvfsdaemonprotocol.h"
+ 
+ #define MAGIC "\xda\x1ameta"
+ #define MAGIC_LEN 6
+@@ -163,6 +160,34 @@ static MetaJournal *meta_journal_open          (MetaTree    *tree,
+ static void         meta_journal_free          (MetaJournal *journal);
+ static void         meta_journal_validate_more (MetaJournal *journal);
+ 
++GVfsMetadata *
++meta_tree_get_metadata_proxy ()
++{
++  static GVfsMetadata *proxy = NULL;
++  static volatile gsize initialized = 0;
++
++  if (g_once_init_enter (&initialized))
++    {
++      GError *error = NULL;
++
++      proxy = gvfs_metadata_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
++                                                    G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS | G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
++                                                    G_VFS_DBUS_METADATA_NAME,
++                                                    G_VFS_DBUS_METADATA_PATH,
++                                                    NULL,
++                                                    &error);
++      if (error)
++        {
++          g_warning ("Error: %s\n", error->message);
++          g_error_free (error);
++        }
++
++      g_once_init_leave (&initialized, 1);
++    }
++
++  return proxy;
++}
++
+ static gpointer
+ verify_block_pointer (MetaTree *tree, guint32 pos, guint32 len)
+ {
+@@ -2811,63 +2836,41 @@ struct _MetaLookupCache {
+   char *last_device_tree;
+ };
+ 
+-#ifdef HAVE_LIBUDEV
+-
+-static struct udev *udev;
+-G_LOCK_DEFINE_STATIC (udev);
+-
+-static char *
+-get_tree_from_udev (MetaLookupCache *cache,
+-		    dev_t devnum)
+-{
+-  struct udev_device *dev;
+-  const char *uuid, *label;
+-  char *res;
+-
+-  G_LOCK (udev);
+-
+-  if (udev == NULL)
+-    udev = udev_new ();
+-
+-  dev = udev_device_new_from_devnum (udev, 'b', devnum);
+-  uuid = udev_device_get_property_value (dev, "ID_FS_UUID_ENC");
+-
+-  res = NULL;
+-  if (uuid)
+-    {
+-      res = g_strconcat ("uuid-", uuid, NULL);
+-    }
+-  else
+-    {
+-      label = udev_device_get_property_value (dev, "ID_FS_LABEL_ENC");
+-
+-      if (label)
+-	res = g_strconcat ("label-", label, NULL);
+-    }
+-
+-  udev_device_unref (dev);
+-
+-  G_UNLOCK (udev);
+-
+-  return res;
+-}
+-#endif
+ 
+ static const char *
+ get_tree_for_device (MetaLookupCache *cache,
+ 		     dev_t device)
+ {
+-#ifdef HAVE_LIBUDEV
++  gchar *res = NULL;
++
+   if (device != cache->last_device)
+     {
++      GError *error = NULL;
++      GVfsMetadata *metadata_proxy;
++
++      metadata_proxy = meta_tree_get_metadata_proxy ();
++      if (metadata_proxy != NULL)
++        gvfs_metadata_call_get_tree_from_device_sync (metadata_proxy,
++                                                      major (device),
++                                                      minor (device),
++                                                      &res,
++                                                      NULL,
++                                                      &error);
++
++      if (error)
++        {
++          g_warning ("Error: %s\n", error->message);
++          g_error_free (error);
++        }
++
++      if (res && res[0] == '\0')
++        g_clear_pointer (&res, g_free);
+       cache->last_device = device;
+       g_free (cache->last_device_tree);
+-      cache->last_device_tree = get_tree_from_udev (cache, device);
++      cache->last_device_tree = res;
+     }
+ 
+   return cache->last_device_tree;
+-#endif
+-  return NULL;
+ }
+ 
+ 
+diff --git a/metadata/metatree.h b/metadata/metatree.h
+index d469b98e..46dd02bd 100644
+--- a/metadata/metatree.h
++++ b/metadata/metatree.h
+@@ -24,6 +24,7 @@
+ #define __META_TREE_H__
+ 
+ #include <glib.h>
++#include "metadata-dbus.h"
+ 
+ typedef struct _MetaTree MetaTree;
+ typedef struct _MetaLookupCache MetaLookupCache;
+@@ -104,4 +105,7 @@ gboolean    meta_tree_remove           (MetaTree                         *tree,
+ gboolean    meta_tree_copy             (MetaTree                         *tree,
+ 					const char                       *src,
+ 					const char                       *dest);
++
++GVfsMetadata *meta_tree_get_metadata_proxy (void);
++
+ #endif /* __META_TREE_H__ */
+-- 
+GitLab
+

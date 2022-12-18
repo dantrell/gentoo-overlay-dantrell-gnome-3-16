@@ -18,7 +18,7 @@ RDEPEND="
 	>=dev-libs/libxslt-1.1.8
 	dev-util/itstool
 	gnome-extra/yelp-xsl
-	virtual/awk
+	app-alternatives/awk
 "
 DEPEND="${RDEPEND}
 	virtual/pkgconfig

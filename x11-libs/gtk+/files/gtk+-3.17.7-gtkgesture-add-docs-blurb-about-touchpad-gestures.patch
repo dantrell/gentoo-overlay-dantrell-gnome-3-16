@@ -1,0 +1,33 @@
+From d756463d9b2ad1cf84c0ca4313a19227a89796b4 Mon Sep 17 00:00:00 2001
+From: Carlos Garnacho <carlosg@gnome.org>
+Date: Fri, 24 Jul 2015 18:52:38 +0200
+Subject: gtkgesture: Add docs blurb about touchpad gestures
+
+Not too long though, the precautions to take are minimal.
+---
+ gtk/gtkgesture.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/gtk/gtkgesture.c b/gtk/gtkgesture.c
+index 58a4a521e0..5fc909ee6a 100644
+--- a/gtk/gtkgesture.c
++++ b/gtk/gtkgesture.c
+@@ -104,6 +104,15 @@
+  *
+  * Sequence states can't be changed freely, see gtk_gesture_set_sequence_state()
+  * to know about the possible lifetimes of a #GdkEventSequence.
++ *
++ * ## Touchpad gestures
++ *
++ * On the platforms that support it, #GtkGesture will handle transparently
++ * touchpad gesture events. The only precautions users of #GtkGesture should do
++ * to enable this support are:
++ * - Enabling %GDK_TOUCHPAD_GESTURE_MASK on their #GdkWindows
++ * - If the gesture has %GTK_PHASE_NONE, ensuring events of type
++ *   %GDK_TOUCHPAD_SWIPE and %GDK_TOUCHPAD_PINCH are handled by the #GtkGesture
+  */
+ 
+ #include "config.h"
+-- 
+cgit v1.2.3
+
