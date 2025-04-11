@@ -44,7 +44,7 @@ COMMON_DEPEND="
 DEPEND="${COMMON_DEPEND}
 	>=dev-lang/perl-5
 	>=dev-util/gdbus-codegen-2.33
-	>=dev-util/gtk-doc-am-1.4
+	>=dev-build/gtk-doc-am-1.4
 	>=dev-util/intltool-0.40.1
 	sys-devel/gettext
 	virtual/pkgconfig
@@ -56,7 +56,7 @@ RDEPEND="${COMMON_DEPEND}
 
 # For eautoreconf
 #	gnome-base/gnome-common
-#	dev-util/gtk-doc-am"
+#	dev-build/gtk-doc-am"
 
 PDEPEND="
 	gnome? ( x11-themes/adwaita-icon-theme )
@@ -78,13 +78,13 @@ src_prepare() {
 
 	if ! use vanilla-icon; then
 		# From GNOME:
-		# 	https://gitlab.gnome.org/GNOME/nautilus/commit/986eafd989bdaf8ad003a61e2ed0fa8d21dab87b
-		# 	https://gitlab.gnome.org/GNOME/nautilus/commit/2e1ac987268cd57349cdc2763d2442b532ce3c49
-		# 	https://gitlab.gnome.org/GNOME/nautilus/commit/3409a397d8cd46821ceb2bdca70b88d1aaf5c1f7
-		# 	https://gitlab.gnome.org/GNOME/nautilus/commit/ba2da7b800e14f22e509161c5c038642c30f9b60
-		# 	https://gitlab.gnome.org/GNOME/nautilus/commit/2f206f0009be7f3a1c4d5968bb12e4d128dd9ad1
-		# 	https://gitlab.gnome.org/GNOME/nautilus/commit/efb04b8b9d9d7d1121caff4f419acaf98967e704
-		# 	https://gitlab.gnome.org/GNOME/nautilus/commit/a6821c163f2982acd330c2226268f6dfb9972fc1
+		# 	https://gitlab.gnome.org/GNOME/nautilus/-/commit/986eafd989bdaf8ad003a61e2ed0fa8d21dab87b
+		# 	https://gitlab.gnome.org/GNOME/nautilus/-/commit/2e1ac987268cd57349cdc2763d2442b532ce3c49
+		# 	https://gitlab.gnome.org/GNOME/nautilus/-/commit/3409a397d8cd46821ceb2bdca70b88d1aaf5c1f7
+		# 	https://gitlab.gnome.org/GNOME/nautilus/-/commit/ba2da7b800e14f22e509161c5c038642c30f9b60
+		# 	https://gitlab.gnome.org/GNOME/nautilus/-/commit/2f206f0009be7f3a1c4d5968bb12e4d128dd9ad1
+		# 	https://gitlab.gnome.org/GNOME/nautilus/-/commit/efb04b8b9d9d7d1121caff4f419acaf98967e704
+		# 	https://gitlab.gnome.org/GNOME/nautilus/-/commit/a6821c163f2982acd330c2226268f6dfb9972fc1
 		eapply "${FILESDIR}"/${PN}-3.17.2-view-make-the-zoom-slider-the-preference-itself.patch
 		eapply "${FILESDIR}"/${PN}-3.17.3-preferences-make-toolbar-hidden-files-permanent-setting.patch
 		eapply "${FILESDIR}"/${PN}-3.17.3-preferences-make-the-view-buttons-permanent-setting.patch
@@ -111,10 +111,10 @@ src_prepare() {
 	fi
 
 	# From GNOME:
-	# 	https://gitlab.gnome.org/GNOME/nautilus/commit/bfe878e4313e21b4c539d95a88d243065d30fc2c
-	# 	https://gitlab.gnome.org/GNOME/nautilus/commit/079d349206c2dd182df82e4b26e3e23c9b7a75c4
-	# 	https://gitlab.gnome.org/GNOME/nautilus/commit/618f6a6d1965b35e302b2623cbd7e4e81e752ded
-	# 	https://gitlab.gnome.org/GNOME/nautilus/commit/e96f73cf1589c023ade74e4aeb16a0c422790161
+	# 	https://gitlab.gnome.org/GNOME/nautilus/-/commit/bfe878e4313e21b4c539d95a88d243065d30fc2c
+	# 	https://gitlab.gnome.org/GNOME/nautilus/-/commit/079d349206c2dd182df82e4b26e3e23c9b7a75c4
+	# 	https://gitlab.gnome.org/GNOME/nautilus/-/commit/618f6a6d1965b35e302b2623cbd7e4e81e752ded
+	# 	https://gitlab.gnome.org/GNOME/nautilus/-/commit/e96f73cf1589c023ade74e4aeb16a0c422790161
 	eapply "${FILESDIR}"/${PN}-3.17.3-ignore-no-desktop-if-not-first-launch.patch
 	eapply "${FILESDIR}"/${PN}-3.18.5-thumbnails-avoid-crash-with-jp2-images.patch
 	eapply "${FILESDIR}"/${PN}-3.19.91-files-view-hide-hidden-files-when-renamed.patch

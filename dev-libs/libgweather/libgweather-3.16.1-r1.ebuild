@@ -27,7 +27,7 @@ RDEPEND="
 	introspection? ( >=dev-libs/gobject-introspection-0.9.5:= )
 "
 DEPEND="${RDEPEND}
-	>=dev-util/gtk-doc-am-1.11
+	>=dev-build/gtk-doc-am-1.11
 	>=dev-util/intltool-0.50
 	>=sys-devel/gettext-0.18
 	virtual/pkgconfig
@@ -36,7 +36,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	# From GNOME:
-	# 	https://gitlab.gnome.org/GNOME/libgweather/commit/6b0586d95f5632c92b2fbbcb68426bfe5be51098
+	# 	https://gitlab.gnome.org/GNOME/libgweather/-/commit/6b0586d95f5632c92b2fbbcb68426bfe5be51098
 	eapply "${FILESDIR}"/${PN}-3.18.2-switch-to-new-metar-data-provider.patch
 
 	use vala && vala_src_prepare

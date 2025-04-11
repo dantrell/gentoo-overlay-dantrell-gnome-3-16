@@ -33,8 +33,8 @@ DEPEND="${COMMON_DEPEND}
 
 PATCHES=(
 	# From GNOME:
-	# 	https://gitlab.gnome.org/GNOME/gnome-calculator/commit/37cfdf497ced9d52930792c5e8581171420a7a66
-	# 	https://gitlab.gnome.org/GNOME/gnome-calculator/commit/b0427cf0e9349fad3ac02f551e1f1c84d9b9eebc
+	# 	https://gitlab.gnome.org/GNOME/gnome-calculator/-/commit/37cfdf497ced9d52930792c5e8581171420a7a66
+	# 	https://gitlab.gnome.org/GNOME/gnome-calculator/-/commit/b0427cf0e9349fad3ac02f551e1f1c84d9b9eebc
 	"${FILESDIR}"/${PN}-3.18.4-lib-prevents-segfault-when-elements-of-division-to-zero-have-null-assigned-tokens.patch
 	"${FILESDIR}"/${PN}-3.18.4-complex-exponentiation-fixes.patch
 )

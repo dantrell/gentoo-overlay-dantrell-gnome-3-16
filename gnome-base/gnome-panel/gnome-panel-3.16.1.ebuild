@@ -42,7 +42,7 @@ DEPEND="${RDEPEND}
 BDEPEND="
 	app-text/docbook-xml-dtd:4.1.2
 	dev-util/gdbus-codegen
-	gtk-doc? ( >=dev-util/gtk-doc-am-1.0 )
+	gtk-doc? ( >=dev-build/gtk-doc-am-1.0 )
 	>=dev-util/intltool-0.40.6
 	dev-util/itstool
 	sys-devel/gettext

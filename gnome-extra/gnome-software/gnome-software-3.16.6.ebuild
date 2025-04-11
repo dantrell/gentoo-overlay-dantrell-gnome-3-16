@@ -34,7 +34,7 @@ BDEPEND="
 
 src_prepare() {
 	# From GNOME:
-	# 	https://gitlab.gnome.org/GNOME/gnome-software/commit/4de9bc66873f6bb054fe0b4d26f2b24079c8d354
+	# 	https://gitlab.gnome.org/GNOME/gnome-software/-/commit/4de9bc66873f6bb054fe0b4d26f2b24079c8d354
 	eapply "${FILESDIR}"/${PN}-3.16.6-support-the-new-appstreamglib-v5.0-api.patch
 
 	gnome2_src_prepare

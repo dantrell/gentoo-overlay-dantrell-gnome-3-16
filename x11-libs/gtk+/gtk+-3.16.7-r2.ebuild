@@ -65,7 +65,7 @@ DEPEND="${COMMON_DEPEND}
 	dev-libs/libxslt
 	dev-libs/gobject-introspection-common
 	>=dev-util/gdbus-codegen-2.38.2
-	>=dev-util/gtk-doc-am-1.20
+	>=dev-build/gtk-doc-am-1.20
 	>=sys-devel/gettext-0.18.3[${MULTILIB_USEDEP}]
 	virtual/pkgconfig
 	X? ( x11-base/xorg-proto )
@@ -107,26 +107,26 @@ src_prepare() {
 	eapply "${FILESDIR}"/${PN}-3.21.3-configure-fix-detecting-cups-2-x.patch
 
 	# From GNOME:
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/862cac7fe63c712d54936548a245707f2a966e78
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/862cac7fe63c712d54936548a245707f2a966e78
 	#
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/a3b402a9498787d2704f6ab228d3814683c946eb
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/8c2b3930daa6d3886626907fbc79b812579b42d7
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/5092febaf841939c7b3539ef447f43e1ce464037
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/6cd45af8b0afb3758df6bc7679b651033b39c9c4
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/777ac92862529d9b9065a2f9e86f055bbfdd4b61
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/3808322f80e322195165a8162d9c8765a68bcc52
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/8b1c9c0687e4d2deb65a7235e97bd1a2e63447ab
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/97e67e21a1e21215f1191a5be1f2fb102fb2d6a0
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/67ae7322e9569d106328ddab39296ffc9f64961a
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/4457be688da16811d2e558519b566b2605de346d
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/e736e8dcb997da651747804f069b5db8417c43bf
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/d756463d9b2ad1cf84c0ca4313a19227a89796b4
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/e55b3c6501c01c085ca0583e05e1f95b4705a70f
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/dc77989a1c67bce242873de0e7dc0b2f9ded6cb7
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/a3b402a9498787d2704f6ab228d3814683c946eb
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/8c2b3930daa6d3886626907fbc79b812579b42d7
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/5092febaf841939c7b3539ef447f43e1ce464037
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/6cd45af8b0afb3758df6bc7679b651033b39c9c4
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/777ac92862529d9b9065a2f9e86f055bbfdd4b61
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/3808322f80e322195165a8162d9c8765a68bcc52
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/8b1c9c0687e4d2deb65a7235e97bd1a2e63447ab
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/97e67e21a1e21215f1191a5be1f2fb102fb2d6a0
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/67ae7322e9569d106328ddab39296ffc9f64961a
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/4457be688da16811d2e558519b566b2605de346d
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/e736e8dcb997da651747804f069b5db8417c43bf
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/d756463d9b2ad1cf84c0ca4313a19227a89796b4
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/e55b3c6501c01c085ca0583e05e1f95b4705a70f
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/dc77989a1c67bce242873de0e7dc0b2f9ded6cb7
 
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/defa1e9c0da70b270b63093eb2bc7c11968dab2e
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/f8b24884b5cc6fbd582eae5e7aab3e234b3c4c26
-	# 	https://gitlab.gnome.org/GNOME/gtk/commit/809c27e5d87821862a1010c5a0d4cb2f9e2fa8b1
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/defa1e9c0da70b270b63093eb2bc7c11968dab2e
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/f8b24884b5cc6fbd582eae5e7aab3e234b3c4c26
+	# 	https://gitlab.gnome.org/GNOME/gtk/-/commit/809c27e5d87821862a1010c5a0d4cb2f9e2fa8b1
 	if ! use vanilla-touchpad; then
 		eapply "${FILESDIR}"/${PN}-3.17.6-gtkgesture-minor-cleanup.patch
 

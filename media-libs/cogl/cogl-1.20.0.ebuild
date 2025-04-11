@@ -46,7 +46,7 @@ RDEPEND="${COMMON_DEPEND}
 	!<media-libs/clutter-1.7
 "
 DEPEND="${COMMON_DEPEND}
-	>=dev-util/gtk-doc-am-1.13
+	>=dev-build/gtk-doc-am-1.13
 	sys-devel/gettext
 	virtual/pkgconfig
 	test? ( media-libs/mesa[classic] )

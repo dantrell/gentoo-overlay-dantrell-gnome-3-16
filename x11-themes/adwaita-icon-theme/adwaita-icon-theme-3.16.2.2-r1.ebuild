@@ -40,7 +40,7 @@ DEPEND="${COMMON_DEPEND}
 
 src_prepare() {
 	# From GNOME:
-	# 	https://gitlab.gnome.org/GNOME/adwaita-icon-theme/commit/f07e61189a779a825bfa531849454d307c70c1b9
+	# 	https://gitlab.gnome.org/GNOME/adwaita-icon-theme/-/commit/f07e61189a779a825bfa531849454d307c70c1b9
 	eapply "${FILESDIR}"/${PN}-3.17.3-fix-intltool-locale-directory-location.patch
 
 	if use branding; then

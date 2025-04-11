@@ -1,7 +1,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="6"
-PYTHON_COMPAT=( python{3_9,3_10,3_11} )
+PYTHON_COMPAT=( python{3_10,3_11,3_12,3_13} )
 
 inherit gnome2 python-single-r1 virtualx
 
@@ -26,14 +26,14 @@ RDEPEND="
 	dev-python/pygobject:3
 	>=dev-util/devhelp-3.16
 	dev-util/uncrustify
-	sys-devel/clang
+	llvm-core/clang
 	>=x11-libs/gtk+-3.16.1:3[introspection?]
 	>=x11-libs/gtksourceview-3.16.1:3.0[introspection?]
 	introspection? ( >=dev-libs/gobject-introspection-1.42:= )
 "
 DEPEND="${RDEPEND}
 	dev-libs/appstream-glib
-	>=dev-util/gtk-doc-am-1.11
+	>=dev-build/gtk-doc-am-1.11
 	>=dev-util/intltool-0.50.1
 	>=sys-devel/gettext-0.18
 	virtual/pkgconfig

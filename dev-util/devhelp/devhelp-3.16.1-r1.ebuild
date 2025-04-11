@@ -1,7 +1,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="6"
-PYTHON_COMPAT=( python{3_9,3_10,3_11} )
+PYTHON_COMPAT=( python{3_10,3_11,3_12,3_13} )
 
 inherit autotools gnome2 python-single-r1 toolchain-funcs
 
@@ -47,7 +47,7 @@ src_prepare() {
 	fi
 
 	# From GNOME:
-	# 	https://gitlab.gnome.org/GNOME/devhelp/commit/05659428acc6da4e6a85d37d9e0d3b00e6adde9d
+	# 	https://gitlab.gnome.org/GNOME/devhelp/-/commit/05659428acc6da4e6a85d37d9e0d3b00e6adde9d
 	eapply "${FILESDIR}"/${PN}-3.17.3-use-webkit-navigation-policy-decision-get-navigation-action.patch
 
 	eautoreconf
